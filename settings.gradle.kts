@@ -14,3 +14,6 @@ pluginManagement {
 
 rootProject.name = "LokiLogger"
 
+
+include("LokiLogger")
+project(":LokiLogger").name = "loki-logger"
