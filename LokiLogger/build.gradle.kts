@@ -2,13 +2,6 @@ plugins {
     kotlin("multiplatform")
 }
 
-group = "net.codinux.log"
-version = "1.0.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 kotlin {
     jvm {
         jvmToolchain(8)
@@ -49,19 +42,41 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
+
+    val coroutinesVersion: String by project
+    val ktorVersion: String by project
     
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
             }
         }
-        val jvmMain by getting
+
+        val jvmMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+            }
+        }
         val jvmTest by getting
+
         val jsMain by getting
         val jsTest by getting
-        val nativeMain by getting
+
+        val nativeMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-curl:$ktorVersion") // requires that curl is installed
+            }
+        }
         val nativeTest by getting
     }
 }
