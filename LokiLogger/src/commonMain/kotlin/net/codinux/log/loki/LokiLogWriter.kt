@@ -1,14 +1,18 @@
 package net.codinux.log.loki
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.codinux.log.LogRecord
 import net.codinux.log.LogAppenderConfig
+import net.codinux.log.LogWriter
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 
 open class LokiLogWriter(
     private val config: LogAppenderConfig,
     private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host))
-) {
+) : LogWriter {
 
     companion object {
         private const val JsonContentType = "application/json"
@@ -17,7 +21,14 @@ open class LokiLogWriter(
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
     }
 
-    open suspend fun writeRecord(record: LogRecord) {
+
+    override fun writeRecord(record: LogRecord) {
+        GlobalScope.launch(Dispatchers.Unconfined) {
+            writeRecordAsync(record)
+        }
+    }
+
+    open suspend fun writeRecordAsync(record: LogRecord) {
         val requestBody = createRequestBody(record)
 
         // TODO: GZip body and add "Content-Encoding: gzip" header
@@ -201,5 +212,13 @@ open class LokiLogWriter(
                 stackTrace
             }
         }
+    }
+
+    override fun flush() {
+        // currently nothing to do (implement after implementing queue)
+    }
+
+    override fun close() {
+        // currently nothing to do (implement after implementing queue)
     }
 }
