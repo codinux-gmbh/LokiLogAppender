@@ -4,8 +4,7 @@ plugins {
 
 java {
     toolchain {
-        // ExtLogRecord.instant needs at least Java version 9 (why?)
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
