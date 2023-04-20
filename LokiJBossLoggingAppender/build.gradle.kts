@@ -2,6 +2,13 @@ plugins {
     kotlin("jvm")
 }
 
+java {
+    toolchain {
+        // ExtLogRecord.instant needs at least Java version 9 (why?)
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
 
 val junitVersion: String by project
 
@@ -10,6 +17,7 @@ dependencies {
     api(project(":loki-log-appender-base"))
 
     api("net.codinux.log:jboss-logging-appender-base:$version")
+
 
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -22,4 +30,16 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+
+ext["artifactId"] = project.name
+ext["libraryName"] = ext["artifactId"]
+
+ext["description"] = "JBoss logging appender to pushing logs directly to Loki"
+
+
+val commonScriptsFile = File(File(project.gradle.gradleUserHomeDir, "scripts"), "commonScripts.gradle")
+if (commonScriptsFile.exists()) {
+    apply(from = commonScriptsFile)
 }

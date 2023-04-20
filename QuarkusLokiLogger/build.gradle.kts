@@ -32,3 +32,15 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+
+ext["artifactId"] = project.name
+ext["libraryName"] = ext["artifactId"]
+
+ext["description"] = "Quarkus extension to enable pushing logs to Loki in Quarkus"
+
+
+val commonScriptsFile = File(File(project.gradle.gradleUserHomeDir, "scripts"), "commonScripts.gradle")
+if (commonScriptsFile.exists()) {
+    apply(from = commonScriptsFile)
+}
