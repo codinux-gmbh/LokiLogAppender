@@ -180,6 +180,9 @@ open class LokiLogWriter(
     protected open fun extractStacktrace(record: LogRecord): String? {
         return record.exception?.let { exception ->
             val stackTrace = exception.stackTraceToString()
+                // we have to escape single backslashes as Loki doesn't accept control characters
+                // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
+                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
 
             if (stackTrace.length > settings.stacktraceMaxFieldLength) {
                 return stackTrace.substring(0, settings.stacktraceMaxFieldLength)
