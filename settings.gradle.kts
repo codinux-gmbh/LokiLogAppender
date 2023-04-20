@@ -28,10 +28,12 @@ project(":LokiJBossLoggingAppender").name = "loki-jboss-logging-appender"
 
 /*          Quarkus             */
 
-include("QuarkusLokiLogger")
-project(":QuarkusLokiLogger").name = "quarkus-loki-logger"
+// building Quarkus extension with Gradle and / or Kotlin does not work (but in Quarkus?) so using Maven and Java for these
 
-include("QuarkusLokiLoggerDeployment")
-project(":QuarkusLokiLoggerDeployment").name = "quarkus-loki-logger-deployment"
+//include("QuarkusLokiLogger")
+//project(":QuarkusLokiLogger").name = "quarkus-loki-logger"
+//
+//include("QuarkusLokiLoggerDeployment")
+//project(":QuarkusLokiLoggerDeployment").name = "quarkus-loki-logger-deployment"
 
 include("QuarkusSampleApplication")
