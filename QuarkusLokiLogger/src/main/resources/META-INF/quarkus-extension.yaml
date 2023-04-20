@@ -1,0 +1,10 @@
+---
+name: "Quarkus Loki log appender"
+metadata:
+  short-name: "loki-logger"
+  categories:
+  - "core"
+  status: "preview"
+  guide: "https://github.com/codinux-gmbh/LokiLogAppender"
+  config:
+  - "quarkus.log.loki"
