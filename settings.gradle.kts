@@ -13,9 +13,6 @@ pluginManagement {
 }
 
 
-rootProject.name = "LokiLogger"
-
-
 include("LokiLogAppenderBase")
 project(":LokiLogAppenderBase").name = "loki-log-appender-base"
 
