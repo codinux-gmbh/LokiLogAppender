@@ -1,13 +1,13 @@
 package net.codinux.log.loki
 
 import net.codinux.log.LogRecord
-import net.codinux.log.LoggerSettings
+import net.codinux.log.LogAppenderConfig
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 
 open class LokiLogWriter(
-    private val settings: LoggerSettings,
-    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(settings.host))
+    private val config: LogAppenderConfig,
+    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host))
 ) {
 
     companion object {
@@ -54,13 +54,13 @@ open class LokiLogWriter(
     private fun getLogLine(record: LogRecord): String {
         val logLine = StringBuilder()
 
-        if (settings.includeThreadName) {
+        if (config.includeThreadName) {
             logLine.append("[${record.threadName}] ")
         }
 
         logLine.append(record.message)
 
-        if (settings.includeStacktrace) {
+        if (config.includeStacktrace) {
             logLine.append(" ${extractStacktrace(record)}")
         }
 
@@ -68,17 +68,17 @@ open class LokiLogWriter(
     }
 
     protected open fun getIncludedFields(record: LogRecord): List<String> = mapIncludedFields(
-        mapLabel(settings.includeLogLevel, settings.logLevelFieldName, record.level),
-        mapLabel(settings.includeLoggerName, settings.loggerNameFieldName, record.loggerName),
-        mapLabel(settings.includeLoggerClassName, settings.loggerClassNameFieldName) { extractLoggerName(record) },
+        mapLabel(config.includeLogLevel, config.logLevelFieldName, record.level),
+        mapLabel(config.includeLoggerName, config.loggerNameFieldName, record.loggerName),
+        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(record) },
 
-        mapLabel(settings.includeHost, settings.hostFieldName, record.host),
-        mapLabel(settings.includeDeviceName, settings.deviceNameFieldName, settings.deviceName),
-        mapLabel(settings.includeAppName, settings.appNameFieldName, settings.appName),
+        mapLabel(config.includeHost, config.hostFieldName, record.host),
+        mapLabel(config.includeDeviceName, config.deviceNameFieldName, config.deviceName),
+        mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
-        *mapMdcLabel(settings.includeMdc && record.mdc != null, record.mdc).toTypedArray(),
-        mapLabel(settings.includeMarker && record.marker != null, settings.markerFieldName, record.marker),
-        mapLabel(settings.includeNdc && record.ndc != null, settings.ndcFieldName, record.ndc),
+        *mapMdcLabel(config.includeMdc && record.mdc != null, record.mdc).toTypedArray(),
+        mapLabel(config.includeMarker && record.marker != null, config.markerFieldName, record.marker),
+        mapLabel(config.includeNdc && record.ndc != null, config.ndcFieldName, record.ndc),
     )
 
     private fun mapIncludedFields(vararg labels: String?): List<String> =
@@ -101,7 +101,7 @@ open class LokiLogWriter(
     private fun mapMdcLabel(includeMdc: Boolean, mdc: Map<String, String>?): List<String> {
         if (includeMdc) {
             mdc?.let {
-                val prefix = determinePrefix(settings.mdcKeysPrefix)
+                val prefix = determinePrefix(config.mdcKeysPrefix)
 
                 return mdc.mapNotNull { (key, value) ->
                     mapLabel(includeMdc, prefix + key, value)
@@ -195,8 +195,8 @@ open class LokiLogWriter(
                 // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
                 .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
 
-            if (stackTrace.length > settings.stacktraceMaxFieldLength) {
-                return stackTrace.substring(0, settings.stacktraceMaxFieldLength)
+            if (stackTrace.length > config.stacktraceMaxFieldLength) {
+                return stackTrace.substring(0, config.stacktraceMaxFieldLength)
             } else {
                 stackTrace
             }

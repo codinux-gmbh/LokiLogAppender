@@ -49,7 +49,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("net.codinux.log:logger-base:1.0.0-SNAPSHOT")
+                implementation("net.codinux.log:log-appender-base:1.0.0-SNAPSHOT")
 
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
 
