@@ -104,7 +104,7 @@ open class LokiLogWriter(
 
     protected open fun mapLabel(includeField: Boolean, fieldName: String, value: Any?): String? =
         if (includeField) {
-            """"${cleanFieldName(fieldName)}":"${value ?: "null"}""""
+            """"${cleanLabelName(fieldName)}":"${value ?: "null"}""""
         } else {
             null
         }
@@ -179,9 +179,9 @@ open class LokiLogWriter(
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    private fun cleanFieldName(fieldName: String): String {
+    private fun cleanLabelName(fieldName: String): String {
         // TODO: implement removing illegal characters by converting illegal characters to underscore. Do this once and set it in LoggerSettings
-        return fieldName
+        return fieldName.replace(' ', '_')
     }
 
     private fun determinePrefix(prefix: String?): String =
