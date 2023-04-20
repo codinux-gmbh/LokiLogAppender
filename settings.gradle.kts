@@ -33,3 +33,5 @@ project(":QuarkusLokiLogger").name = "quarkus-loki-logger"
 
 include("QuarkusLokiLoggerDeployment")
 project(":QuarkusLokiLoggerDeployment").name = "quarkus-loki-logger-deployment"
+
+include("QuarkusSampleApplication")
