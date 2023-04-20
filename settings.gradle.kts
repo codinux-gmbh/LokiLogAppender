@@ -37,3 +37,4 @@ project(":LokiJBossLoggingAppender").name = "loki-jboss-logging-appender"
 //project(":QuarkusLokiLoggerDeployment").name = "quarkus-loki-logger-deployment"
 
 include("QuarkusSampleApplication")
+project(":QuarkusSampleApplication").projectDir = File("sampleApplications/QuarkusSampleApplication")
