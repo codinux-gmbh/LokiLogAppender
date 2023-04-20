@@ -9,8 +9,6 @@ public class QuarkusLokiLoggerProcessor {
 
     @BuildStep
     public FeatureBuildItem feature() {
-        System.out.println("BUilding feature"); // TODO: remove again
-
         return new FeatureBuildItem(FEATURE);
     }
 }

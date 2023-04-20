@@ -12,7 +12,6 @@ public class QuarkusLokiLoggerSteps {
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     public LogHandlerBuildItem setUpLogAppender(QuarkusLokiLogAppenderRecorder recorder, QuarkusLokiLogAppenderConfig config) {
-        System.out.println("Setting up logger");
         return new LogHandlerBuildItem(recorder.initializeLokiLogAppender(config));
     }
 
