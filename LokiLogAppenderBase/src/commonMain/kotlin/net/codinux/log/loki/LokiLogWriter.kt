@@ -71,7 +71,7 @@ open class LokiLogWriter(
 
         logLine.append(record.message)
 
-        if (config.includeStacktrace) {
+        if (config.includeStacktrace && record.exception != null) {
             logLine.append(" ${extractStacktrace(record)}")
         }
 
