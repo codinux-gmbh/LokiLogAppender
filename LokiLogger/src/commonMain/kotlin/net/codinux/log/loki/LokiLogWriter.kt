@@ -43,7 +43,7 @@ open class LokiLogWriter(
         body.append(getIncludedFields(record).joinToString(","))
 
         body.append("""},"values":[""")
-        body.append("""["${convertTimestamp(record)}","${record.message}"]""")
+        body.append("""["${convertTimestamp(record)}","${getLogLine(record)}"]""")
 
         body.append("]}")
     }
@@ -51,19 +51,30 @@ open class LokiLogWriter(
     private fun convertTimestamp(record: LogRecord) =
         record.timestamp.epochSeconds * 1_000_000_000 + record.timestamp.nanosecondsOfSecond
 
+    private fun getLogLine(record: LogRecord): String {
+        val logLine = StringBuilder()
+
+        if (settings.includeThreadName) {
+            logLine.append("[${record.threadName}] ")
+        }
+
+        logLine.append(record.message)
+
+        if (settings.includeStacktrace) {
+            logLine.append(" ${extractStacktrace(record)}")
+        }
+
+        return logLine.toString()
+    }
+
     protected open fun getIncludedFields(record: LogRecord): List<String> = mapIncludedFields(
         mapLabel(settings.includeLogLevel, settings.logLevelFieldName, record.level),
         mapLabel(settings.includeLoggerName, settings.loggerNameFieldName, record.loggerName),
         mapLabel(settings.includeLoggerClassName, settings.loggerClassNameFieldName) { extractLoggerName(record) },
 
-        mapLabel(settings.includeThreadName, settings.threadNameFieldName, record.threadName),
-
         mapLabel(settings.includeHost, settings.hostFieldName, record.host),
         mapLabel(settings.includeDeviceName, settings.deviceNameFieldName, settings.deviceName),
         mapLabel(settings.includeAppName, settings.appNameFieldName, settings.appName),
-
-        // TODO: where to put the stacktrace to? i don't think that a label is the correct place for it
-        mapLabel(settings.includeStacktrace && record.exception != null, settings.stacktraceFieldName) { extractStacktrace(record) },
 
         *mapMdcLabel(settings.includeMdc && record.mdc != null, record.mdc).toTypedArray(),
         mapLabel(settings.includeMarker && record.marker != null, settings.markerFieldName, record.marker),
