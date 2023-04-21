@@ -3,8 +3,8 @@ package net.codinux.log.loki
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.codinux.log.LogRecord
 import net.codinux.log.LogAppenderConfig
+import net.codinux.log.LogRecord
 import net.codinux.log.LogWriter
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
@@ -69,10 +69,10 @@ open class LokiLogWriter(
             logLine.append("[${record.threadName}] ")
         }
 
-        logLine.append(record.message)
+        logLine.append(cleanFieldValue(record.message))
 
         if (config.includeStacktrace && record.exception != null) {
-            logLine.append(" ${extractStacktrace(record)}")
+            logLine.append(" ${cleanFieldValue(extractStacktrace(record))}")
         }
 
         return logLine.toString()
@@ -184,6 +184,15 @@ open class LokiLogWriter(
         return fieldName.replace(' ', '_')
     }
 
+    @JvmName("cleanFieldValueNullable")
+    private fun cleanFieldValue(value: String?): String? =
+        value?.let { cleanFieldValue(it) }
+
+    private fun cleanFieldValue(value: String): String =
+        // we have to escape single backslashes as Loki doesn't accept control characters
+        // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
+        value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
+
     private fun determinePrefix(prefix: String?): String =
         if (prefix.isNullOrBlank()) "" else prefix + "_" // TODO: in Loki prefixes get separated by '_', in ElasticSearch by '.'
 
@@ -202,12 +211,9 @@ open class LokiLogWriter(
     protected open fun extractStacktrace(record: LogRecord): String? {
         return record.exception?.let { exception ->
             val stackTrace = exception.stackTraceToString()
-                // we have to escape single backslashes as Loki doesn't accept control characters
-                // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
-                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
 
             if (stackTrace.length > config.stacktraceMaxFieldLength) {
-                return stackTrace.substring(0, config.stacktraceMaxFieldLength)
+                stackTrace.substring(0, config.stacktraceMaxFieldLength)
             } else {
                 stackTrace
             }
