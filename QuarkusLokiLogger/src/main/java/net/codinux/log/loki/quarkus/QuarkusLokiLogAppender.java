@@ -16,6 +16,10 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedConfig.setEnabled(config.enable);
         mappedConfig.setHost(config.lokiHost);
 
+        mappedConfig.setIncludeAppName(config.appName.include);
+        mappedConfig.setAppNameFieldName(config.appName.fieldName);
+        mappedConfig.setAppName(config.appName.appName);
+
         return mappedConfig;
     }
 }
