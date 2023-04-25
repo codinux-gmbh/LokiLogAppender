@@ -21,12 +21,27 @@ class LokiLogWriterTest {
                 "Test message ${index.toString().padStart(3, '0')}",
                 Clock.System.now(),
                 "INFO",
-                "net.codinux.Liebe",
+                "net.codinux.LokiTest",
                 "main",
                 exception = Exception("Just a test, no animals have been harmed"),
                 mdc = mapOf("MDC1" to "Stasi", "MDC2" to "Wuerd ich gerne knutschen")
             ))
             delay(50)
         }
+    }
+
+    @Test
+    fun messageContainsQuotes() = runBlocking {
+        underTest.writeRecord(LogRecord(
+            """RESTEASY002142: Multiple resource methods match request "GET /favicon-finder". Selecting one. Matching methods: [public javax.ws.rs.core.Response net.dankito.utils.favicon.rest.FaviconFinderResource.findFavicons(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting), public java.lang.String net.dankito.utils.favicon.rest.FaviconFinderResource.findFaviconsHtml(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting)]""",
+            Clock.System.now(),
+            "INFO",
+            "net.codinux.LokiTest",
+            "main"
+        ))
+
+        delay(1000)
+
+        // TODO: add a assert to assert that HTTP 204 got returned instead of 400
     }
 }

@@ -192,6 +192,7 @@ open class LokiLogWriter(
         // we have to escape single backslashes as Loki doesn't accept control characters
         // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
         value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
+            .replace("\"", "\\\"")
 
     private fun determinePrefix(prefix: String?): String =
         if (prefix.isNullOrBlank()) "" else prefix + "_" // TODO: in Loki prefixes get separated by '_', in ElasticSearch by '.'
