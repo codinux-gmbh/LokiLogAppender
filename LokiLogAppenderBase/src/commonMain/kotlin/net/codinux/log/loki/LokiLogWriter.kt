@@ -18,6 +18,13 @@ open class LokiLogWriter(
     }
 
 
+    protected open val hostNameLabel: String?
+
+    init {
+        hostNameLabel = mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName)
+    }
+
+
     override fun serializeRecord(
         timestampMillisSinceEpoch: Long,
         timestampMicroAndNanosecondsPart: Long?,
@@ -105,7 +112,7 @@ open class LokiLogWriter(
         mapLabel(config.includeLoggerName, config.loggerNameFieldName, loggerName),
         mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(loggerName) },
 
-        mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName),
+        hostNameLabel,
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
         *mapMdcLabel(config.includeMdc && mdc != null, mdc).toTypedArray(),
