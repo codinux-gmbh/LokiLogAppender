@@ -12,7 +12,6 @@ pluginManagement {
         kotlin("multiplatform") version kotlinVersion
         kotlin("plugin.allopen") version kotlinVersion
 
-        id("java")
         id("io.quarkus") version quarkusVersion
         id("io.quarkus.extension") version quarkusVersion
     }

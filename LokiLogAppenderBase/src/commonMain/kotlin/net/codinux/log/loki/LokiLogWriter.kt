@@ -226,11 +226,4 @@ open class LokiLogWriter(
         }
     }
 
-    override fun flush() {
-        // currently nothing to do (implement after implementing queue)
-    }
-
-    override fun close() {
-        // currently nothing to do (implement after implementing queue)
-    }
 }

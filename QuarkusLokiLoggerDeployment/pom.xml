@@ -77,32 +77,7 @@
     </issueManagement>
 
     <build>
-<!--        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>-->
-<!--        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>-->
-
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.jetbrains.kotlin</groupId>-->
-<!--                <artifactId>kotlin-maven-plugin</artifactId>-->
-<!--                <version>${kotlin.version}</version>-->
-
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>compile</id>-->
-<!--                        <goals>-->
-<!--                            <goal>compile</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-
-<!--                    <execution>-->
-<!--                        <id>test-compile</id>-->
-<!--                        <goals>-->
-<!--                            <goal>test-compile</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
