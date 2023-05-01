@@ -1,7 +1,6 @@
 package net.codinux.log.loki
 
 import net.codinux.log.LogAppenderConfig
-import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
@@ -19,7 +18,35 @@ open class LokiLogWriter(
     }
 
 
-    override suspend fun writeRecords(records: List<LogRecord>): List<LogRecord> {
+    override fun serializeRecord(
+        timestampMillisSinceEpoch: Long,
+        timestampMicroAndNanosecondsPart: Long?,
+        level: String,
+        message: String,
+        loggerName: String,
+        threadName: String,
+        exception: Throwable?,
+        mdc: Map<String, String>?,
+        marker: String?,
+        ndc: String?
+    ): String {
+        val serializedRecord = StringBuilder()
+
+        serializedRecord.append("""{"stream":{""")
+
+        serializedRecord.append(getIncludedFields(level, loggerName, mdc, marker, ndc).joinToString(","))
+
+        serializedRecord.append("""},"values":[""")
+        serializedRecord.append("""["${convertTimestamp(timestampMillisSinceEpoch, timestampMicroAndNanosecondsPart)}",
+            |"${getLogLine(message, threadName, exception)}"]""".trimMargin())
+
+        serializedRecord.append("]}")
+
+        return serializedRecord.toString()
+    }
+
+
+    override suspend fun writeRecords(records: List<String>): List<String> {
         try {
             val requestBody = createRequestBody(records)
 
@@ -34,16 +61,16 @@ open class LokiLogWriter(
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
     }
 
-    protected open fun createRequestBody(records: List<LogRecord>): String {
+    protected open fun createRequestBody(serializedRecords: List<String>): String {
         // it's not that easy to build the request body with a standard JSON serializer, so let's build the JSON request body ourselves
         // for the format see https://grafana.com/docs/loki/latest/api/#push-log-entries-to-loki
         val body = StringBuilder()
             .append("""{"streams":[""")
 
-        records.forEachIndexed { index, record ->
-            createStreamForLogRecord(body, record)
+        serializedRecords.forEachIndexed { index, record ->
+            body.append(record)
 
-            if (index < records.size - 1) {
+            if (index < serializedRecords.size - 1) {
                 body.append(',')
             }
         }
@@ -53,48 +80,38 @@ open class LokiLogWriter(
         return body.toString()
     }
 
-    protected open fun createStreamForLogRecord(body: StringBuilder, record: LogRecord) {
-        body.append("""{"stream":{""")
 
-        body.append(getIncludedFields(record).joinToString(","))
+    private fun convertTimestamp(timestampMillisSinceEpoch: Long, timestampMicroAndNanosecondsPart: Long?) =
+        timestampMillisSinceEpoch * 1_000_000 + (timestampMicroAndNanosecondsPart ?: 0)
 
-        body.append("""},"values":[""")
-        body.append("""["${convertTimestamp(record)}","${getLogLine(record)}"]""")
-
-        body.append("]}")
-    }
-
-    private fun convertTimestamp(record: LogRecord) =
-        record.timestamp.epochSeconds * 1_000_000_000 + record.timestamp.nanosecondsOfSecond
-
-    private fun getLogLine(record: LogRecord): String {
+    private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
         val logLine = StringBuilder()
 
         if (config.includeThreadName) {
-            logLine.append("[${record.threadName}] ")
+            logLine.append("[${threadName}] ")
         }
 
-        logLine.append(cleanFieldValue(record.message))
+        logLine.append(cleanFieldValue(message))
 
-        if (config.includeStacktrace && record.exception != null) {
-            logLine.append(" ${cleanFieldValue(extractStacktrace(record))}")
+        if (config.includeStacktrace && exception != null) {
+            logLine.append(" ${cleanFieldValue(extractStacktrace(exception))}")
         }
 
         return logLine.toString()
     }
 
-    protected open fun getIncludedFields(record: LogRecord): List<String> = mapIncludedFields(
-        mapLabel(config.includeLogLevel, config.logLevelFieldName, record.level),
-        mapLabel(config.includeLoggerName, config.loggerNameFieldName, record.loggerName),
-        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(record) },
+    protected open fun getIncludedFields(level: String, loggerName: String, mdc: Map<String, String>?, marker: String?, ndc: String?): List<String> = mapIncludedFields(
+        mapLabel(config.includeLogLevel, config.logLevelFieldName, level),
+        mapLabel(config.includeLoggerName, config.loggerNameFieldName, loggerName),
+        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(loggerName) },
 
         mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName),
         mapLabel(config.includeDeviceName, config.deviceNameFieldName, config.deviceName),
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
-        *mapMdcLabel(config.includeMdc && record.mdc != null, record.mdc).toTypedArray(),
-        mapLabel(config.includeMarker && record.marker != null, config.markerFieldName, record.marker),
-        mapLabel(config.includeNdc && record.ndc != null, config.ndcFieldName, record.ndc),
+        *mapMdcLabel(config.includeMdc && mdc != null, mdc).toTypedArray(),
+        mapLabel(config.includeMarker && marker != null, config.markerFieldName, marker),
+        mapLabel(config.includeNdc && ndc != null, config.ndcFieldName, ndc),
     )
 
     private fun mapIncludedFields(vararg labels: String?): List<String> =
@@ -203,19 +220,17 @@ open class LokiLogWriter(
         if (prefix.isNullOrBlank()) "" else prefix + "_" // TODO: in Loki prefixes get separated by '_', in ElasticSearch by '.'
 
     // loggerName is in most cases full qualified class name including packages, try to extract only name of class
-    protected open fun extractLoggerName(record: LogRecord): String { // TODO: as there's only a small amount of loggers: Cache extracted logger names
-        var loggerName = record.loggerName
-
+    protected open fun extractLoggerName(loggerName: String): String { // TODO: as there's only a small amount of loggers: Cache extracted logger names
         val indexOfDot = loggerName.lastIndexOf('.')
         if (indexOfDot >= 0) {
-            loggerName = loggerName.substring(indexOfDot + 1)
+            return loggerName.substring(indexOfDot + 1)
         }
 
         return loggerName
     }
 
-    protected open fun extractStacktrace(record: LogRecord): String? {
-        return record.exception?.let { exception ->
+    protected open fun extractStacktrace(exception: Throwable?): String? {
+        return exception?.let {
             val stackTrace = exception.stackTraceToString()
 
             if (stackTrace.length > config.stacktraceMaxFieldLength) {
