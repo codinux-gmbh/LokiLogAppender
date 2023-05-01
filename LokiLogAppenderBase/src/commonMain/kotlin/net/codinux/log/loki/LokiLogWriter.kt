@@ -1,18 +1,15 @@
 package net.codinux.log.loki
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogRecord
-import net.codinux.log.LogWriter
+import net.codinux.log.LogWriterBase
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 
 open class LokiLogWriter(
-    private val config: LogAppenderConfig,
+    config: LogAppenderConfig,
     private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host))
-) : LogWriter {
+) : LogWriterBase(config) {
 
     companion object {
         private const val JsonContentType = "application/json"
@@ -22,26 +19,34 @@ open class LokiLogWriter(
     }
 
 
-    override fun writeRecord(record: LogRecord) {
-        GlobalScope.launch(Dispatchers.Unconfined) {
-            writeRecordAsync(record)
+    override suspend fun writeRecords(records: List<LogRecord>): List<LogRecord> {
+        try {
+            val requestBody = createRequestBody(records)
+
+            // TODO: GZip body and add "Content-Encoding: gzip" header
+            if (webClient.post("", requestBody, JsonContentType)) {
+                return emptyList() // all records successfully send to Loki
+            }
+        } catch (e: Exception) {
+            // TODO: log error
         }
+
+        return records // could not send records to Loki, so we failed to insert all records -> all records failed
     }
 
-    open suspend fun writeRecordAsync(record: LogRecord) {
-        val requestBody = createRequestBody(record)
-
-        // TODO: GZip body and add "Content-Encoding: gzip" header
-        webClient.post("", requestBody, JsonContentType)
-    }
-
-    protected open fun createRequestBody(record: LogRecord): String {
+    protected open fun createRequestBody(records: List<LogRecord>): String {
         // it's not that easy to build the request body with a standard JSON serializer, so let's build the JSON request body ourselves
         // for the format see https://grafana.com/docs/loki/latest/api/#push-log-entries-to-loki
         val body = StringBuilder()
             .append("""{"streams":[""")
 
-        createStreamForLogRecord(body, record)
+        records.forEachIndexed { index, record ->
+            createStreamForLogRecord(body, record)
+
+            if (index < records.size - 1) {
+                body.append(',')
+            }
+        }
 
         body.append("]}")
 
@@ -83,7 +88,7 @@ open class LokiLogWriter(
         mapLabel(config.includeLoggerName, config.loggerNameFieldName, record.loggerName),
         mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(record) },
 
-        mapLabel(config.includeHost, config.hostFieldName, record.host),
+        mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName),
         mapLabel(config.includeDeviceName, config.deviceNameFieldName, config.deviceName),
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
