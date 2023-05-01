@@ -106,7 +106,6 @@ open class LokiLogWriter(
         mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(loggerName) },
 
         mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName),
-        mapLabel(config.includeDeviceName, config.deviceNameFieldName, config.deviceName),
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
         *mapMdcLabel(config.includeMdc && mdc != null, mdc).toTypedArray(),
