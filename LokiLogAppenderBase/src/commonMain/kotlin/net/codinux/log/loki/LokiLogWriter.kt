@@ -4,11 +4,14 @@ import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
+import net.codinux.log.statelogger.AppenderStateLogger
+import net.codinux.log.statelogger.StdOutStateLogger
 
 open class LokiLogWriter(
     config: LogAppenderConfig,
+    stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host))
-) : LogWriterBase(config) {
+) : LogWriterBase(config, stateLogger) {
 
     companion object {
         private const val JsonContentType = "application/json"
@@ -66,7 +69,7 @@ open class LokiLogWriter(
                 return emptyList() // all records successfully send to Loki
             }
         } catch (e: Exception) {
-            // TODO: log error
+            stateLogger.error("Could not write record", e)
         }
 
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
@@ -114,7 +117,7 @@ open class LokiLogWriter(
     protected open fun getIncludedFields(level: String, loggerName: String, mdc: Map<String, String>?, marker: String?, ndc: String?): List<String> = mapIncludedFields(
         mapLabel(config.includeLogLevel, config.logLevelFieldName, level),
         mapLabel(config.includeLoggerName, config.loggerNameFieldName, loggerName),
-        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerName(loggerName) },
+        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) },
 
         hostNameLabel,
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
@@ -262,7 +265,7 @@ open class LokiLogWriter(
         if (prefix.isNullOrBlank()) "" else prefix + "_" // TODO: in Loki prefixes get separated by '_', in ElasticSearch by '.'
 
     // loggerName is in most cases full qualified class name including packages, try to extract only name of class
-    protected open fun extractLoggerName(loggerName: String): String { // TODO: as there's only a small amount of loggers: Cache extracted logger names
+    protected open fun extractLoggerClassName(loggerName: String): String { // TODO: as there's only a small amount of loggers: Cache extracted logger class names
         val indexOfDot = loggerName.lastIndexOf('.')
         if (indexOfDot >= 0) {
             return loggerName.substring(indexOfDot + 1)
