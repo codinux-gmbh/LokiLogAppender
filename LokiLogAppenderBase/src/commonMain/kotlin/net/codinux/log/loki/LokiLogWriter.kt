@@ -20,8 +20,12 @@ open class LokiLogWriter(
 
     protected open val hostNameLabel: String?
 
+    protected open val serializedKubernetesInfo: Array<String>
+
     init {
         hostNameLabel = mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName)
+
+        serializedKubernetesInfo = mapKubernetesInfoLabels()
     }
 
 
@@ -115,9 +119,11 @@ open class LokiLogWriter(
         hostNameLabel,
         mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
 
-        *mapMdcLabel(config.includeMdc && mdc != null, mdc).toTypedArray(),
+        *mapMdcLabel(config.includeMdc && mdc != null, mdc),
         mapLabel(config.includeMarker && marker != null, config.markerFieldName, marker),
         mapLabel(config.includeNdc && ndc != null, config.ndcFieldName, ndc),
+
+        *mapKubernetesInfoLabels()
     )
 
     private fun mapIncludedFields(vararg labels: String?): List<String> =
@@ -137,18 +143,48 @@ open class LokiLogWriter(
             null
         }
 
-    private fun mapMdcLabel(includeMdc: Boolean, mdc: Map<String, String>?): List<String> {
+    protected open fun mapLabelIfNotNull(fieldName: String, value: Any?): String? =
+        mapLabel(value != null, fieldName, value)
+
+    private fun mapMdcLabel(includeMdc: Boolean, mdc: Map<String, String>?): Array<String> {
         if (includeMdc) {
             mdc?.let {
                 val prefix = determinePrefix(config.mdcKeysPrefix)
 
                 return mdc.mapNotNull { (key, value) ->
                     mapLabel(includeMdc, prefix + key, value)
-                }
+                }.toTypedArray()
             }
         }
 
-        return emptyList()
+        return emptyArray()
+    }
+
+    private fun mapKubernetesInfoLabels(): Array<String> {
+        if (config.includeKubernetesInfo) {
+            kubernetesInfo?.let { info ->
+                val prefix = determinePrefix(config.kubernetesFieldsPrefix)
+                val labels = mutableListOf<String?>()
+
+                labels.add(mapLabel(true, prefix + "namespace", info.namespace))
+                labels.add(mapLabel(true, prefix + "podName", info.podName))
+                labels.add(mapLabel(true, prefix + "podIp", info.podIp))
+                labels.add(mapLabel(true, prefix + "startTime", info.startTime))
+
+                labels.add(mapLabelIfNotNull(prefix + "podUid", info.podUid))
+                labels.add(mapLabelIfNotNull(prefix + "restartCount", info.restartCount))
+                labels.add(mapLabelIfNotNull(prefix + "containerName", info.containerName))
+                labels.add(mapLabelIfNotNull(prefix + "containerId", info.containerId))
+                labels.add(mapLabelIfNotNull(prefix + "imageName", info.imageName))
+                labels.add(mapLabelIfNotNull(prefix + "imageId", info.imageId))
+                labels.add(mapLabelIfNotNull(prefix + "nodeIp", info.nodeIp))
+                labels.add(mapLabelIfNotNull(prefix + "node", info.nodeName))
+
+                return labels.filterNotNull().toTypedArray()
+            }
+        }
+
+        return emptyArray()
     }
 
     /**
