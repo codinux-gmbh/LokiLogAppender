@@ -52,6 +52,7 @@ kotlin {
                 implementation("net.codinux.log:log-appender-base:1.0.0-SNAPSHOT")
 
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-auth:$ktorVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             }

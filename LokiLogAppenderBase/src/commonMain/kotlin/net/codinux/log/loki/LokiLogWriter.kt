@@ -11,7 +11,7 @@ import kotlin.jvm.JvmName
 open class LokiLogWriter(
     config: LogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host))
+    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password)
 ) : LogWriterBase(config, stateLogger) {
 
     companion object {

@@ -15,6 +15,8 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
 
         mappedConfig.setEnabled(config.enable);
         mappedConfig.setHost(config.endpointHost);
+        mappedConfig.setUsername(config.username);
+        mappedConfig.setPassword(config.password);
 
         mappedConfig.setIncludeLogLevel(config.logLevel.include);
         mappedConfig.setLogLevelFieldName(config.logLevel.fieldName);

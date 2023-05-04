@@ -1,6 +1,8 @@
 package net.codinux.log.loki.web
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
@@ -10,11 +12,23 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-class KtorWebClient(lokiPushApiUrl: String) : WebClient {
+class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?) : WebClient {
 
     private val client = HttpClient {
         defaultRequest {
             url(lokiPushApiUrl)
+        }
+        if (username != null && password != null) {
+            install(Auth) {
+                basic {
+                    credentials {
+                        BasicAuthCredentials(username, password)
+                    }
+                    sendWithoutRequest { request ->
+                        request.url.buildString() == lokiPushApiUrl
+                    }
+                }
+            }
         }
     }
 
