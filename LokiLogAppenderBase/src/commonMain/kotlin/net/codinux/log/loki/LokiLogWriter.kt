@@ -165,7 +165,7 @@ open class LokiLogWriter(
 
     private fun mapKubernetesInfoLabels(): Array<String> {
         if (config.includeKubernetesInfo) {
-            kubernetesInfo?.let { info ->
+            podInfo?.let { info ->
                 val prefix = determinePrefix(config.kubernetesFieldsPrefix)
                 val labels = mutableListOf<String?>()
 
