@@ -6,6 +6,7 @@ import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
+import kotlin.jvm.JvmName
 
 open class LokiLogWriter(
     config: LogAppenderConfig,
