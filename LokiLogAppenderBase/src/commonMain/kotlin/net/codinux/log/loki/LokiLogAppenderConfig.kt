@@ -1,7 +1,13 @@
 package net.codinux.log.loki
 
-object LokiLogAppenderConfig {
+import net.codinux.log.LogAppenderConfig
 
-    const val StateLoggerDefaultName = "net.codinux.log.loki.LokiStateLogger"
+open class LokiLogAppenderConfig : LogAppenderConfig() {
+
+    companion object {
+        const val StateLoggerDefaultName = "net.codinux.log.loki.LokiStateLogger"
+    }
+
+    open var tenantId: String? = null
 
 }

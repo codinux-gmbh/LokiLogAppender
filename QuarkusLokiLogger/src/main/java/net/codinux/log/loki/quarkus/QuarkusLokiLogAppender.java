@@ -2,6 +2,7 @@ package net.codinux.log.loki.quarkus;
 
 import net.codinux.log.LogAppenderConfig;
 import net.codinux.log.loki.LokiJBossLoggingAppender;
+import net.codinux.log.loki.LokiLogAppenderConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 
 public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
@@ -11,12 +12,13 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
     }
 
     private static LogAppenderConfig mapConfig(QuarkusLokiLogAppenderConfig config) {
-        LogAppenderConfig mappedConfig = new LogAppenderConfig();
+        LokiLogAppenderConfig mappedConfig = new LokiLogAppenderConfig();
 
         mappedConfig.setEnabled(config.enable);
         mappedConfig.setHost(config.endpointHost);
         mappedConfig.setUsername(config.username);
         mappedConfig.setPassword(config.password);
+        mappedConfig.setTenantId(config.tenantId);
 
         mappedConfig.setIncludeLogLevel(config.logLevel.include);
         mappedConfig.setLogLevelFieldName(config.logLevel.fieldName);
