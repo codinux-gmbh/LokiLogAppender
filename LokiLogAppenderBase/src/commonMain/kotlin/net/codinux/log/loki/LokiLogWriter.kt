@@ -106,10 +106,10 @@ open class LokiLogWriter(
             logLine.append("[${threadName}] ")
         }
 
-        logLine.append(cleanFieldValue(message))
+        logLine.append(escapeFieldValue(message))
 
         if (config.includeStacktrace && exception != null) {
-            logLine.append(" ${cleanFieldValue(extractStacktrace(exception))}")
+            logLine.append(" ${escapeFieldValue(extractStacktrace(exception))}")
         }
 
         return logLine.toString()
@@ -142,7 +142,7 @@ open class LokiLogWriter(
 
     protected open fun mapLabel(includeField: Boolean, fieldName: String, value: Any?): String? =
         if (includeField) {
-            """"${cleanLabelName(fieldName)}":"${value ?: "null"}""""
+            """"${escapeLabelName(fieldName)}":"${value ?: "null"}""""
         } else {
             null
         }
@@ -247,16 +247,16 @@ open class LokiLogWriter(
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    private fun cleanLabelName(fieldName: String): String {
+    private fun escapeLabelName(fieldName: String): String {
         // TODO: implement removing illegal characters by converting illegal characters to underscore. Do this once and set it in LoggerSettings
         return fieldName.replace(' ', '_')
     }
 
     @JvmName("cleanFieldValueNullable")
-    private fun cleanFieldValue(value: String?): String? =
-        value?.let { cleanFieldValue(it) }
+    private fun escapeFieldValue(value: String?): String? =
+        value?.let { escapeFieldValue(it) }
 
-    private fun cleanFieldValue(value: String): String =
+    private fun escapeFieldValue(value: String): String =
         // we have to escape single backslashes as Loki doesn't accept control characters
         // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
         value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
