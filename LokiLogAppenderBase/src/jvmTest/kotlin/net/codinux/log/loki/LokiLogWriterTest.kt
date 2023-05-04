@@ -2,9 +2,6 @@ package net.codinux.log.loki
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Clock
-import net.codinux.log.LogRecord
 import net.codinux.log.LogAppenderConfig
 import org.junit.jupiter.api.Test
 
@@ -17,28 +14,30 @@ class LokiLogWriterTest {
     @Test
     fun writeLogs() = runBlocking {
         IntRange(0, 100).forEach { index ->
-            underTest.writeRecord(LogRecord(
-                "Test message ${index.toString().padStart(3, '0')}",
-                Clock.System.now(),
+            underTest.writeRecord(
+                1683232216552,
+                0,
                 "INFO",
+                "Test message ${index.toString().padStart(3, '0')}",
                 "net.codinux.LokiTest",
                 "main",
                 exception = Exception("Just a test, no animals have been harmed"),
                 mdc = mapOf("MDC1" to "Stasi", "MDC2" to "Wuerd ich gerne knutschen")
-            ))
+            )
             delay(50)
         }
     }
 
     @Test
     fun messageContainsQuotes() = runBlocking {
-        underTest.writeRecord(LogRecord(
-            """RESTEASY002142: Multiple resource methods match request "GET /favicon-finder". Selecting one. Matching methods: [public javax.ws.rs.core.Response net.dankito.utils.favicon.rest.FaviconFinderResource.findFavicons(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting), public java.lang.String net.dankito.utils.favicon.rest.FaviconFinderResource.findFaviconsHtml(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting)]""",
-            Clock.System.now(),
+        underTest.writeRecord(
+            1683232216552,
+            0,
             "INFO",
+            """RESTEASY002142: Multiple resource methods match request "GET /favicon-finder". Selecting one. Matching methods: [public javax.ws.rs.core.Response ...)]""",
             "net.codinux.LokiTest",
             "main"
-        ))
+        )
 
         delay(1000)
 
