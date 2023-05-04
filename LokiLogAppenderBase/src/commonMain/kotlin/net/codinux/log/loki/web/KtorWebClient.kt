@@ -13,6 +13,8 @@ import io.ktor.http.isSuccess
 
 class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?, tenantId: String?) : WebClient {
 
+    private val gzipEncoder = net.codinux.log.data.GZipEncoder()
+
     private val client = HttpClient {
         defaultRequest {
             url(lokiPushApiUrl)
@@ -39,7 +41,14 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
         val response = client.request {
             this.method = HttpMethod.Post
             contentType(ContentType.parse(contentType))
-            setBody(body)
+
+            val gzipped = gzipEncoder.gzip(body)
+            if (gzipped == null) {
+                setBody(body)
+            } else {
+                this.headers.append("Content-Encoding", "gzip")
+                setBody(gzipped)
+            }
 
             headers.forEach { (name, value) -> this.headers.append(name, value) }
         }
