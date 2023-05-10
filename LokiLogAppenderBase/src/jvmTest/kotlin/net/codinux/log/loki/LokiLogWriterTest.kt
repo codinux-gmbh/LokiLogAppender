@@ -2,6 +2,7 @@ package net.codinux.log.loki
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import net.codinux.log.LogAppenderConfig
 import org.junit.jupiter.api.Test
 
@@ -15,8 +16,7 @@ class LokiLogWriterTest {
     fun writeLogs() = runBlocking {
         IntRange(0, 100).forEach { index ->
             underTest.writeRecord(
-                1683232216552,
-                0,
+                getTimestamp(),
                 "INFO",
                 "Test message ${index.toString().padStart(3, '0')}",
                 "net.codinux.LokiTest",
@@ -32,15 +32,14 @@ class LokiLogWriterTest {
     @Test
     fun messageContainsQuotes() = runBlocking {
         underTest.writeRecord(
-            1683232216552,
-            0,
+            getTimestamp(),
             "INFO",
             """RESTEASY002142: Multiple resource methods match request "GET /favicon-finder". Selecting one. Matching methods: [public javax.ws.rs.core.Response ...)]""",
             "net.codinux.LokiTest",
             "main"
         )
 
-        delay(100)
+        delay(500)
 
         // TODO: add a assert to assert that HTTP 204 got returned instead of 400
     }
@@ -48,16 +47,19 @@ class LokiLogWriterTest {
     @Test
     fun messageContainsControlCharacters() = runBlocking {
         underTest.writeRecord(
-            1683232216552,
-            0,
+            getTimestamp(),
             "INFO",
             "RESTEASY002142: Multiple resource methods match request GET /favicon-finder. Selecting one. Matching methods: [\npublic javax.ws.rs.core.Response\r net.dankito.utils.favicon.rest.FaviconFinderResource.findFavicons(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting),\t public java.lang.String net.dankito.utils.favicon.rest.FaviconFinderResource.findFaviconsHtml(java.lang.String,net.dankito.utils.favicon.rest.model.SizeSorting)]",
             "net.codinux.LokiTest",
             "main"
         )
 
-        delay(100)
+        delay(500)
 
         // TODO: add a assert to assert that HTTP 204 got returned instead of 400
     }
+
+
+    private fun getTimestamp() =
+        Clock.System.now()
 }

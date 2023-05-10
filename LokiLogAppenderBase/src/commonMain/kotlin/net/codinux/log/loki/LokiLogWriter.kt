@@ -1,5 +1,6 @@
 package net.codinux.log.loki
 
+import kotlinx.datetime.Instant
 import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
 import net.codinux.log.loki.web.KtorWebClient
@@ -34,8 +35,7 @@ open class LokiLogWriter(
 
 
     override fun serializeRecord(
-        timestampMillisSinceEpoch: Long,
-        timestampMicroAndNanosecondsPart: Long?,
+        timestamp: Instant,
         level: String,
         message: String,
         loggerName: String,
@@ -52,7 +52,7 @@ open class LokiLogWriter(
         serializedRecord.append(getIncludedFields(level, loggerName, mdc, marker, ndc).joinToString(","))
 
         serializedRecord.append("""},"values":[""")
-        serializedRecord.append("""["${convertTimestamp(timestampMillisSinceEpoch, timestampMicroAndNanosecondsPart)}",
+        serializedRecord.append("""["${convertTimestamp(timestamp)}",
             |"${getLogLine(message, threadName, exception)}"]""".trimMargin())
 
         serializedRecord.append("]}")
@@ -96,8 +96,8 @@ open class LokiLogWriter(
     }
 
 
-    private fun convertTimestamp(timestampMillisSinceEpoch: Long, timestampMicroAndNanosecondsPart: Long?) =
-        timestampMillisSinceEpoch * 1_000_000 + (timestampMicroAndNanosecondsPart ?: 0)
+    private fun convertTimestamp(timestamp: Instant) =
+        timestamp.epochSeconds * 1_000_000_000 + timestamp.nanosecondsOfSecond
 
     private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
         val logLine = StringBuilder()
