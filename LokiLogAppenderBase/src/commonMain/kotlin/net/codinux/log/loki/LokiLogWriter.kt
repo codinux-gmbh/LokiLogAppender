@@ -206,7 +206,8 @@ open class LokiLogWriter(
     // And:
 
     /**
-     * Labels are the index to Loki’s log data. They are used to find the compressed log content, which is stored separately as chunks. Every unique combination of label and values defines a stream, and logs for a stream are batched up, compressed, and stored as chunks.
+     * Labels are the index to Loki’s log data. They are used to find the compressed log content, which is stored separately as chunks.
+     * Every unique combination of label and values defines a stream, and logs for a stream are batched up, compressed, and stored as chunks.
      *
      * For Loki to be efficient and cost-effective, we have to use labels responsibly.
      *
@@ -222,7 +223,9 @@ open class LokiLogWriter(
     // different action or status_code from the same user will get its own stream.
 
     /**
-     * Doing some quick math, if there are maybe four common actions (GET, PUT, POST, DELETE) and maybe four common status codes (although there could be more than four!), this would be 16 streams and 16 separate chunks. Now multiply this by every user if we use a label for ip. You can quickly have thousands or tens of thousands of streams.
+     * Doing some quick math, if there are maybe four common actions (GET, PUT, POST, DELETE) and maybe four common status codes
+     * (although there could be more than four!), this would be 16 streams and 16 separate chunks. Now multiply this by every user
+     * if we use a label for ip. You can quickly have thousands or tens of thousands of streams.
      *
      * This is high cardinality. This can kill Loki.
      *
