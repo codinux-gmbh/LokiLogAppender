@@ -65,7 +65,6 @@ open class LokiLogWriter(
         try {
             val requestBody = createRequestBody(records)
 
-            // TODO: GZip body and add "Content-Encoding: gzip" header
             if (webClient.post("", requestBody, JsonContentType)) {
                 return emptyList() // all records successfully send to Loki
             }
@@ -97,7 +96,8 @@ open class LokiLogWriter(
 
 
     private fun convertTimestamp(timestamp: Instant) =
-        timestamp.epochSeconds * 1_000_000_000 + timestamp.nanosecondsOfSecond
+        // pad start as nanosecondsOfSecond does not contain leading zeros
+        "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
         val logLine = StringBuilder()
