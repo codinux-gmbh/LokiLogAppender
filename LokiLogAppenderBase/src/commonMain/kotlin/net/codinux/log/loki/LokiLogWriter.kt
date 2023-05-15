@@ -27,6 +27,8 @@ open class LokiLogWriter(
 
     protected open val serializedKubernetesInfo: Array<String>
 
+    private val cachedStackTraces = mutableMapOf<Int?, String>() // TODO: use thread safe Map
+
     protected open val cachedLoggerClassNames = mutableMapOf<String, String>() // TODO: use thread safe Map
 
     init {
@@ -110,7 +112,7 @@ open class LokiLogWriter(
         logLine.append(escapeFieldValue(message))
 
         if (config.includeStacktrace && exception != null) {
-            logLine.append(" ${escapeFieldValue(extractStacktrace(exception))}")
+            logLine.append(" ${getStacktrace(exception)}")
         }
 
         return logLine.toString()
@@ -256,10 +258,6 @@ open class LokiLogWriter(
         return fieldName.replace(' ', '_')
     }
 
-    @JvmName("cleanFieldValueNullable")
-    private fun escapeFieldValue(value: String?): String? =
-        value?.let { escapeFieldValue(it) }
-
     private fun escapeFieldValue(value: String): String =
         // we have to escape single backslashes as Loki doesn't accept control characters
         // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
@@ -288,16 +286,48 @@ open class LokiLogWriter(
         return loggerClassName
     }
 
-    protected open fun extractStacktrace(exception: Throwable?): String? {
+    protected open fun getStacktrace(exception: Throwable?): String? {
         return exception?.let {
-            val stackTrace = exception.stackTraceToString()
+            // Throwable doesn't implement hashCode(), so it differs for each new object -> create a hash code to uniquely identify Throwables
+            val exceptionHash = getExceptionHashCode(exception)
 
-            if (stackTrace.length > config.stacktraceMaxFieldLength) {
-                stackTrace.substring(0, config.stacktraceMaxFieldLength)
-            } else {
-                stackTrace
+            // exception.stackTraceToString() is one of the most resource intensive operations of our implementation. As there typically aren't
+            // that much different exceptions in an application, we cache the stack trace of each unique exception for performance reasons.
+            cachedStackTraces[exceptionHash]?.let {
+                return it
             }
+
+            val stackTrace = escapeFieldValue(extractStacktrace(exception))
+
+            cachedStackTraces[exceptionHash] = stackTrace
+
+            stackTrace
         }
+    }
+
+    protected open fun extractStacktrace(exception: Throwable): String {
+        val stackTrace = exception.stackTraceToString()
+
+        return if (stackTrace.length > config.stacktraceMaxFieldLength) {
+            stackTrace.substring(0, config.stacktraceMaxFieldLength)
+        } else {
+            stackTrace
+        }
+    }
+
+    private fun getExceptionHashCode(exception: Throwable): Int {
+        var hashCode = exception::class.hashCode()
+
+        if (exception.message != null) {
+            hashCode = 31 * hashCode + exception.message.hashCode()
+        }
+
+        // to avoid infinite loops check if exception.cause and exception equal
+        if (exception.cause != null && exception.cause != exception) {
+            hashCode = 31 * hashCode + getExceptionHashCode(exception.cause!!)
+        }
+
+        return hashCode
     }
 
 }
