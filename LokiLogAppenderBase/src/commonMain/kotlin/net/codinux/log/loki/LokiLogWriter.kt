@@ -102,19 +102,7 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
-        val logLine = StringBuilder()
-
-        if (config.includeThreadName) {
-            logLine.append("[${threadName}] ")
-        }
-
-        logLine.append(escapeFieldValue(message))
-
-        if (config.includeStacktrace && exception != null) {
-            logLine.append(" ${getStacktrace(exception)}")
-        }
-
-        return logLine.toString()
+        return "${ if (config.includeThreadName) "[${threadName}] " else ""}${escapeFieldValue(message)}${getStacktrace(exception) ?: ""}"
     }
 
     protected open fun getIncludedFields(level: String, loggerName: String, mdc: Map<String, String>?, marker: String?, ndc: String?): List<String> = mapIncludedFields(
@@ -286,6 +274,10 @@ open class LokiLogWriter(
     }
 
     protected open fun getStacktrace(exception: Throwable?): String? {
+        if (config.includeStacktrace == false) {
+            return null
+        }
+
         return exception?.let {
             // Throwable doesn't implement hashCode(), so it differs for each new object -> create a hash code to uniquely identify Throwables
             val exceptionHash = getExceptionHashCode(exception)
