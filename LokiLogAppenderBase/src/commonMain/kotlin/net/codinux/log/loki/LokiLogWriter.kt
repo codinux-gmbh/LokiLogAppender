@@ -56,7 +56,7 @@ open class LokiLogWriter(
         serializedRecord.append(getIncludedFields(level, loggerName, mdc, marker, ndc).joinToString(","))
 
         serializedRecord.append("""},"values":[""")
-        serializedRecord.append("""["${convertTimestamp(timestamp)}",${getLogLine(message, threadName, exception)}"]""")
+        serializedRecord.append("""["${convertTimestamp(timestamp)}","${getLogLine(message, threadName, exception)}"]""")
 
         serializedRecord.append("]}")
 
