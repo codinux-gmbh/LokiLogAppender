@@ -27,6 +27,8 @@ open class LokiLogWriter(
 
     protected open val serializedKubernetesInfo: Array<String>
 
+    protected open val cachedLoggerClassNames = mutableMapOf<String, String>() // TODO: use thread safe Map
+
     init {
         hostNameLabel = mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName)
 
@@ -268,13 +270,22 @@ open class LokiLogWriter(
         if (prefix.isNullOrBlank()) "" else prefix + "_" // TODO: in Loki prefixes get separated by '_', in ElasticSearch by '.'
 
     // loggerName is in most cases full qualified class name including packages, try to extract only name of class
-    protected open fun extractLoggerClassName(loggerName: String): String { // TODO: as there's only a small amount of loggers: Cache extracted logger class names
-        val indexOfDot = loggerName.lastIndexOf('.')
-        if (indexOfDot >= 0) {
-            return loggerName.substring(indexOfDot + 1)
+    protected open fun extractLoggerClassName(loggerName: String): String {
+        cachedLoggerClassNames[loggerName]?.let {
+            return it
         }
 
-        return loggerName
+        val indexOfDot = loggerName.lastIndexOf('.')
+
+        val loggerClassName = if (indexOfDot >= 0) {
+            loggerName.substring(indexOfDot + 1)
+        } else {
+            loggerName
+        }
+
+        cachedLoggerClassNames[loggerName] = loggerClassName
+
+        return loggerClassName
     }
 
     protected open fun extractStacktrace(exception: Throwable?): String? {
