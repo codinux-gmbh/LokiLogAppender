@@ -7,13 +7,12 @@ import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
-import kotlin.jvm.JvmName
 
 open class LokiLogWriter(
     config: LogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password, (config as? LokiLogAppenderConfig)?.tenantId)
-) : LogWriterBase(config, stateLogger) {
+) : LogWriterBase<String>(config, stateLogger) {
 
     companion object {
         private const val JsonContentType = "application/json"
