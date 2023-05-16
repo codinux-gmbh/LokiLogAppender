@@ -1,18 +1,14 @@
 package net.codinux.log.loki
 
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
-import net.codinux.log.extensions.isNotEmpty
 import net.codinux.log.loki.model.Stream
 import net.codinux.log.loki.model.StreamBody
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
-import kotlin.math.min
 
 open class LokiLogWriter(
     config: LogAppenderConfig,
@@ -119,9 +115,9 @@ open class LokiLogWriter(
 
     protected open val streamBody = StreamBody()
 
-    protected open val cachedStackTraces = mutableMapOf<Int?, String>() // TODO: use thread safe Map
-
-    protected open val cachedLoggerClassNames = mutableMapOf<String, String>() // TODO: use thread safe Map
+    init {
+        mapper.escapeControlCharacters = true
+    }
 
 
     override suspend fun mapRecord(
@@ -139,13 +135,13 @@ open class LokiLogWriter(
 
         stream.set(convertTimestamp(timestamp), getLogLine(message, threadName, exception))
 
-        mapLabels(stream, level, loggerName, threadName, exception, mdc, marker, ndc)
+        mapper.mapLogEventFields(stream.stream, level, loggerName, threadName, exception, mdc, marker, ndc)
 
         return stream
     }
 
     override fun instantiateMappedRecord() = Stream().apply {
-        mapStaticLabels(this)
+        mapper.mapStaticFields(this.stream)
     }
 
 
@@ -171,174 +167,7 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
-        return "${ if (config.includeThreadName) "[${threadName}] " else ""}${escapeFieldValue(message)}${getStacktrace(exception) ?: ""}"
-    }
-
-    /**
-     * Add labels that never change during the whole process lifetime
-     */
-    private fun mapStaticLabels(stream: Stream) {
-        mapLabel(stream, config.includeHostName, config.hostNameFieldName, processData.hostName)
-        mapLabel(stream, config.includeAppName, config.appNameFieldName, config.appName)
-
-        mapPodInfoLabels(stream)
-
-        // pre-allocate per log event labels in Map
-        mapLabels(stream, "", "", "", null, null, null, null)
-    }
-
-    private fun mapLabels(
-        stream: Stream,
-        level: String,
-        loggerName: String,
-        threadName: String,
-        exception: Throwable?,
-        mdc: Map<String, String>?,
-        marker: String?,
-        ndc: String?
-    ) {
-        stream.dynamicLabels.forEach { dynamicLabel ->
-            stream.stream.remove(dynamicLabel)
-        }
-        stream.dynamicLabels.clear()
-
-        mapLabel(stream, config.includeLogLevel, config.logLevelFieldName, level)
-        mapLabel(stream, config.includeLoggerName, config.loggerNameFieldName, loggerName)
-        mapLabel(stream, config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) }
-
-        mapMdcLabels(stream, config.includeMdc && mdc != null, mdc)
-        mapLabel(stream, config.includeMarker, config.markerFieldName, marker)
-        mapLabel(stream, config.includeNdc, config.ndcFieldName, ndc)
-    }
-
-    protected open fun mapLabel(stream: Stream, includeField: Boolean, fieldName: String, valueSupplier: () -> String?) {
-        if (includeField) {
-            mapLabel(stream, includeField, fieldName, valueSupplier.invoke())
-        }
-    }
-
-    protected open fun mapLabel(stream: Stream, includeField: Boolean, fieldName: String, value: String?) {
-        if (includeField) {
-            stream.stream[fieldName] = value
-        }
-    }
-
-    protected open fun mapLabelIfNotNull(stream: Stream, fieldName: String, value: String?) {
-        mapLabel(stream, value != null, fieldName, value)
-    }
-
-    protected open fun addDynamicLabel(stream: Stream, fieldName: String, value: String?) {
-        // Remember labels that are not included in each log record, like MDC values, and remove them on next log record mapping
-        stream.dynamicLabels.add(fieldName)
-
-        mapLabel(stream, true, fieldName, value)
-    }
-
-    private fun mapMdcLabels(stream: Stream, includeMdc: Boolean, mdc: Map<String, String>?) {
-        if (includeMdc) {
-            if (mdc != null) {
-                val prefix = config.mdcKeysPrefix
-
-                mdc.mapNotNull { (key, value) ->
-                    addDynamicLabel(stream, prefix + key, value)
-                }
-            }
-        }
-    }
-
-    private fun mapPodInfoLabels(stream: Stream) {
-        if (config.includeKubernetesInfo) {
-            podInfo?.let { info ->
-                val prefix = config.kubernetesFieldsPrefix
-
-                mapLabel(stream, true, prefix + "namespace", info.namespace)
-                mapLabel(stream, true, prefix + "podName", info.podName)
-                mapLabel(stream, true, prefix + "podIp", info.podIp)
-                mapLabel(stream, true, prefix + "startTime", info.startTime)
-
-                mapLabelIfNotNull(stream, prefix + "podUid", info.podUid)
-                mapLabelIfNotNull(stream, prefix + "restartCount", info.restartCount.toString())
-                mapLabelIfNotNull(stream, prefix + "containerName", info.containerName)
-                mapLabelIfNotNull(stream, prefix + "containerId", info.containerId)
-                mapLabelIfNotNull(stream, prefix + "imageName", info.imageName)
-                mapLabelIfNotNull(stream, prefix + "imageId", info.imageId)
-                mapLabelIfNotNull(stream, prefix + "nodeIp", info.nodeIp)
-                mapLabelIfNotNull(stream, prefix + "node", info.nodeName)
-            }
-        }
-    }
-
-    private fun escapeFieldValue(value: String): String =
-        // we have to escape single backslashes as Loki doesn't accept control characters
-        // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
-        value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
-            .replace("\"", "\\\"")
-
-    // loggerName is in most cases full qualified class name including packages, try to extract only name of class
-    protected open fun extractLoggerClassName(loggerName: String): String {
-        cachedLoggerClassNames[loggerName]?.let {
-            return it
-        }
-
-        val indexOfDot = loggerName.lastIndexOf('.')
-
-        val loggerClassName = if (indexOfDot >= 0) {
-            loggerName.substring(indexOfDot + 1)
-        } else {
-            loggerName
-        }
-
-        cachedLoggerClassNames[loggerName] = loggerClassName
-
-        return loggerClassName
-    }
-
-    protected open fun getStacktrace(exception: Throwable?): String? {
-        if (config.includeStacktrace == false) {
-            return null
-        }
-
-        return exception?.let {
-            // Throwable doesn't implement hashCode(), so it differs for each new object -> create a hash code to uniquely identify Throwables
-            val exceptionHash = getExceptionHashCode(exception)
-
-            // exception.stackTraceToString() is one of the most resource intensive operations of our implementation. As there typically aren't
-            // that much different exceptions in an application, we cache the stack trace of each unique exception for performance reasons.
-            cachedStackTraces[exceptionHash]?.let {
-                return it
-            }
-
-            val stackTrace = escapeFieldValue(extractStacktrace(exception))
-
-            cachedStackTraces[exceptionHash] = stackTrace
-
-            stackTrace
-        }
-    }
-
-    protected open fun extractStacktrace(exception: Throwable): String {
-        val stackTrace = exception.stackTraceToString()
-
-        return if (stackTrace.length > config.stacktraceMaxFieldLength) {
-            stackTrace.substring(0, config.stacktraceMaxFieldLength)
-        } else {
-            stackTrace
-        }
-    }
-
-    private fun getExceptionHashCode(exception: Throwable): Int {
-        var hashCode = exception::class.hashCode()
-
-        if (exception.message != null) {
-            hashCode = 31 * hashCode + exception.message.hashCode()
-        }
-
-        // to avoid infinite loops check if exception.cause and exception equal
-        if (exception.cause != null && exception.cause != exception) {
-            hashCode = 31 * hashCode + getExceptionHashCode(exception.cause!!)
-        }
-
-        return hashCode
+        return "${ if (config.includeThreadName) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
 }
