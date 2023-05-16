@@ -124,8 +124,8 @@ open class LokiLogWriter(
         timestamp: Instant,
         level: String,
         message: String,
-        loggerName: String,
-        threadName: String,
+        loggerName: String?,
+        threadName: String?,
         exception: Throwable?,
         mdc: Map<String, String>?,
         marker: String?,
@@ -166,8 +166,8 @@ open class LokiLogWriter(
         // pad start as nanosecondsOfSecond does not contain leading zeros
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
-    private fun getLogLine(message: String, threadName: String, exception: Throwable?): String {
-        return "${ if (config.includeThreadName) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
+    private fun getLogLine(message: String, threadName: String?, exception: Throwable?): String {
+        return "${ if (config.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
 }
