@@ -1,18 +1,24 @@
 package net.codinux.log.loki
 
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
+import net.codinux.log.extensions.isNotEmpty
+import net.codinux.log.loki.model.Stream
+import net.codinux.log.loki.model.StreamBody
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
+import kotlin.math.min
 
 open class LokiLogWriter(
     config: LogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password, (config as? LokiLogAppenderConfig)?.tenantId)
-) : LogWriterBase<String>(config, stateLogger) {
+) : LogWriterBase<Stream>(config, stateLogger) {
 
     companion object {
         private const val JsonContentType = "application/json"
@@ -22,22 +28,25 @@ open class LokiLogWriter(
     }
 
 
-    protected open val hostNameLabel: String?
+    protected open val streamBody = StreamBody()
 
-    protected open val serializedKubernetesInfo: Array<String>
+    protected open val cachedStreams = Channel<Stream>(config.maxBufferedLogRecords)
 
-    private val cachedStackTraces = mutableMapOf<Int?, String>() // TODO: use thread safe Map
+    protected open val cachedStackTraces = mutableMapOf<Int?, String>() // TODO: use thread safe Map
 
     protected open val cachedLoggerClassNames = mutableMapOf<String, String>() // TODO: use thread safe Map
 
     init {
-        hostNameLabel = mapLabel(config.includeHostName, config.hostNameFieldName, processData.hostName)
-
-        serializedKubernetesInfo = mapKubernetesInfoLabels()
+        // pre-cache Streams
+        senderScope.launch {
+            IntRange(0, min(1_000, config.maxBufferedLogRecords / 2)).forEach {
+                cachedStreams.send(Stream())
+            }
+        }
     }
 
 
-    override fun serializeRecord(
+    override suspend fun mapRecord(
         timestamp: Instant,
         level: String,
         message: String,
@@ -47,27 +56,34 @@ open class LokiLogWriter(
         mdc: Map<String, String>?,
         marker: String?,
         ndc: String?
-    ): String {
-        val serializedRecord = StringBuilder()
+    ): Stream {
+        val stream = getStreamObject()
 
-        serializedRecord.append("""{"stream":{""")
+        stream.set(convertTimestamp(timestamp), getLogLine(message, threadName, exception))
 
-        serializedRecord.append(getIncludedFields(level, loggerName, mdc, marker, ndc).joinToString(","))
+        mapLabels(stream.stream, level, loggerName, threadName, exception, mdc, marker, ndc)
 
-        serializedRecord.append("""},"values":[""")
-        serializedRecord.append("""["${convertTimestamp(timestamp)}","${getLogLine(message, threadName, exception)}"]""")
+        return stream
+    }
 
-        serializedRecord.append("]}")
-
-        return serializedRecord.toString()
+    private suspend fun getStreamObject(): Stream {
+        return if (cachedStreams.isNotEmpty) {
+            cachedStreams.receive()
+        } else {
+            Stream()
+        }
     }
 
 
-    override suspend fun writeRecords(records: List<String>): List<String> {
+    override suspend fun writeRecords(records: List<Stream>): List<Stream> {
         try {
-            val requestBody = createRequestBody(records)
+            streamBody.streams = records
 
-            if (webClient.post("", requestBody, JsonContentType)) {
+            if (webClient.post("", streamBody, JsonContentType)) {
+                records.forEach {
+                    cachedStreams.send(it)
+                }
+
                 return emptyList() // all records successfully send to Loki
             }
         } catch (e: Exception) {
@@ -75,25 +91,6 @@ open class LokiLogWriter(
         }
 
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
-    }
-
-    protected open fun createRequestBody(serializedRecords: List<String>): String {
-        // it's not that easy to build the request body with a standard JSON serializer, so let's build the JSON request body ourselves
-        // for the format see https://grafana.com/docs/loki/latest/api/#push-log-entries-to-loki
-        val body = StringBuilder()
-            .append("""{"streams":[""")
-
-        serializedRecords.forEachIndexed { index, record ->
-            body.append(record)
-
-            if (index < serializedRecords.size - 1) {
-                body.append(',')
-            }
-        }
-
-        body.append("]}")
-
-        return body.toString()
     }
 
 
@@ -105,80 +102,80 @@ open class LokiLogWriter(
         return "${ if (config.includeThreadName) "[${threadName}] " else ""}${escapeFieldValue(message)}${getStacktrace(exception) ?: ""}"
     }
 
-    protected open fun getIncludedFields(level: String, loggerName: String, mdc: Map<String, String>?, marker: String?, ndc: String?): List<String> = mapIncludedFields(
-        mapLabel(config.includeLogLevel, config.logLevelFieldName, level),
-        mapLabel(config.includeLoggerName, config.loggerNameFieldName, loggerName),
-        mapLabel(config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) },
+    private fun mapLabels(
+        labels: MutableMap<String, String?>,
+        level: String,
+        loggerName: String,
+        threadName: String,
+        exception: Throwable?,
+        mdc: Map<String, String>?,
+        marker: String?,
+        ndc: String?
+    ) {
+        mapLabel(labels, config.includeLogLevel, config.logLevelFieldName, level)
+        mapLabel(labels, config.includeLoggerName, config.loggerNameFieldName, loggerName)
+        mapLabel(labels, config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) }
 
-        hostNameLabel,
-        mapLabel(config.includeAppName, config.appNameFieldName, config.appName),
+        mapLabel(labels, config.includeHostName, config.hostNameFieldName, processData.hostName) // TODO: static data
+        mapLabel(labels, config.includeAppName, config.appNameFieldName, config.appName) // TODO: static data
 
-        *mapMdcLabel(config.includeMdc && mdc != null, mdc),
-        mapLabel(config.includeMarker && marker != null, config.markerFieldName, marker),
-        mapLabel(config.includeNdc && ndc != null, config.ndcFieldName, ndc),
+        // TODO: these are the only dynamic fields. Remember these so that they can be removed again from Map (where? after successful writing? Before setting the next record?)
+        mapMdcLabel(labels, config.includeMdc && mdc != null, mdc)
+        mapLabel(labels, config.includeMarker && marker != null, config.markerFieldName, marker)
+        mapLabel(labels, config.includeNdc && ndc != null, config.ndcFieldName, ndc)
 
-        *mapKubernetesInfoLabels()
-    )
+        mapKubernetesInfoLabels(labels)
+    }
 
-    private fun mapIncludedFields(vararg labels: String?): List<String> =
-        labels.filterNotNull()
-
-    protected open fun mapLabel(includeField: Boolean, fieldName: String, valueSupplier: () -> Any?): String? =
+    protected open fun mapLabel(labels: MutableMap<String, String?>, includeField: Boolean, fieldName: String, valueSupplier: () -> String?) {
         if (includeField) {
-            mapLabel(includeField, fieldName, valueSupplier.invoke())
-        } else {
-            null
+            mapLabel(labels, includeField, fieldName, valueSupplier.invoke())
         }
+    }
 
-    protected open fun mapLabel(includeField: Boolean, fieldName: String, value: Any?): String? =
+    protected open fun mapLabel(labels: MutableMap<String, String?>, includeField: Boolean, fieldName: String, value: String?) {
         if (includeField) {
-            """"${escapeLabelName(fieldName)}":"${value ?: "null"}""""
-        } else {
-            null
+            labels[escapeLabelName(fieldName)] = value
         }
+    }
 
-    protected open fun mapLabelIfNotNull(fieldName: String, value: Any?): String? =
-        mapLabel(value != null, fieldName, value)
+    protected open fun mapLabelIfNotNull(labels: MutableMap<String, String?>, fieldName: String, value: String?) {
+        mapLabel(labels, value != null, fieldName, value)
+    }
 
-    private fun mapMdcLabel(includeMdc: Boolean, mdc: Map<String, String>?): Array<String> {
+    private fun mapMdcLabel(labels: MutableMap<String, String?>, includeMdc: Boolean, mdc: Map<String, String>?) {
         if (includeMdc) {
             mdc?.let {
                 val prefix = determinePrefix(config.mdcKeysPrefix)
 
-                return mdc.mapNotNull { (key, value) ->
-                    mapLabel(includeMdc, prefix + key, value)
-                }.toTypedArray()
+                mdc.mapNotNull { (key, value) ->
+                    mapLabel(labels, includeMdc, prefix + key, value)
+                }
             }
         }
-
-        return emptyArray()
     }
 
-    private fun mapKubernetesInfoLabels(): Array<String> {
+    // TODO: do this only once, these are all static data that don't change over the process life time
+    private fun mapKubernetesInfoLabels(labels: MutableMap<String, String?>) {
         if (config.includeKubernetesInfo) {
             podInfo?.let { info ->
                 val prefix = determinePrefix(config.kubernetesFieldsPrefix)
-                val labels = mutableListOf<String?>()
 
-                labels.add(mapLabel(true, prefix + "namespace", info.namespace))
-                labels.add(mapLabel(true, prefix + "podName", info.podName))
-                labels.add(mapLabel(true, prefix + "podIp", info.podIp))
-                labels.add(mapLabel(true, prefix + "startTime", info.startTime))
+                mapLabel(labels, true, prefix + "namespace", info.namespace)
+                mapLabel(labels, true, prefix + "podName", info.podName)
+                mapLabel(labels, true, prefix + "podIp", info.podIp)
+                mapLabel(labels, true, prefix + "startTime", info.startTime)
 
-                labels.add(mapLabelIfNotNull(prefix + "podUid", info.podUid))
-                labels.add(mapLabelIfNotNull(prefix + "restartCount", info.restartCount))
-                labels.add(mapLabelIfNotNull(prefix + "containerName", info.containerName))
-                labels.add(mapLabelIfNotNull(prefix + "containerId", info.containerId))
-                labels.add(mapLabelIfNotNull(prefix + "imageName", info.imageName))
-                labels.add(mapLabelIfNotNull(prefix + "imageId", info.imageId))
-                labels.add(mapLabelIfNotNull(prefix + "nodeIp", info.nodeIp))
-                labels.add(mapLabelIfNotNull(prefix + "node", info.nodeName))
-
-                return labels.filterNotNull().toTypedArray()
+                mapLabelIfNotNull(labels, prefix + "podUid", info.podUid)
+                mapLabelIfNotNull(labels, prefix + "restartCount", info.restartCount.toString())
+                mapLabelIfNotNull(labels, prefix + "containerName", info.containerName)
+                mapLabelIfNotNull(labels, prefix + "containerId", info.containerId)
+                mapLabelIfNotNull(labels, prefix + "imageName", info.imageName)
+                mapLabelIfNotNull(labels, prefix + "imageId", info.imageId)
+                mapLabelIfNotNull(labels, prefix + "nodeIp", info.nodeIp)
+                mapLabelIfNotNull(labels, prefix + "node", info.nodeName)
             }
         }
-
-        return emptyArray()
     }
 
     /**
