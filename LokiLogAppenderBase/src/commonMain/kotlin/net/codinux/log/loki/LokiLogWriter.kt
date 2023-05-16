@@ -30,20 +30,9 @@ open class LokiLogWriter(
 
     protected open val streamBody = StreamBody()
 
-    protected open val cachedStreams = Channel<Stream>(config.maxBufferedLogRecords)
-
     protected open val cachedStackTraces = mutableMapOf<Int?, String>() // TODO: use thread safe Map
 
     protected open val cachedLoggerClassNames = mutableMapOf<String, String>() // TODO: use thread safe Map
-
-    init {
-        // pre-cache Streams
-        senderScope.launch {
-            IntRange(0, min(1_000, config.maxBufferedLogRecords / 2)).forEach {
-                cachedStreams.send(createStreamObject())
-            }
-        }
-    }
 
 
     override suspend fun mapRecord(
@@ -57,7 +46,7 @@ open class LokiLogWriter(
         marker: String?,
         ndc: String?
     ): Stream {
-        val stream = getStreamObject()
+        val stream = getMappedRecordObject()
 
         stream.set(convertTimestamp(timestamp), getLogLine(message, threadName, exception))
 
@@ -66,15 +55,7 @@ open class LokiLogWriter(
         return stream
     }
 
-    private suspend fun getStreamObject(): Stream {
-        return if (cachedStreams.isNotEmpty) {
-            cachedStreams.receive()
-        } else {
-            createStreamObject()
-        }
-    }
-
-    private fun createStreamObject() = Stream().apply {
+    override fun instantiateMappedRecord() = Stream().apply {
         mapStaticLabels(this)
     }
 
@@ -84,9 +65,7 @@ open class LokiLogWriter(
             streamBody.streams = records
 
             if (webClient.post("", streamBody, JsonContentType)) {
-                records.forEach {
-                    cachedStreams.send(it)
-                }
+                releaseMappedRecords(records)
 
                 return emptyList() // all records successfully send to Loki
             }
@@ -113,7 +92,6 @@ open class LokiLogWriter(
         mapLabel(stream, config.includeHostName, config.hostNameFieldName, processData.hostName)
         mapLabel(stream, config.includeAppName, config.appNameFieldName, config.appName)
 
-        // TODO: PodInfo may hasn't been initialized yet at this point
         mapPodInfoLabels(stream)
 
         // pre-allocate per log event labels in Map
