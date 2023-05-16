@@ -61,7 +61,7 @@ open class LokiLogWriter(
 
         stream.set(convertTimestamp(timestamp), getLogLine(message, threadName, exception))
 
-        mapLabels(stream.stream, level, loggerName, threadName, exception, mdc, marker, ndc)
+        mapLabels(stream, level, loggerName, threadName, exception, mdc, marker, ndc)
 
         return stream
     }
@@ -75,7 +75,7 @@ open class LokiLogWriter(
     }
 
     private fun createStreamObject() = Stream().apply {
-        mapStaticLabels(this.stream)
+        mapStaticLabels(this)
     }
 
 
@@ -109,19 +109,19 @@ open class LokiLogWriter(
     /**
      * Add labels that never change during the whole process lifetime
      */
-    private fun mapStaticLabels(labels: MutableMap<String, String?>) {
-        mapLabel(labels, config.includeHostName, config.hostNameFieldName, processData.hostName)
-        mapLabel(labels, config.includeAppName, config.appNameFieldName, config.appName)
+    private fun mapStaticLabels(stream: Stream) {
+        mapLabel(stream, config.includeHostName, config.hostNameFieldName, processData.hostName)
+        mapLabel(stream, config.includeAppName, config.appNameFieldName, config.appName)
 
         // TODO: PodInfo may hasn't been initialized yet at this point
-        mapPodInfoLabels(labels)
+        mapPodInfoLabels(stream)
 
         // pre-allocate per log event labels in Map
-        mapLabels(labels, "", "", "", null, null, null, null)
+        mapLabels(stream, "", "", "", null, null, null, null)
     }
 
     private fun mapLabels(
-        labels: MutableMap<String, String?>,
+        stream: Stream,
         level: String,
         loggerName: String,
         threadName: String,
@@ -130,62 +130,70 @@ open class LokiLogWriter(
         marker: String?,
         ndc: String?
     ) {
-        mapLabel(labels, config.includeLogLevel, config.logLevelFieldName, level)
-        mapLabel(labels, config.includeLoggerName, config.loggerNameFieldName, loggerName)
-        mapLabel(labels, config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) }
+        stream.dynamicLabels.clear()
 
-        // TODO: these are the only dynamic fields. Remember these so that they can be removed again from Map (where? after successful writing? Before setting the next record?)
-        mapMdcLabel(labels, config.includeMdc && mdc != null, mdc)
-        mapLabel(labels, config.includeMarker && marker != null, config.markerFieldName, marker)
-        mapLabel(labels, config.includeNdc && ndc != null, config.ndcFieldName, ndc)
+        mapLabel(stream, config.includeLogLevel, config.logLevelFieldName, level)
+        mapLabel(stream, config.includeLoggerName, config.loggerNameFieldName, loggerName)
+        mapLabel(stream, config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) }
+
+        mapMdcLabels(stream, config.includeMdc && mdc != null, mdc)
+        mapLabel(stream, config.includeMarker, config.markerFieldName, marker)
+        mapLabel(stream, config.includeNdc, config.ndcFieldName, ndc)
     }
 
-    protected open fun mapLabel(labels: MutableMap<String, String?>, includeField: Boolean, fieldName: String, valueSupplier: () -> String?) {
+    protected open fun mapLabel(stream: Stream, includeField: Boolean, fieldName: String, valueSupplier: () -> String?) {
         if (includeField) {
-            mapLabel(labels, includeField, fieldName, valueSupplier.invoke())
+            mapLabel(stream, includeField, fieldName, valueSupplier.invoke())
         }
     }
 
-    protected open fun mapLabel(labels: MutableMap<String, String?>, includeField: Boolean, fieldName: String, value: String?) {
+    protected open fun mapLabel(stream: Stream, includeField: Boolean, fieldName: String, value: String?) {
         if (includeField) {
-            labels[escapeLabelName(fieldName)] = value
+            stream.stream[escapeLabelName(fieldName)] = value
         }
     }
 
-    protected open fun mapLabelIfNotNull(labels: MutableMap<String, String?>, fieldName: String, value: String?) {
-        mapLabel(labels, value != null, fieldName, value)
+    protected open fun mapLabelIfNotNull(stream: Stream, fieldName: String, value: String?) {
+        mapLabel(stream, value != null, fieldName, value)
     }
 
-    private fun mapMdcLabel(labels: MutableMap<String, String?>, includeMdc: Boolean, mdc: Map<String, String>?) {
+    protected open fun addDynamicLabel(stream: Stream, fieldName: String, value: String?) {
+        // Remember labels that are not included in each log record, like MDC values, and remove them on next log record mapping
+        stream.dynamicLabels.add(fieldName)
+
+        mapLabel(stream, true, fieldName, value)
+    }
+
+    private fun mapMdcLabels(stream: Stream, includeMdc: Boolean, mdc: Map<String, String>?) {
         if (includeMdc) {
-            mdc?.let {
+            if (mdc != null) {
                 val prefix = determinePrefix(config.mdcKeysPrefix)
 
                 mdc.mapNotNull { (key, value) ->
-                    mapLabel(labels, includeMdc, prefix + key, value)
+                    addDynamicLabel(stream, prefix + key, value)
                 }
             }
         }
     }
 
-    private fun mapPodInfoLabels(labels: MutableMap<String, String?>) {
+    private fun mapPodInfoLabels(stream: Stream) {
         if (config.includeKubernetesInfo) {
             podInfo?.let { info ->
                 val prefix = determinePrefix(config.kubernetesFieldsPrefix)
 
-                mapLabel(labels, true, prefix + "namespace", info.namespace)
-                mapLabel(labels, true, prefix + "podName", info.podName)
-                mapLabel(labels, true, prefix + "podIp", info.podIp)
-                mapLabel(labels, true, prefix + "startTime", info.startTime)
+                mapLabel(stream, true, prefix + "namespace", info.namespace)
+                mapLabel(stream, true, prefix + "podName", info.podName)
+                mapLabel(stream, true, prefix + "podIp", info.podIp)
+                mapLabel(stream, true, prefix + "startTime", info.startTime)
 
-                mapLabelIfNotNull(labels, prefix + "podUid", info.podUid)
-                mapLabelIfNotNull(labels, prefix + "restartCount", info.restartCount.toString())
-                mapLabelIfNotNull(labels, prefix + "containerName", info.containerName)
-                mapLabelIfNotNull(labels, prefix + "containerId", info.containerId)
-                mapLabelIfNotNull(labels, prefix + "imageName", info.imageName)
-                mapLabelIfNotNull(labels, prefix + "imageId", info.imageId)
-                mapLabelIfNotNull(labels, prefix + "nodeIp", info.nodeIp)
-                mapLabelIfNotNull(labels, prefix + "node", info.nodeName)
+                mapLabelIfNotNull(stream, prefix + "podUid", info.podUid)
+                mapLabelIfNotNull(stream, prefix + "restartCount", info.restartCount.toString())
+                mapLabelIfNotNull(stream, prefix + "containerName", info.containerName)
+                mapLabelIfNotNull(stream, prefix + "containerId", info.containerId)
+                mapLabelIfNotNull(stream, prefix + "imageName", info.imageName)
+                mapLabelIfNotNull(stream, prefix + "imageId", info.imageId)
+                mapLabelIfNotNull(stream, prefix + "nodeIp", info.nodeIp)
+                mapLabelIfNotNull(stream, prefix + "node", info.nodeName)
             }
         }
     }
