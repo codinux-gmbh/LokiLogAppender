@@ -40,7 +40,7 @@ open class LokiLogWriter(
         // pre-cache Streams
         senderScope.launch {
             IntRange(0, min(1_000, config.maxBufferedLogRecords / 2)).forEach {
-                cachedStreams.send(Stream())
+                cachedStreams.send(createStreamObject())
             }
         }
     }
@@ -70,8 +70,12 @@ open class LokiLogWriter(
         return if (cachedStreams.isNotEmpty) {
             cachedStreams.receive()
         } else {
-            Stream()
+            createStreamObject()
         }
+    }
+
+    private fun createStreamObject() = Stream().apply {
+        mapStaticLabels(this.stream)
     }
 
 
@@ -102,6 +106,20 @@ open class LokiLogWriter(
         return "${ if (config.includeThreadName) "[${threadName}] " else ""}${escapeFieldValue(message)}${getStacktrace(exception) ?: ""}"
     }
 
+    /**
+     * Add labels that never change during the whole process lifetime
+     */
+    private fun mapStaticLabels(labels: MutableMap<String, String?>) {
+        mapLabel(labels, config.includeHostName, config.hostNameFieldName, processData.hostName)
+        mapLabel(labels, config.includeAppName, config.appNameFieldName, config.appName)
+
+        // TODO: PodInfo may hasn't been initialized yet at this point
+        mapPodInfoLabels(labels)
+
+        // pre-allocate per log event labels in Map
+        mapLabels(labels, "", "", "", null, null, null, null)
+    }
+
     private fun mapLabels(
         labels: MutableMap<String, String?>,
         level: String,
@@ -116,15 +134,10 @@ open class LokiLogWriter(
         mapLabel(labels, config.includeLoggerName, config.loggerNameFieldName, loggerName)
         mapLabel(labels, config.includeLoggerClassName, config.loggerClassNameFieldName) { extractLoggerClassName(loggerName) }
 
-        mapLabel(labels, config.includeHostName, config.hostNameFieldName, processData.hostName) // TODO: static data
-        mapLabel(labels, config.includeAppName, config.appNameFieldName, config.appName) // TODO: static data
-
         // TODO: these are the only dynamic fields. Remember these so that they can be removed again from Map (where? after successful writing? Before setting the next record?)
         mapMdcLabel(labels, config.includeMdc && mdc != null, mdc)
         mapLabel(labels, config.includeMarker && marker != null, config.markerFieldName, marker)
         mapLabel(labels, config.includeNdc && ndc != null, config.ndcFieldName, ndc)
-
-        mapKubernetesInfoLabels(labels)
     }
 
     protected open fun mapLabel(labels: MutableMap<String, String?>, includeField: Boolean, fieldName: String, valueSupplier: () -> String?) {
@@ -155,8 +168,7 @@ open class LokiLogWriter(
         }
     }
 
-    // TODO: do this only once, these are all static data that don't change over the process life time
-    private fun mapKubernetesInfoLabels(labels: MutableMap<String, String?>) {
+    private fun mapPodInfoLabels(labels: MutableMap<String, String?>) {
         if (config.includeKubernetesInfo) {
             podInfo?.let { info ->
                 val prefix = determinePrefix(config.kubernetesFieldsPrefix)
