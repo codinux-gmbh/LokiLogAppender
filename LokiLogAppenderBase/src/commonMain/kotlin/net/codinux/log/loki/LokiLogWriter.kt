@@ -108,6 +108,9 @@ open class LokiLogWriter(
         marker: String?,
         ndc: String?
     ) {
+        stream.dynamicLabels.forEach { dynamicLabel ->
+            stream.stream.remove(dynamicLabel)
+        }
         stream.dynamicLabels.clear()
 
         mapLabel(stream, config.includeLogLevel, config.logLevelFieldName, level)
