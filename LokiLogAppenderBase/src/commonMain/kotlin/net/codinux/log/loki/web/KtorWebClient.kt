@@ -12,10 +12,9 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.*
+import net.codinux.log.data.KtorStreamContent
 
 class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?, tenantId: String?) : WebClient {
-
-    private val gzipEncoder = net.codinux.log.data.GZipEncoder()
 
     private val client = HttpClient {
         install(ContentNegotiation) {
@@ -26,6 +25,10 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
             url(lokiPushApiUrl)
             if (tenantId != null) {
                 header("X-Scope-OrgID", tenantId)
+            }
+
+            KtorStreamContent.additionalHeaders.forEach { (name, value) ->
+                headers.append(name, value)
             }
         }
 
@@ -48,12 +51,10 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
             this.method = HttpMethod.Post
             contentType(ContentType.parse(contentType))
 
-            val gzipped = gzipEncoder.gzip(body)
-            if (gzipped == null) {
-                setBody(body)
+            if (KtorStreamContent.isSupported) {
+                setBody(KtorStreamContent(body))
             } else {
-                this.headers.append("Content-Encoding", "gzip")
-                setBody(gzipped)
+                setBody(body)
             }
 
             headers.forEach { (name, value) -> this.headers.append(name, value) }
