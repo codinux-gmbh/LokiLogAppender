@@ -27,8 +27,8 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
                 header("X-Scope-OrgID", tenantId)
             }
 
-            KtorStreamContent.additionalHeaders.forEach { (name, value) ->
-                headers.append(name, value)
+            if (KtorStreamContent.isSupported && KtorStreamContent.supportsGZip) {
+                headers.append("Content-Encoding", "gzip")
             }
         }
 
