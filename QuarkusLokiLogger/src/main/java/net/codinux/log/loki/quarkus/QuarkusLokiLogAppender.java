@@ -30,14 +30,14 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedConfig.setIncludeThreadName(config.threadName.include);
         mappedConfig.setThreadNameFieldName(config.threadName.fieldName);
 
+        mappedConfig.setIncludeAppName(config.appName.include);
+        mappedConfig.setAppNameFieldName(config.appName.fieldName);
+        mappedConfig.setAppName(config.appName.appName);
+
         mappedConfig.setIncludeHostName(config.hostName.include);
         mappedConfig.setHostNameFieldName(config.hostName.fieldName);
         mappedConfig.setIncludeHostIp(config.hostIp.include);
         mappedConfig.setHostIpFieldName(config.hostIp.fieldName);
-
-        mappedConfig.setIncludeAppName(config.appName.include);
-        mappedConfig.setAppNameFieldName(config.appName.fieldName);
-        mappedConfig.setAppName(config.appName.appName);
 
         mappedConfig.setIncludeStacktrace(config.stacktrace.include);
         mappedConfig.setStacktraceFieldName(config.stacktrace.fieldName);
@@ -57,10 +57,8 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedConfig.setIncludeKubernetesAnnotations(config.kubernetesInfo.annotations.include);
         mappedConfig.setKubernetesAnnotationsPrefix(config.kubernetesInfo.annotations.prefix);
 
-        mappedConfig.setAppendLogsAsync(config.appendLogsAsync);
-
-        mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
         mappedConfig.setMaxBufferedLogRecords(config.maxBufferedLogRecords);
+        mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
         mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
 
         return mappedConfig;
