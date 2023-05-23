@@ -120,6 +120,10 @@ open class LokiLogWriter(
     }
 
 
+    override fun instantiateMappedRecord() = Stream().apply {
+        mapper.mapStaticFields(this.stream)
+    }
+
     override suspend fun mapRecord(
         timestamp: Instant,
         level: String,
@@ -138,10 +142,6 @@ open class LokiLogWriter(
         mapper.mapLogEventFields(stream.stream, level, loggerName, threadName, exception, mdc, marker, ndc)
 
         return stream
-    }
-
-    override fun instantiateMappedRecord() = Stream().apply {
-        mapper.mapStaticFields(this.stream)
     }
 
 
