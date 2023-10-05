@@ -11,9 +11,9 @@ import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
 
 open class LokiLogWriter(
-    config: LogAppenderConfig,
+    config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password, (config as? LokiLogAppenderConfig)?.tenantId)
+    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password, config.tenantId)
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger) {
 
     companion object {

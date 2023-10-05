@@ -1,6 +1,5 @@
 package net.codinux.log.loki
 
-import net.codinux.log.LogAppenderConfig
 import net.codinux.log.jboss.JBossLoggingUtil
 import org.jboss.logging.Logger
 import org.jboss.logging.NDC
@@ -22,7 +21,11 @@ class LokiJBossLoggingAppenderSample {
 
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
-            LokiJBossLoggingAppender(LogAppenderConfig(host = "http://localhost:3100", includeMarker = true, includeNdc = true)),
+            LokiJBossLoggingAppender(LokiLogAppenderConfig().apply {
+                host = "http://localhost:3100"
+                includeMarker = true
+                includeNdc = true
+            }),
             JBossLoggingUtil.colorConsoleHandler()
         )
     }

@@ -8,9 +8,12 @@ import org.junit.jupiter.api.Test
 
 class LokiLogWriterTest {
 
-    private val underTest = LokiLogWriter(
-        LogAppenderConfig(host = "http://localhost:3100", includeLoggerClassName = true, includeAppName = true, appName = "Liebestest")
-    )
+    private val underTest = LokiLogWriter(LokiLogAppenderConfig().apply {
+        host = "http://localhost:3100"
+        includeLoggerClassName = true
+        includeAppName = true
+        appName = "Liebestest"
+    })
 
     @Test
     fun writeLogs() = runBlocking {
@@ -39,7 +42,7 @@ class LokiLogWriterTest {
             "main"
         )
 
-        delay(500)
+        delay(5000)
 
         // TODO: add a assert to assert that HTTP 204 got returned instead of 400
     }
