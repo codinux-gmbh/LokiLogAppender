@@ -12,7 +12,7 @@ import kotlinx.serialization.encoding.encodeCollection
 
 @Serializable(with = Values.ValuesSerializer::class)
 // Loki's values are not safely typed. The first value is the timestamp in RFC3339 or RFC3339Nano format, the second the log line
-open class Values : ArrayList<String>(listOf("", "")) {
+open class Values : OpenArrayList<String>(listOf("", "")) {
 
     open val timestamp: String
         get() = get(0)
