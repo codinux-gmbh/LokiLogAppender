@@ -17,8 +17,6 @@ open class LokiLogWriter(
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger) {
 
     companion object {
-        private const val JsonContentType = "application/json"
-
         fun getLokiPushApiUrl(host: String): String =
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
 
@@ -149,7 +147,7 @@ open class LokiLogWriter(
         try {
             streamBody.streams = records
 
-            if (webClient.post("", streamBody, JsonContentType)) {
+            if (webClient.post(streamBody)) {
                 releaseMappedRecords(records)
 
                 return emptyList() // all records successfully send to Loki

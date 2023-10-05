@@ -16,6 +16,10 @@ import net.codinux.log.data.KtorStreamContent
 
 class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?, tenantId: String?) : WebClient {
 
+    companion object {
+        private val JsonContentType = ContentType.parse("application/json")
+    }
+
     private val client = HttpClient {
         install(ContentNegotiation) {
             json()
@@ -30,6 +34,8 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
             if (KtorStreamContent.isSupported && KtorStreamContent.supportsGZip) {
                 headers.append("Content-Encoding", "gzip")
             }
+
+            contentType(JsonContentType)
         }
 
         if (username != null && password != null) {
@@ -46,18 +52,15 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
         }
     }
 
-    override suspend fun post(url: String, body: Any, contentType: String, headers: Map<String, String>): Boolean {
+    override suspend fun post(body: Any): Boolean {
         val response = client.request {
             this.method = HttpMethod.Post
-            contentType(ContentType.parse(contentType))
 
             if (KtorStreamContent.isSupported) {
                 setBody(KtorStreamContent(body))
             } else {
                 setBody(body)
             }
-
-            headers.forEach { (name, value) -> this.headers.append(name, value) }
         }
 
         if (response.status.isSuccess() == false) {
