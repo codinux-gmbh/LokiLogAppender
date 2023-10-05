@@ -57,7 +57,7 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
             this.method = HttpMethod.Post
 
             if (KtorStreamContent.isSupported) {
-                setBody(KtorStreamContent(body))
+                setBody(KtorStreamContent(body, KtorStreamContent.supportsGZip))
             } else {
                 setBody(body)
             }
