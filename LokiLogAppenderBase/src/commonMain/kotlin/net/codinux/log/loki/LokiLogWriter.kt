@@ -148,9 +148,7 @@ open class LokiLogWriter(
             streamBody.streams = records
 
             if (webClient.post(streamBody)) {
-                releaseMappedRecords(records)
-
-                return emptyList() // all records successfully send to Loki
+                return emptyList() // all records successfully send to Loki = no record failed
             }
         } catch (e: Exception) {
             stateLogger.error("Could not write record", e)
