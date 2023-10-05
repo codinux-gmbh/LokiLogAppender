@@ -58,9 +58,6 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-
-                // why to we have to re-add this dependency, it's exported with api() by log-appender-base
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val commonTest by getting {
@@ -75,9 +72,6 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
-
-                // why to we have to re-add this dependency, it's exported with api() by log-appender-base
-                api("org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0")
             }
         }
         val jvmTest by getting
