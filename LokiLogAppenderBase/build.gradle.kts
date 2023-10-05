@@ -95,9 +95,7 @@ kotlin {
 }
 
 
-ext["artifactId"] = "loki-log-appender-base" // is overwritten by Gradle anyway, therefore we need to set in in settings.gradle
-ext["libraryName"] = ext["artifactId"]
-
+ext["customArtifactId"] = "loki-log-appender-base"
 ext["projectDescription"] = "Logger implementation to push logs to Loki (Like Prometheus, but for logs)"
 
-apply(from = "../publish.gradle.kts")
+apply(from = "../gradle/scripts/publish-codinux.gradle.kts")

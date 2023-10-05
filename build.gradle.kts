@@ -1,3 +1,8 @@
+plugins {
+    // don't know why it's needed but otherwise build breaks with "The Kotlin Gradle plugin was loaded multiple times in different subprojects"
+    kotlin("plugin.serialization") apply(false)
+}
+
 
 allprojects {
     repositories {
@@ -7,23 +12,19 @@ allprojects {
     }
 
     group = "net.codinux.log"
-    version = "1.0.0-SNAPSHOT"
+    version = "0.5.0-SNAPSHOT"
 
 
-    ext["groupId"] = group
-    ext["artifactVersion"] = version
-
-    ext["sourceCodeRepositoryBaseUrl"] = "https://github.com/codinux/LokiLogAppender"
-
-    ext["useNewSonatypeRepo"] = true
-    ext["packageGroup"] = "net.codinux"
+    ext["sourceCodeRepositoryBaseUrl"] = "github.com/codinux/LokiLogAppender"
 
     ext["projectDescription"] = "Logger implementation to push logs to Loki (Like Prometheus, but for logs)"
+}
 
-    ext["developerId"] = "codinux"
-    ext["developerName"] = "codinux GmbH & Co. KG"
-    ext["developerMail"] = "git@codinux.net"
 
-    ext["licenseName"] = "The Apache License, Version 2.0"
-    ext["licenseUrl"] = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+tasks.register("publishAllToMavenLocal") {
+    dependsOn(
+        ":LokiLogAppenderBase:publishToMavenLocal",
+
+        ":LokiJBossLoggingAppender:publishToMavenLocal"
+    )
 }
