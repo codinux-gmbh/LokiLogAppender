@@ -13,7 +13,7 @@ import net.codinux.log.statelogger.StdOutStateLogger
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient(getLokiPushApiUrl(config.host), config.username, config.password, config.tenantId)
+    private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.host), config.username, config.password, config.tenantId)
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger) {
 
     companion object {

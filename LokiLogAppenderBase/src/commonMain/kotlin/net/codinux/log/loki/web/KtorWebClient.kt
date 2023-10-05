@@ -13,8 +13,15 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.*
 import net.codinux.log.data.KtorStreamContent
+import net.codinux.log.statelogger.AppenderStateLogger
 
-class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?, tenantId: String?) : WebClient {
+class KtorWebClient(
+    private val stateLogger: AppenderStateLogger,
+    lokiPushApiUrl: String,
+    username: String?,
+    password: String?,
+    tenantId: String?
+) : WebClient {
 
     companion object {
         private val JsonContentType = ContentType.parse("application/json")
@@ -31,11 +38,11 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
                 header("X-Scope-OrgID", tenantId)
             }
 
+            contentType(JsonContentType)
+
             if (KtorStreamContent.isSupported && KtorStreamContent.supportsGZip) {
                 headers.append("Content-Encoding", "gzip")
             }
-
-            contentType(JsonContentType)
         }
 
         if (username != null && password != null) {
@@ -64,8 +71,7 @@ class KtorWebClient(lokiPushApiUrl: String, username: String?, password: String?
         }
 
         if (response.status.isSuccess() == false) {
-            // TODO: use error logger
-            println("An error occurred: ${response.status}, ${response.bodyAsText()}")
+            stateLogger.error("Could not push logs to Loki, response was: ${response.status}, ${response.bodyAsText()}")
         }
 
         return response.status.isSuccess()
