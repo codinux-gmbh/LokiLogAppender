@@ -14,7 +14,7 @@ public class QuarkusLokiLogAppenderRecorder {
             return new RuntimeValue(Optional.empty());
         }
 
-        if (config.endpointHost == null || config.endpointHost.isBlank()) {
+        if (config.hostUrl == null || config.hostUrl.isBlank()) {
             throw new IllegalArgumentException("If loki-logger is enabled, then host value with the URL pointing to your Loki instance must be configured");
         }
 

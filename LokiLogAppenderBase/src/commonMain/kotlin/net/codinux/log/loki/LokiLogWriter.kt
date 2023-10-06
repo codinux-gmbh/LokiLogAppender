@@ -13,7 +13,7 @@ import net.codinux.log.statelogger.StdOutStateLogger
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.host), config.username, config.password, config.tenantId)
+    private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.hostUrl), config.username, config.password, config.tenantId)
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger) {
 
     companion object {
@@ -21,24 +21,26 @@ open class LokiLogWriter(
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
 
         fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
-            config.logLevelFieldName = escapeLabelName(config.logLevelFieldName)
-            config.loggerNameFieldName = escapeLabelName(config.loggerNameFieldName)
-            config.loggerClassNameFieldName = escapeLabelName(config.loggerClassNameFieldName)
-            config.threadNameFieldName = escapeLabelName(config.threadNameFieldName)
+            val fields = config.fields
 
-            config.hostNameFieldName = escapeLabelName(config.hostNameFieldName)
-            config.hostIpFieldName = escapeLabelName(config.hostIpFieldName)
-            config.appNameFieldName = escapeLabelName(config.appNameFieldName)
-            config.stacktraceFieldName = escapeLabelName(config.stacktraceFieldName)
+            fields.logLevelFieldName = escapeLabelName(fields.logLevelFieldName)
+            fields.loggerNameFieldName = escapeLabelName(fields.loggerNameFieldName)
+            fields.loggerClassNameFieldName = escapeLabelName(fields.loggerClassNameFieldName)
+            fields.threadNameFieldName = escapeLabelName(fields.threadNameFieldName)
 
-            config.mdcKeysPrefix = determinePrefix(config.mdcKeysPrefix)
+            fields.hostNameFieldName = escapeLabelName(fields.hostNameFieldName)
+            fields.hostIpFieldName = escapeLabelName(fields.hostIpFieldName)
+            fields.appNameFieldName = escapeLabelName(fields.appNameFieldName)
+            fields.stacktraceFieldName = escapeLabelName(fields.stacktraceFieldName)
 
-            config.markerFieldName = escapeLabelName(config.markerFieldName)
-            config.ndcFieldName = escapeLabelName(config.ndcFieldName)
+            fields.mdcKeysPrefix = determinePrefix(fields.mdcKeysPrefix)
 
-            config.kubernetesFieldsPrefix = determinePrefix(config.kubernetesFieldsPrefix)
-            config.kubernetesLabelsPrefix = determinePrefix(config.kubernetesLabelsPrefix)
-            config.kubernetesAnnotationsPrefix = determinePrefix(config.kubernetesAnnotationsPrefix)
+            fields.markerFieldName = escapeLabelName(fields.markerFieldName)
+            fields.ndcFieldName = escapeLabelName(fields.ndcFieldName)
+
+            fields.kubernetesFieldsPrefix = determinePrefix(fields.kubernetesFieldsPrefix)
+            fields.kubernetesLabelsPrefix = determinePrefix(fields.kubernetesLabelsPrefix)
+            fields.kubernetesAnnotationsPrefix = determinePrefix(fields.kubernetesAnnotationsPrefix)
 
             return config
         }
@@ -163,7 +165,7 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     private fun getLogLine(message: String, threadName: String?, exception: Throwable?): String {
-        return "${ if (config.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
+        return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
 }

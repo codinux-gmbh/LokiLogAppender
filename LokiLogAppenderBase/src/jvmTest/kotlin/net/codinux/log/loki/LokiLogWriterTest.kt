@@ -3,16 +3,18 @@ package net.codinux.log.loki
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import net.codinux.log.LogAppenderConfig
+import net.codinux.log.LogAppenderFieldsConfig
 import org.junit.jupiter.api.Test
 
 class LokiLogWriterTest {
 
     private val underTest = LokiLogWriter(LokiLogAppenderConfig().apply {
-        host = "http://localhost:3100"
-        includeLoggerClassName = true
-        includeAppName = true
-        appName = "Liebestest"
+        hostUrl = "http://localhost:3100"
+        fields = LogAppenderFieldsConfig(
+            includeLoggerClassName = true,
+            includeAppName = true,
+            appName = "Liebestest"
+        )
     })
 
     @Test
