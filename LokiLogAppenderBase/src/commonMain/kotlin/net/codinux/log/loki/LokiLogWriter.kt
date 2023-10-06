@@ -31,6 +31,7 @@ open class LokiLogWriter(
             fields.hostNameFieldName = escapeLabelName(fields.hostNameFieldName)
             fields.hostIpFieldName = escapeLabelName(fields.hostIpFieldName)
             fields.appNameFieldName = escapeLabelName(fields.appNameFieldName)
+            fields.appVersionFieldName = escapeLabelName(fields.appVersionFieldName)
             fields.stacktraceFieldName = escapeLabelName(fields.stacktraceFieldName)
 
             fields.mdcKeysPrefix = determinePrefix(fields.mdcKeysPrefix)

@@ -37,6 +37,10 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedFields.setAppNameFieldName(fields.appName.fieldName);
         mappedFields.setAppName(fields.appName.appName);
 
+        mappedFields.setIncludeAppVersion(fields.appVersion.include);
+        mappedFields.setAppVersionFieldName(fields.appVersion.fieldName);
+        mappedFields.setAppVersion(fields.appVersion.appVersion);
+
         mappedFields.setIncludeHostName(fields.hostName.include);
         mappedFields.setHostNameFieldName(fields.hostName.fieldName);
         mappedFields.setIncludeHostIp(fields.hostIp.include);
