@@ -1,7 +1,9 @@
 package net.codinux.log.loki.quarkus;
 
 import net.codinux.log.LogAppenderFieldsConfig;
+import net.codinux.log.config.KubernetesFieldsConfig;
 import net.codinux.log.config.quarkus.QuarkusLogAppenderFieldsConfig;
+import net.codinux.log.config.quarkus.fields.kubernetes.QuarkusKubernetesFieldsConfig;
 import net.codinux.log.loki.LokiJBossLoggingAppender;
 import net.codinux.log.loki.LokiLogAppenderConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
@@ -25,14 +27,13 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
         mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
 
-        mappedConfig.setFields(mapFields(config));
+        mappedConfig.setFields(mapFields(config.fields));
 
         return mappedConfig;
     }
 
-    private static LogAppenderFieldsConfig mapFields(QuarkusLokiLogAppenderConfig config) {
+    private static LogAppenderFieldsConfig mapFields(QuarkusLogAppenderFieldsConfig fields) {
         LogAppenderFieldsConfig mappedFields = new LogAppenderFieldsConfig();
-        QuarkusLogAppenderFieldsConfig fields = config.fields;
 
         mappedFields.setIncludeLogLevel(fields.logLevel.include);
         mappedFields.setLogLevelFieldName(fields.logLevel.fieldName);
@@ -70,10 +71,55 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
 
         mappedFields.setIncludeKubernetesInfo(fields.kubernetesInfo.include);
         mappedFields.setKubernetesFieldsPrefix(fields.kubernetesInfo.prefix);
-        mappedFields.setIncludeKubernetesLabels(fields.kubernetesInfo.labels.include);
-        mappedFields.setKubernetesLabelsPrefix(fields.kubernetesInfo.labels.prefix);
-        mappedFields.setIncludeKubernetesAnnotations(fields.kubernetesInfo.annotations.include);
-        mappedFields.setKubernetesAnnotationsPrefix(fields.kubernetesInfo.annotations.prefix);
+        mappedFields.setKubernetesFields(mapKubernetesFields(fields.kubernetesInfo.fields));
+
+        return mappedFields;
+    }
+
+    private static KubernetesFieldsConfig mapKubernetesFields(QuarkusKubernetesFieldsConfig fields) {
+        KubernetesFieldsConfig mappedFields = new KubernetesFieldsConfig();
+
+        mappedFields.setIncludeNamespace(fields.namespace.include);
+        mappedFields.setNamespaceFieldName(fields.namespace.fieldName);
+
+        mappedFields.setIncludePodName(fields.podName.include);
+        mappedFields.setPodNameFieldName(fields.podName.fieldName);
+
+        mappedFields.setIncludeContainerName(fields.containerName.include);
+        mappedFields.setContainerNameFieldName(fields.containerName.fieldName);
+
+        mappedFields.setIncludeImageName(fields.imageName.include);
+        mappedFields.setImageNameFieldName(fields.imageName.fieldName);
+
+        mappedFields.setIncludeNodeName(fields.nodeName.include);
+        mappedFields.setNodeNameFieldName(fields.nodeName.fieldName);
+
+        mappedFields.setIncludeNodeIp(fields.nodeIp.include);
+        mappedFields.setNodeIpFieldName(fields.nodeIp.fieldName);
+
+        mappedFields.setIncludePodIp(fields.podIp.include);
+        mappedFields.setPodIpFieldName(fields.podIp.fieldName);
+
+        mappedFields.setIncludeStartTime(fields.startTime.include);
+        mappedFields.setStartTimeFieldName(fields.startTime.fieldName);
+
+        mappedFields.setIncludeRestartCount(fields.restartCount.include);
+        mappedFields.setRestartCountFieldName(fields.restartCount.fieldName);
+
+        mappedFields.setIncludePodUid(fields.podUid.include);
+        mappedFields.setPodUidFieldName(fields.podUid.fieldName);
+
+        mappedFields.setIncludeContainerId(fields.containerId.include);
+        mappedFields.setContainerIdFieldName(fields.containerId.fieldName);
+
+        mappedFields.setIncludeImageId(fields.imageName.include);
+        mappedFields.setImageIdFieldName(fields.imageName.fieldName);
+
+        mappedFields.setIncludeLabels(fields.labels.include);
+        mappedFields.setLabelsPrefix(fields.labels.prefix);
+
+        mappedFields.setIncludeAnnotations(fields.annotations.include);
+        mappedFields.setAnnotationsPrefix(fields.annotations.prefix);
 
         return mappedFields;
     }

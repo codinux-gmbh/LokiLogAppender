@@ -3,6 +3,7 @@ package net.codinux.log.loki
 import kotlinx.datetime.Instant
 import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
+import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.loki.model.Stream
 import net.codinux.log.loki.model.StreamBody
 import net.codinux.log.loki.web.KtorWebClient
@@ -20,6 +21,7 @@ open class LokiLogWriter(
         fun getLokiPushApiUrl(host: String): String =
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
 
+        // TODO: add to LokiLogAppenderConfig
         fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
             val fields = config.fields
 
@@ -40,10 +42,31 @@ open class LokiLogWriter(
             fields.ndcFieldName = escapeLabelName(fields.ndcFieldName)
 
             fields.kubernetesFieldsPrefix = determinePrefix(fields.kubernetesFieldsPrefix)
-            fields.kubernetesLabelsPrefix = determinePrefix(fields.kubernetesLabelsPrefix)
-            fields.kubernetesAnnotationsPrefix = determinePrefix(fields.kubernetesAnnotationsPrefix)
+            escapeKubernetesFieldsLabelNames(fields.kubernetesFields)
 
             return config
+        }
+
+        private fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
+            fields.namespaceFieldName = determinePrefix(fields.namespaceFieldName)
+
+            fields.podNameFieldName = determinePrefix(fields.podNameFieldName)
+            fields.containerNameFieldName = determinePrefix(fields.containerNameFieldName)
+            fields.imageNameFieldName = determinePrefix(fields.imageNameFieldName)
+
+            fields.nodeNameFieldName = determinePrefix(fields.nodeNameFieldName)
+            fields.nodeIpFieldName = determinePrefix(fields.nodeIpFieldName)
+            fields.podIpFieldName = determinePrefix(fields.podIpFieldName)
+
+            fields.startTimeFieldName = determinePrefix(fields.startTimeFieldName)
+            fields.restartCountFieldName = determinePrefix(fields.restartCountFieldName)
+
+            fields.podUidFieldName = determinePrefix(fields.podUidFieldName)
+            fields.containerIdFieldName = determinePrefix(fields.containerIdFieldName)
+            fields.imageIdFieldName = determinePrefix(fields.imageIdFieldName)
+
+            fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
+            fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
         }
 
         /**
