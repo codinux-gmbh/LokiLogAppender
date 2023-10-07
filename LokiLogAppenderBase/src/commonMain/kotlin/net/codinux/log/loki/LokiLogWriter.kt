@@ -1,9 +1,10 @@
 package net.codinux.log.loki
 
 import kotlinx.datetime.Instant
-import net.codinux.log.LogAppenderConfig
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.KubernetesFieldsConfig
+import net.codinux.log.config.LogAppenderConfig
+import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.Stream
 import net.codinux.log.loki.model.StreamBody
 import net.codinux.log.loki.web.KtorWebClient

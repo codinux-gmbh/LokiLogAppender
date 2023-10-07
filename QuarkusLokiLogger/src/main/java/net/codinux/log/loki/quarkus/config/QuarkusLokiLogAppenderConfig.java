@@ -4,7 +4,7 @@ import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-import net.codinux.log.config.quarkus.QuarkusLogAppenderConfigBase;
+import net.codinux.log.quarkus.config.QuarkusLogAppenderConfigBase;
 
 @ConfigRoot(phase = ConfigPhase.RUN_TIME, name = "log.loki")
 public class QuarkusLokiLogAppenderConfig extends QuarkusLogAppenderConfigBase {

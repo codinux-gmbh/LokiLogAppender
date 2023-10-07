@@ -1,12 +1,12 @@
 package net.codinux.log.loki.quarkus;
 
-import net.codinux.log.LogAppenderFieldsConfig;
 import net.codinux.log.config.KubernetesFieldsConfig;
-import net.codinux.log.config.quarkus.QuarkusLogAppenderFieldsConfig;
-import net.codinux.log.config.quarkus.fields.kubernetes.QuarkusKubernetesFieldsConfig;
-import net.codinux.log.loki.LokiJBossLoggingAppender;
-import net.codinux.log.loki.LokiLogAppenderConfig;
+import net.codinux.log.config.LogAppenderFieldsConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
+import net.codinux.log.quarkus.config.fields.QuarkusLogAppenderFieldsConfig;
+import net.codinux.log.quarkus.config.fields.kubernetes.QuarkusKubernetesFieldsConfig;
+import net.codinux.log.loki.LokiJBossLoggingAppender;
+import net.codinux.log.loki.config.LokiLogAppenderConfig;
 
 public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
 

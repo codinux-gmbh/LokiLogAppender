@@ -1,6 +1,6 @@
-package net.codinux.log.loki
+package net.codinux.log.loki.config
 
-import net.codinux.log.LogAppenderConfig
+import net.codinux.log.config.LogAppenderConfig
 
 open class LokiLogAppenderConfig : LogAppenderConfig() {
 
