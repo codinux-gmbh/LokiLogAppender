@@ -23,6 +23,7 @@ open class LokiLogWriter(
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
 
         // TODO: add to LokiLogAppenderConfig
+
         fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
             val fields = config.fields
 
@@ -49,22 +50,22 @@ open class LokiLogWriter(
         }
 
         private fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
-            fields.namespaceFieldName = determinePrefix(fields.namespaceFieldName)
+            fields.namespaceFieldName = escapeLabelName(fields.namespaceFieldName)
 
-            fields.podNameFieldName = determinePrefix(fields.podNameFieldName)
-            fields.containerNameFieldName = determinePrefix(fields.containerNameFieldName)
-            fields.imageNameFieldName = determinePrefix(fields.imageNameFieldName)
+            fields.podNameFieldName = escapeLabelName(fields.podNameFieldName)
+            fields.containerNameFieldName = escapeLabelName(fields.containerNameFieldName)
+            fields.imageNameFieldName = escapeLabelName(fields.imageNameFieldName)
 
-            fields.nodeNameFieldName = determinePrefix(fields.nodeNameFieldName)
-            fields.nodeIpFieldName = determinePrefix(fields.nodeIpFieldName)
-            fields.podIpFieldName = determinePrefix(fields.podIpFieldName)
+            fields.nodeNameFieldName = escapeLabelName(fields.nodeNameFieldName)
+            fields.nodeIpFieldName = escapeLabelName(fields.nodeIpFieldName)
+            fields.podIpFieldName = escapeLabelName(fields.podIpFieldName)
 
-            fields.startTimeFieldName = determinePrefix(fields.startTimeFieldName)
-            fields.restartCountFieldName = determinePrefix(fields.restartCountFieldName)
+            fields.startTimeFieldName = escapeLabelName(fields.startTimeFieldName)
+            fields.restartCountFieldName = escapeLabelName(fields.restartCountFieldName)
 
-            fields.podUidFieldName = determinePrefix(fields.podUidFieldName)
-            fields.containerIdFieldName = determinePrefix(fields.containerIdFieldName)
-            fields.imageIdFieldName = determinePrefix(fields.imageIdFieldName)
+            fields.podUidFieldName = escapeLabelName(fields.podUidFieldName)
+            fields.containerIdFieldName = escapeLabelName(fields.containerIdFieldName)
+            fields.imageIdFieldName = escapeLabelName(fields.imageIdFieldName)
 
             fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
             fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
@@ -133,7 +134,7 @@ open class LokiLogWriter(
         private fun determinePrefix(prefix: String?): String =
             if (prefix.isNullOrBlank()) ""
             else if (prefix.endsWith('.')) prefix.substring(0, prefix.length - 2) + "_" // in Loki prefixes get separated by '_', in ElasticSearch by '.'
-            else if (prefix.endsWith('_') == false) prefix + "_"
+            else if (prefix.endsWith('_')) prefix
             else prefix + "_"
     }
 
