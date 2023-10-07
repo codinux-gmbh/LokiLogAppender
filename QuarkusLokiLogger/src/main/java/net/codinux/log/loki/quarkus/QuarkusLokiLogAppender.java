@@ -14,14 +14,25 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
 
     private static LokiLogAppenderConfig mapConfig(QuarkusLokiLogAppenderConfig config) {
         LokiLogAppenderConfig mappedConfig = new LokiLogAppenderConfig();
-        LogAppenderFieldsConfig mappedFields = mappedConfig.getFields();
-        QuarkusLogAppenderFieldsConfig fields = config.fields;
 
         mappedConfig.setEnabled(config.enable);
         mappedConfig.setHostUrl(config.hostUrl);
         mappedConfig.setUsername(config.username);
         mappedConfig.setPassword(config.password);
         mappedConfig.setTenantId(config.tenantId);
+
+        mappedConfig.setMaxBufferedLogRecords(config.maxBufferedLogRecords);
+        mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
+        mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
+
+        mappedConfig.setFields(mapFields(config));
+
+        return mappedConfig;
+    }
+
+    private static LogAppenderFieldsConfig mapFields(QuarkusLokiLogAppenderConfig config) {
+        LogAppenderFieldsConfig mappedFields = new LogAppenderFieldsConfig();
+        QuarkusLogAppenderFieldsConfig fields = config.fields;
 
         mappedFields.setIncludeLogLevel(fields.logLevel.include);
         mappedFields.setLogLevelFieldName(fields.logLevel.fieldName);
@@ -64,10 +75,6 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedFields.setIncludeKubernetesAnnotations(fields.kubernetesInfo.annotations.include);
         mappedFields.setKubernetesAnnotationsPrefix(fields.kubernetesInfo.annotations.prefix);
 
-        mappedConfig.setMaxBufferedLogRecords(config.maxBufferedLogRecords);
-        mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
-        mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
-
-        return mappedConfig;
+        return mappedFields;
     }
 }
