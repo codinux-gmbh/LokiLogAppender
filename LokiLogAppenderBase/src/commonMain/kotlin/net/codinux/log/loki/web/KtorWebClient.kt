@@ -29,6 +29,15 @@ class KtorWebClient(
             json()
         }
 
+        install(HttpTimeout) {
+            config.connectTimeoutMillis?.let {
+                connectTimeoutMillis = it
+            }
+            config.requestTimeoutMillis?.let {
+                requestTimeoutMillis = it
+            }
+        }
+
         defaultRequest {
             url(lokiPushApiUrl)
             if (tenantId != null) {

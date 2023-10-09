@@ -39,6 +39,9 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
         mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
 
+        config.connectTimeout.ifPresent(connectTimeout -> mappedConfig.setConnectTimeoutMillis(connectTimeout.toMillis()));
+        config.requestTimeout.ifPresent(requestTimeout -> mappedConfig.setRequestTimeoutMillis(requestTimeout.toMillis()));
+
         return mappedConfig;
     }
 
