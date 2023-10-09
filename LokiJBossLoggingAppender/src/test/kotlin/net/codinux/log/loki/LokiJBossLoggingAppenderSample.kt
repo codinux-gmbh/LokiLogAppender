@@ -25,13 +25,13 @@ class LokiJBossLoggingAppenderSample {
 
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
-            LokiJBossLoggingAppender(LokiLogAppenderConfig().apply {
-                writer = WriterConfig("http://localhost:3100")
+            LokiJBossLoggingAppender(LokiLogAppenderConfig(
+                writer = WriterConfig("http://localhost:3100"),
                 fields = LogAppenderFieldsConfig(
                     includeMarker = true,
                     includeNdc = true
                 )
-            }),
+            )),
             JBossLoggingUtil.colorConsoleHandler()
         )
     }

@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test
 
 class LokiLogWriterTest {
 
-    private val underTest = LokiLogWriter(LokiLogAppenderConfig().apply {
-        writer = WriterConfig("http://localhost:3100")
+    private val underTest = LokiLogWriter(LokiLogAppenderConfig(
+        writer = WriterConfig("http://localhost:3100"),
         fields = LogAppenderFieldsConfig(
             includeLoggerClassName = true,
             includeAppName = true,
             appName = "Liebestest"
         )
-    })
+    ))
 
     @Test
     fun writeLogs() = runBlocking {
