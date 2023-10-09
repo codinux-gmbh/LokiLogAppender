@@ -20,6 +20,7 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
 
         mappedConfig.setEnabled(config.enable);
         mappedConfig.setTenantId(config.tenantId);
+        mappedConfig.setStateLoggerName(config.stateLoggerName);
 
         mappedConfig.setWriter(mapWriterConfig(config));
 

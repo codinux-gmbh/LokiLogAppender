@@ -6,4 +6,4 @@ import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig.Companion.StateLoggerDefaultName
 
 open class LokiJBossLoggingAppender(config: LokiLogAppenderConfig)
-    : JBossLoggingAppenderBase(config.enabled, LokiLogWriter(config, JBossLoggingStateLogger(StateLoggerDefaultName)))
+    : JBossLoggingAppenderBase(config.enabled, LokiLogWriter(config, JBossLoggingStateLogger(config.stateLoggerName ?: StateLoggerDefaultName)))
