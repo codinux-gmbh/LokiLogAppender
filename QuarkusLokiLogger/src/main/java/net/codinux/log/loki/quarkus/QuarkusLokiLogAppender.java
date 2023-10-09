@@ -2,6 +2,7 @@ package net.codinux.log.loki.quarkus;
 
 import net.codinux.log.config.KubernetesFieldsConfig;
 import net.codinux.log.config.LogAppenderFieldsConfig;
+import net.codinux.log.config.WriterConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 import net.codinux.log.quarkus.config.fields.QuarkusLogAppenderFieldsConfig;
 import net.codinux.log.quarkus.config.fields.kubernetes.QuarkusKubernetesFieldsConfig;
@@ -18,16 +19,25 @@ public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
         LokiLogAppenderConfig mappedConfig = new LokiLogAppenderConfig();
 
         mappedConfig.setEnabled(config.enable);
+        mappedConfig.setTenantId(config.tenantId);
+
+        mappedConfig.setWriter(mapWriterConfig(config));
+
+        mappedConfig.setFields(mapFields(config.fields));
+
+        return mappedConfig;
+    }
+
+    private static WriterConfig mapWriterConfig(QuarkusLokiLogAppenderConfig config) {
+        WriterConfig mappedConfig = new WriterConfig();
+
         mappedConfig.setHostUrl(config.hostUrl);
         mappedConfig.setUsername(config.username);
         mappedConfig.setPassword(config.password);
-        mappedConfig.setTenantId(config.tenantId);
 
         mappedConfig.setMaxBufferedLogRecords(config.maxBufferedLogRecords);
         mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
         mappedConfig.setSendLogRecordsPeriodMillis(config.sendLogRecordsPeriodMillis);
-
-        mappedConfig.setFields(mapFields(config.fields));
 
         return mappedConfig;
     }

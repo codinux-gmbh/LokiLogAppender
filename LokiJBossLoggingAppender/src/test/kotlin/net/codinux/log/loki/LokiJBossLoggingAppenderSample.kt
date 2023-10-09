@@ -1,6 +1,7 @@
 package net.codinux.log.loki
 
 import net.codinux.log.config.LogAppenderFieldsConfig
+import net.codinux.log.config.WriterConfig
 import net.codinux.log.jboss.JBossLoggingUtil
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import org.jboss.logging.Logger
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 
+// TODO: move to sampleApplications
 fun main() {
     LokiJBossLoggingAppenderSample().runExample()
 }
@@ -24,7 +26,7 @@ class LokiJBossLoggingAppenderSample {
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
             LokiJBossLoggingAppender(LokiLogAppenderConfig().apply {
-                hostUrl = "http://localhost:3100"
+                writer = WriterConfig("http://localhost:3100")
                 fields = LogAppenderFieldsConfig(
                     includeMarker = true,
                     includeNdc = true

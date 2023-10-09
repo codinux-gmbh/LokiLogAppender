@@ -1,26 +1,23 @@
 package net.codinux.log.loki.web
 
-import io.ktor.client.HttpClient
+import io.ktor.client.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import net.codinux.log.config.WriterConfig
 import net.codinux.log.data.KtorStreamContent
 import net.codinux.log.statelogger.AppenderStateLogger
 
 class KtorWebClient(
     private val stateLogger: AppenderStateLogger,
     lokiPushApiUrl: String,
-    username: String?,
-    password: String?,
-    tenantId: String?
+    tenantId: String?,
+    config: WriterConfig
 ) : WebClient {
 
     companion object {
@@ -45,14 +42,16 @@ class KtorWebClient(
             }
         }
 
-        if (username != null && password != null) {
-            install(Auth) {
-                basic {
-                    credentials {
-                        BasicAuthCredentials(username, password)
-                    }
-                    sendWithoutRequest { request ->
-                        request.url.buildString() == lokiPushApiUrl
+        config.username?.let { username ->
+            config.password?.let { password ->
+                install(Auth) {
+                    basic {
+                        credentials {
+                            BasicAuthCredentials(username, password)
+                        }
+                        sendWithoutRequest { request ->
+                            request.url.buildString() == lokiPushApiUrl
+                        }
                     }
                 }
             }
