@@ -6,8 +6,8 @@ java {
     withSourcesJar()
 
     toolchain {
-        // ExtLogRecord.instant needs at least Java version 9 (why?)
-        languageVersion.set(JavaLanguageVersion.of(11))
+        // ExtLogRecord.instant needs at least Java version 9
+        languageVersion.set(JavaLanguageVersion.of(9))
     }
 }
 
@@ -34,7 +34,7 @@ tasks.test {
 }
 
 
-ext["customArtifactId"] = "loki-jboss-logging-appender"
-ext["description"] = "JBoss logging appender to pushing logs directly to Loki"
+ext["customArtifactId"] = "jboss-logging-loki-appender"
+ext["description"] = "JBoss logging appender that pushes logs directly to Loki"
 
 apply(from = "../gradle/scripts/publish-codinux.gradle.kts")

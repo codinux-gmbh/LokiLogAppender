@@ -21,7 +21,7 @@ pluginManagement {
 
 include("LokiLogAppenderBase")
 
-include("LokiJBossLoggingAppender")
+include("JBossLoggingLokiAppender")
 
 
 /*          Quarkus             */
