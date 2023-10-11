@@ -5,6 +5,14 @@ import net.codinux.log.config.LogAppenderConfig
 
 class LokiLabelEscaper {
 
+    companion object {
+
+        // Loki label names must match the regex [a-zA-Z_:][a-zA-Z0-9_:]*.
+        // But i removed the colon as "The colons are reserved for user defined recording rules. They should not be used by exporters or direct instrumentation."
+        private val IllegalLabelCharactersRegex = Regex("[^a-zA-Z_][^a-zA-Z0-9_]*")
+
+    }
+
     fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
         val fields = config.fields
 
@@ -108,8 +116,7 @@ class LokiLabelEscaper {
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
     private fun escapeLabelName(fieldName: String): String {
-        // TODO: implement removing illegal characters by converting illegal characters to underscore.
-        return fieldName.replace(' ', '_')
+        return fieldName.replace(IllegalLabelCharactersRegex, "_")
     }
 
     private fun determinePrefix(prefix: String?): String =
