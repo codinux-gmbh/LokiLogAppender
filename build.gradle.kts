@@ -25,6 +25,7 @@ tasks.register("publishAllToMavenLocal") {
     dependsOn(
         ":LokiLogAppenderBase:publishToMavenLocal",
 
-        ":LokiJBossLoggingAppender:publishToMavenLocal"
+        ":LogbackLokiAppender:publishToMavenLocal",
+        ":JBossLoggingLokiAppender:publishToMavenLocal"
     )
 }
