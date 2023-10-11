@@ -9,7 +9,8 @@ import kotlin.system.exitProcess
 
 
 fun main() {
-    // set the configuration in your Logback config, e.g. logback.xml
+    // set the configuration in your Logback config, e.g. logback.xml (see src/main/resources/logback.xml)
+    // make sure Loki is running on localhost under port 3100 or adjust URL there
     LogbackLokiAppenderSampleApp().runExample()
 }
 

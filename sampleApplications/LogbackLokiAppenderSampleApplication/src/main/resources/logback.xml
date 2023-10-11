@@ -1,5 +1,6 @@
 <configuration>
 
+    <!-- make sure Loki is running on localhost under port 3100 or adjust URL here -->
     <appender name="LOKI" class="net.codinux.log.loki.LogbackLokiAppender">
         <enabled>true</enabled>
         <hostUrl>http://localhost:3100</hostUrl>
