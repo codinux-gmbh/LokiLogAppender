@@ -28,6 +28,9 @@ include("JBossLoggingLokiAppender")
 include("LogbackLokiAppenderSampleApplication")
 project(":LogbackLokiAppenderSampleApplication").projectDir = File("sampleApplications/LogbackLokiAppenderSampleApplication")
 
+include("JBossLoggingLokiAppenderSampleApplication")
+project(":JBossLoggingLokiAppenderSampleApplication").projectDir = File("sampleApplications/JBossLoggingLokiAppenderSampleApplication")
+
 /*          Quarkus             */
 
 // building Quarkus extension with Gradle and / or Kotlin does not work (but in Quarkus?) so using Maven and Java for these

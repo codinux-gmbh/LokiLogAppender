@@ -13,12 +13,11 @@ import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 
-// TODO: move to sampleApplications
 fun main() {
-    LokiJBossLoggingAppenderSample().runExample()
+    JBossLoggingLokiAppenderSampleApp().runExample()
 }
 
-class LokiJBossLoggingAppenderSample {
+class JBossLoggingLokiAppenderSampleApp {
 
     init {
         JBossLoggingUtil.useJBossLoggingAsJavaUtilLoggingManager()
@@ -26,10 +25,13 @@ class LokiJBossLoggingAppenderSample {
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
             JBossLoggingLokiAppender(LokiLogAppenderConfig(
-                writer = WriterConfig("http://localhost:3100"),
+                writer = WriterConfig("https://staging.dankito.net", username = "SchaugtsAmoiHer", password = "NewKidOnTheLog"),
                 fields = LogAppenderFieldsConfig(
                     includeMarker = true,
-                    includeNdc = true
+                    includeNdc = true,
+                    includeKubernetesInfo = false,
+                    includeAppName = true,
+                    appName = "TestApp"
                 )
             )),
             JBossLoggingUtil.colorConsoleHandler()
@@ -37,7 +39,7 @@ class LokiJBossLoggingAppenderSample {
     }
 
 
-    private val log = Logger.getLogger(LokiJBossLoggingAppenderSample::class.java.name)
+    private val log = Logger.getLogger(JBossLoggingLokiAppenderSampleApp::class.java.name)
 
     fun runExample() {
         log.error("Error without Exception")
@@ -65,10 +67,10 @@ class LokiJBossLoggingAppenderSample {
 
         // Marker does not seem to be supported by JBoss logging, even though it's a field of ExtLogRecord with JavaDoc:
         // "Markers are used mostly by SLF4J and Log4j."
-        val slf4jLogger = LoggerFactory.getLogger(LokiJBossLoggingAppenderSample::class.java)
+        val slf4jLogger = LoggerFactory.getLogger(JBossLoggingLokiAppenderSampleApp::class.java)
         slf4jLogger.info(MarkerFactory.getMarker("ImportantMessageMarker"), "Log with Marker")
 
-        TimeUnit.SECONDS.sleep(1) // LokiJBossLoggingAppender sends records asynchronously, give it some time for that
+        TimeUnit.SECONDS.sleep(2) // JBossLoggingLokiAppender sends records asynchronously, give it some time for that
 
         exitProcess(0)
     }
