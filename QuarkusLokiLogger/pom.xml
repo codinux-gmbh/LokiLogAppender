@@ -30,12 +30,12 @@
         </dependency>
         <dependency>
             <groupId>net.codinux.log</groupId>
-            <artifactId>loki-jboss-logging-appender</artifactId>
+            <artifactId>jboss-logging-loki-appender</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>net.codinux.log</groupId>
-            <artifactId>quarks-log-appender-config-base</artifactId>
+            <artifactId>quarkus-log-appender-config-base</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>

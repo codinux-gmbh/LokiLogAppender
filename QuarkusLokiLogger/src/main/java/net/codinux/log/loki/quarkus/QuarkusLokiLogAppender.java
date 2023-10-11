@@ -3,13 +3,13 @@ package net.codinux.log.loki.quarkus;
 import net.codinux.log.config.KubernetesFieldsConfig;
 import net.codinux.log.config.LogAppenderFieldsConfig;
 import net.codinux.log.config.WriterConfig;
+import net.codinux.log.loki.JBossLoggingLokiAppender;
+import net.codinux.log.loki.config.LokiLogAppenderConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 import net.codinux.log.quarkus.config.fields.QuarkusLogAppenderFieldsConfig;
 import net.codinux.log.quarkus.config.fields.kubernetes.QuarkusKubernetesFieldsConfig;
-import net.codinux.log.loki.LokiJBossLoggingAppender;
-import net.codinux.log.loki.config.LokiLogAppenderConfig;
 
-public class QuarkusLokiLogAppender extends LokiJBossLoggingAppender {
+public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
 
     public QuarkusLokiLogAppender(QuarkusLokiLogAppenderConfig config) {
         super(mapConfig(config));
