@@ -115,11 +115,11 @@ class LokiLabelEscaper {
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    private fun escapeLabelName(fieldName: String): String {
+    fun escapeLabelName(fieldName: String): String {
         return fieldName.replace(IllegalLabelCharactersRegex, "_")
     }
 
-    private fun determinePrefix(prefix: String?): String =
+    fun determinePrefix(prefix: String?): String =
         if (prefix.isNullOrBlank()) ""
         else if (prefix.endsWith('.')) prefix.substring(0, prefix.length - 2) + "_" // in Loki prefixes get separated by '_', in ElasticSearch by '.'
         else if (prefix.endsWith('_')) prefix

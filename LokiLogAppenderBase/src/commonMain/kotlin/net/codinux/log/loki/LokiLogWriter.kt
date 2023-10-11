@@ -2,7 +2,6 @@ package net.codinux.log.loki
 
 import kotlinx.datetime.Instant
 import net.codinux.log.LogWriterBase
-import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.config.LogAppenderConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.Stream
@@ -17,7 +16,7 @@ open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer)
-) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger) {
+) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, mapper = LokiLogRecordMapper(config.fields)) {
 
     companion object {
         fun getLokiPushApiUrl(host: String): String =
@@ -31,10 +30,6 @@ open class LokiLogWriter(
 
 
     protected open val streamBody = StreamBody()
-
-    init {
-        mapper.escapeControlCharacters = true
-    }
 
 
     override fun instantiateMappedRecord() = Stream().apply {
