@@ -2,7 +2,7 @@ package net.codinux.log.loki
 
 import net.codinux.log.config.LogAppenderFieldsConfig
 import net.codinux.log.config.WriterConfig
-import net.codinux.log.jboss.JBossLoggingUtil
+import net.codinux.log.JBossLoggingUtil
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import org.jboss.logging.Logger
 import org.jboss.logging.NDC
