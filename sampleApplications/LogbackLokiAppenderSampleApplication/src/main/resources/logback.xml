@@ -1,0 +1,44 @@
+<configuration>
+
+    <appender name="LOKI" class="net.codinux.log.loki.LogbackLokiAppender">
+        <enabled>true</enabled>
+        <hostUrl>http://localhost:3100</hostUrl>
+        <tenantId>Tenant</tenantId>
+        <includeLogLevel>true</includeLogLevel>
+        <logLevelFieldName>level</logLevelFieldName>
+        <includeLoggerName>true</includeLoggerName>
+        <loggerNameFieldName>logger</loggerNameFieldName>
+        <includeLoggerClassName>true</includeLoggerClassName>
+        <loggerClassNameFieldName>loggerClass</loggerClassNameFieldName>
+        <includeThreadName>true</includeThreadName>
+        <threadNameFieldName>thread</threadNameFieldName>
+        <includeAppName>true</includeAppName>
+        <appNameFieldName>app</appNameFieldName>
+        <appName>TestApp</appName>
+        <includeAppVersion>true</includeAppVersion>
+        <appVersionFieldName>version</appVersionFieldName>
+        <appVersion>1.0.0</appVersion>
+        <includeHostName>true</includeHostName>
+        <hostNameFieldName>host</hostNameFieldName>
+        <includeStacktrace>true</includeStacktrace>
+        <stacktraceFieldName>stacktrace</stacktraceFieldName>
+        <includeMdc>true</includeMdc>
+        <mdcKeysPrefix>mdc</mdcKeysPrefix>
+        <maxLogRecordsPerBatch>100</maxLogRecordsPerBatch>
+        <maxBufferedLogRecords>2000</maxBufferedLogRecords>
+        <sendLogRecordsPeriodMillis>100</sendLogRecordsPeriodMillis>
+    </appender>
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="LOKI" />
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

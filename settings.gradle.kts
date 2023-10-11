@@ -21,8 +21,12 @@ pluginManagement {
 
 include("LokiLogAppenderBase")
 
+include("LogbackLokiAppender")
 include("JBossLoggingLokiAppender")
 
+
+include("LogbackLokiAppenderSampleApplication")
+project(":LogbackLokiAppenderSampleApplication").projectDir = File("sampleApplications/LogbackLokiAppenderSampleApplication")
 
 /*          Quarkus             */
 
