@@ -102,11 +102,7 @@ kotlin {
         val jsMain by getting
         val jsTest by getting
 
-        val nativeMain by getting {
-            dependencies {
-                implementation("io.ktor:ktor-client-curl:$ktorVersion") // requires that curl is installed
-            }
-        }
+        val nativeMain by getting
         val nativeTest by getting
     }
 }
