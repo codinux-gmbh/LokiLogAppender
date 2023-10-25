@@ -67,6 +67,7 @@ kotlin {
     val coroutinesVersion: String by project
     val ktorVersion: String by project
     val kotlinxDateTimeVersion: String by project
+    val kotlinSerializationVersion: String by project
     
     sourceSets {
         val commonMain by getting {
@@ -80,6 +81,7 @@ kotlin {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
+                // why does it has to be re-added?
                 api("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
             }
         }
@@ -95,15 +97,56 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
+
+                // why does it has to be re-added?
+                api("org.jetbrains.kotlinx:kotlinx-datetime-jvm:$kotlinxDateTimeVersion")
             }
         }
         val jvmTest by getting
 
-        val jsMain by getting
+        val jsMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-js:$ktorVersion")
+
+                // why does it has to be re-added?
+                api("org.jetbrains.kotlinx:kotlinx-datetime-js:$kotlinxDateTimeVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$kotlinSerializationVersion")
+            }
+        }
         val jsTest by getting
 
-        val nativeMain by getting
-        val nativeTest by getting
+
+        val linuxMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+
+                // why does it has to be re-added?
+                api("org.jetbrains.kotlinx:kotlinx-datetime-linuxx64:$kotlinxDateTimeVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-linuxx64:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-linuxx64:$kotlinSerializationVersion")
+            }
+        }
+
+        val mingwMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
+
+                // why does it has to be re-added?
+                api("org.jetbrains.kotlinx:kotlinx-datetime-mingwx64:$kotlinxDateTimeVersion")
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-mingwx64:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-mingwx64:$kotlinSerializationVersion")
+            }
+        }
+
+        val appleMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+            }
+        }
     }
 }
 
