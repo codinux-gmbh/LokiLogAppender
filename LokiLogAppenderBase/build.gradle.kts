@@ -66,11 +66,12 @@ kotlin {
 
     val coroutinesVersion: String by project
     val ktorVersion: String by project
+    val kotlinxDateTimeVersion: String by project
     
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("net.codinux.log:log-appender-base:1.0.0-SNAPSHOT")
+                api("net.codinux.log:log-appender-base:$version")
 
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-auth:$ktorVersion")
@@ -78,6 +79,8 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+
+                api("org.jetbrains.kotlinx:kotlinx-datetime:$kotlinxDateTimeVersion")
             }
         }
         val commonTest by getting {
