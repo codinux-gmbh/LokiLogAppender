@@ -19,8 +19,8 @@ public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
         LokiLogAppenderConfig mappedConfig = new LokiLogAppenderConfig();
 
         mappedConfig.setEnabled(config.enable);
-        mappedConfig.setTenantId(config.tenantId);
-        mappedConfig.setStateLoggerName(config.stateLoggerName);
+        mappedConfig.setTenantId(mapNullableString(config.tenantId));
+        mappedConfig.setStateLoggerName(mapNullableString(config.stateLoggerName));
 
         mappedConfig.setWriter(mapWriterConfig(config));
 
@@ -33,8 +33,8 @@ public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
         WriterConfig mappedConfig = new WriterConfig();
 
         mappedConfig.setHostUrl(config.hostUrl);
-        mappedConfig.setUsername(config.username);
-        mappedConfig.setPassword(config.password);
+        mappedConfig.setUsername(mapNullableString(config.username));
+        mappedConfig.setPassword(mapNullableString(config.password));
 
         mappedConfig.setMaxBufferedLogRecords(config.maxBufferedLogRecords);
         mappedConfig.setMaxLogRecordsPerBatch(config.maxLogRecordsPerBatch);
@@ -61,11 +61,11 @@ public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
 
         mappedFields.setIncludeAppName(fields.appName.include);
         mappedFields.setAppNameFieldName(fields.appName.fieldName);
-        mappedFields.setAppName(fields.appName.appName);
+        mappedFields.setAppName(mapNullableString(fields.appName.appName));
 
         mappedFields.setIncludeAppVersion(fields.appVersion.include);
         mappedFields.setAppVersionFieldName(fields.appVersion.fieldName);
-        mappedFields.setAppVersion(fields.appVersion.appVersion);
+        mappedFields.setAppVersion(mapNullableString(fields.appVersion.appVersion));
 
         mappedFields.setIncludeHostName(fields.hostName.include);
         mappedFields.setHostNameFieldName(fields.hostName.fieldName);
@@ -136,5 +136,13 @@ public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
         mappedFields.setAnnotationsPrefix(fields.annotations.prefix);
 
         return mappedFields;
+    }
+
+    private static String mapNullableString(String value) {
+        if (value == null || "null".equals(value)) {
+            return null;
+        } else {
+            return value;
+        }
     }
 }
