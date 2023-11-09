@@ -3,6 +3,7 @@ package net.codinux.log.loki
 import kotlinx.datetime.Instant
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
+import net.codinux.log.data.ProcessData
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.Stream
 import net.codinux.log.loki.model.StreamBody
@@ -15,8 +16,9 @@ import net.codinux.log.statelogger.StdOutStateLogger
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer)
-) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, mapper = LokiLogRecordMapper(config.fields)) {
+    private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer),
+    processData: ProcessData? = null
+) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData) {
 
     companion object {
         fun getLokiPushApiUrl(host: String): String =
