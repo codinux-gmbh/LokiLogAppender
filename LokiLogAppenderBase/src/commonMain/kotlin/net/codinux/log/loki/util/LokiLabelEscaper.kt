@@ -25,6 +25,7 @@ class LokiLabelEscaper {
         fields.hostIpFieldName = escapeLabelName(fields.hostIpFieldName)
         fields.appNameFieldName = escapeLabelName(fields.appNameFieldName)
         fields.appVersionFieldName = escapeLabelName(fields.appVersionFieldName)
+        fields.jobNameFieldName = escapeLabelName(fields.jobNameFieldName)
         fields.stacktraceFieldName = escapeLabelName(fields.stacktraceFieldName)
 
         fields.mdcKeysPrefix = determinePrefix(fields.mdcKeysPrefix)

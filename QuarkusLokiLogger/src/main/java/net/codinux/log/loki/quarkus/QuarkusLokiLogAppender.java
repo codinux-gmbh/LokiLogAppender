@@ -67,6 +67,10 @@ public class QuarkusLokiLogAppender extends JBossLoggingLokiAppender {
         mappedFields.setAppVersionFieldName(fields.appVersion.fieldName);
         mappedFields.setAppVersion(mapNullableString(fields.appVersion.appVersion));
 
+        mappedFields.setIncludeJobName(fields.jobName.include);
+        mappedFields.setJobNameFieldName(fields.jobName.fieldName);
+        mappedFields.setJobName(mapNullableString(fields.jobName.jobName));
+
         mappedFields.setIncludeHostName(fields.hostName.include);
         mappedFields.setHostNameFieldName(fields.hostName.fieldName);
         mappedFields.setIncludeHostIp(fields.hostIp.include);
