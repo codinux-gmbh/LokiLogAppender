@@ -5,6 +5,10 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.LogHandlerBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import net.codinux.log.config.KubernetesFieldsConfig;
+import net.codinux.log.config.LogAppenderFieldsConfig;
+import net.codinux.log.config.WriterConfig;
+import net.codinux.log.loki.config.LokiLogAppenderConfig;
 import net.codinux.log.loki.model.Stream;
 import net.codinux.log.loki.model.StreamBody;
 import net.codinux.log.loki.model.Values;
@@ -26,6 +30,16 @@ public class QuarkusLokiLoggerSteps {
                 StreamBody.class, StreamBody.Companion.getClass(),
                 Stream.class, Stream.Companion.getClass(),
                 Values.class, Values.Companion.getClass(), Values.ValuesSerializer.class
+        );
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem configClasses() {
+        return new ReflectiveClassBuildItem(true, true,
+                LokiLogAppenderConfig.class,
+                // TODO: move these classes to LogAppenderBase (+ LogAppenderConfig)
+                WriterConfig.class,
+                LogAppenderFieldsConfig.class, KubernetesFieldsConfig.class
         );
     }
 
