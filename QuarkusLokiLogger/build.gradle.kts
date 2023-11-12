@@ -4,7 +4,7 @@ plugins {
 }
 
 quarkusExtension {
-    deploymentModule = ":quarkus-loki-logger-deployment"
+    deploymentModule = ":quarkus-loki-log-appender-deployment"
 }
 
 java {
