@@ -35,11 +35,11 @@ project(":JBossLoggingLokiAppenderSampleApplication").projectDir = File("sampleA
 
 // building Quarkus extension with Gradle and / or Kotlin does not work (but in Quarkus?) so using Maven and Java for these
 
-//include("QuarkusLokiLogger")
-//project(":QuarkusLokiLogger").name = "quarkus-loki-logger"
+//include("QuarkusLokiLogAppender")
+//project(":QuarkusLokiLogAppender").name = "quarkus-loki-log-appender"
 //
-//include("QuarkusLokiLoggerDeployment")
-//project(":QuarkusLokiLoggerDeployment").name = "quarkus-loki-logger-deployment"
+//include("QuarkusLokiLogAppenderDeployment")
+//project(":QuarkusLokiLogAppenderDeployment").name = "quarkus-loki-log-appender-deployment"
 
 include("QuarkusSampleApplication")
 project(":QuarkusSampleApplication").projectDir = File("sampleApplications/QuarkusSampleApplication")

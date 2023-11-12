@@ -19,7 +19,7 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy")
     implementation("io.quarkus:quarkus-resteasy-jackson")
 
-    implementation("$group:quarkus-loki-logger:$version")
+    implementation("$group:quarkus-loki-log-appender:$version")
     implementation("net.codinux.log:kmp-log:1.0.0")
 }
 

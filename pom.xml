@@ -5,7 +5,7 @@
     <properties>
         <version>0.5.2-SNAPSHOT</version>
         <groupId>net.codinux.log</groupId>
-        <artifactIdBase>quarkus-loki-logger</artifactIdBase>
+        <artifactIdBase>quarkus-loki-log-appender</artifactIdBase>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
@@ -21,7 +21,7 @@
 
 
     <groupId>net.codinux.log</groupId>
-    <artifactId>quarkus-loki-logger-parent</artifactId>
+    <artifactId>quarkus-loki-log-appender-parent</artifactId>
     <version>0.5.2-SNAPSHOT</version>
     <name>Loki Logging Extension - Parent</name>
 

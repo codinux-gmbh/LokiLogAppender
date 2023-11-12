@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.codinux.log</groupId>
-        <artifactId>quarkus-loki-logger-parent</artifactId>
+        <artifactId>quarkus-loki-log-appender-parent</artifactId>
         <version>0.5.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>quarkus-loki-logger</artifactId>
+    <artifactId>quarkus-loki-log-appender</artifactId>
     <name>Enables logging from Loki to Elasticsearch - Runtime</name>
 
     <dependencies>

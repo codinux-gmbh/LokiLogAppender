@@ -15,8 +15,8 @@ dependencies {
     implementation(platform("io.quarkus:quarkus-bom:${quarkusVersion}"))
     implementation("io.quarkus:quarkus-core-deployment")
 
-//    implementation(project(":quarkus-loki-logger"))
-    implementation("net.codinux.log:quarkus-loki-logger:$version")
+//    implementation(project(":quarkus-loki-log-appender"))
+    implementation("net.codinux.log:quarkus-loki-log-appender:$version")
 
 
     testImplementation("io.quarkus:quarkus-junit5-internal")
