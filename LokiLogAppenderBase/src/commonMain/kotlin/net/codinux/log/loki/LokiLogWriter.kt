@@ -1,6 +1,7 @@
 package net.codinux.log.loki
 
 import kotlinx.datetime.Instant
+import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
 import net.codinux.log.data.ProcessData
@@ -34,34 +35,20 @@ open class LokiLogWriter(
     protected open val streamBody = StreamBody()
 
 
-    override fun instantiateMappedRecord() = Stream().apply {
+    override fun instantiateMappedRecord() = LogRecord(Stream().apply {
         mapper.mapStaticFields(this.stream)
-    }
+    })
 
-    override suspend fun mapRecord(
-        timestamp: Instant,
-        level: String,
-        message: String,
-        loggerName: String?,
-        threadName: String?,
-        exception: Throwable?,
-        mdc: Map<String, String>?,
-        marker: String?,
-        ndc: String?
-    ): Stream {
-        val stream = getMappedRecordObject()
+    override suspend fun mapRecord(record: LogRecord<Stream>) {
+        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record.message, record.threadName, record.exception))
 
-        stream.set(convertTimestamp(timestamp), getLogLine(message, threadName, exception))
-
-        mapper.mapLogEventFields(stream.stream, level, loggerName, threadName, exception, mdc, marker, ndc)
-
-        return stream
+        mapper.mapLogEventFields(record, record.mappedRecord.stream)
     }
 
 
-    override suspend fun writeRecords(records: List<Stream>): List<Stream> {
+    override suspend fun writeRecords(records: List<LogRecord<Stream>>): List<LogRecord<Stream>> {
         try {
-            streamBody.streams = records
+            streamBody.streams = records.map { it.mappedRecord }
 
             if (webClient.post(streamBody)) {
                 return emptyList() // all records successfully send to Loki = no record failed
