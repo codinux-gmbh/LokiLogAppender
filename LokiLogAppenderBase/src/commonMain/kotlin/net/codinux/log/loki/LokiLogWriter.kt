@@ -59,6 +59,13 @@ open class LokiLogWriter(
                 return records.flatMap { record ->
                     writeRecords(listOf(record))
                 }
+            } else if (records.size == 1) { // we sent records one by one
+                if (httpStatusCode == 400) { // we're not able to send the record successfully to Loki, giving up
+                    stateLogger.warn("Dropping record as Loki indicated bad request: ${records.first()}")
+                    return emptyList()
+                }
+
+                records.first().errorCode = httpStatusCode
             }
         } catch (e: Exception) {
             stateLogger.error("Could not write record", e)
