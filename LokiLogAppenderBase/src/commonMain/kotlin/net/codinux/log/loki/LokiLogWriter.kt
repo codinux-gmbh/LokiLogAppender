@@ -50,8 +50,15 @@ open class LokiLogWriter(
         try {
             streamBody.streams = records.map { it.mappedRecord }
 
-            if (webClient.post(streamBody)) {
+            val httpStatusCode = webClient.post(streamBody, records.size == 1)
+
+            if (httpStatusCode in (200 until 300)) {
                 return emptyList() // all records successfully send to Loki = no record failed
+            } else if (records.size > 1) {
+                // write records one by one, so that the problem free records succeed and only the erroneous ones remain
+                return records.flatMap { record ->
+                    writeRecords(listOf(record))
+                }
             }
         } catch (e: Exception) {
             stateLogger.error("Could not write record", e)

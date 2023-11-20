@@ -67,7 +67,7 @@ class KtorWebClient(
         }
     }
 
-    override suspend fun post(body: Any): Boolean {
+    override suspend fun post(body: Any, logError: Boolean): Int {
         val response = client.request {
             this.method = HttpMethod.Post
 
@@ -78,11 +78,11 @@ class KtorWebClient(
             }
         }
 
-        if (response.status.isSuccess() == false) {
+        if (logError && response.status.isSuccess() == false) {
             stateLogger.error("Could not push logs to Loki, response was: ${response.status}, ${response.bodyAsText()}")
-            println("Request body was:\n$body") // TODO: remove again (?)
+            stateLogger.error("Request body was:\n$body")
         }
 
-        return response.status.isSuccess()
+        return response.status.value
     }
 }
