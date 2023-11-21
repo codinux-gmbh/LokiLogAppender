@@ -54,13 +54,14 @@ open class LokiLogWriter(
 
             if (httpStatusCode in (200 until 300)) {
                 return emptyList() // all records successfully send to Loki = no record failed
-            } else if (records.size > 1) {
-                // write records one by one, so that the problem free records succeed and only the erroneous ones remain
-                return records.flatMap { record ->
-                    writeRecords(listOf(record))
-                }
-            } else if (records.size == 1) { // we sent records one by one
-                if (httpStatusCode == 400) { // we're not able to send the record successfully to Loki, giving up
+            } else if (httpStatusCode == 400) { // Bad request -> try to find the culprit and store at least all other ones
+                if (records.size > 1) {
+                    // write records one by one, so that the problem free records succeed and only the erroneous ones remain
+                    return records.flatMap { record ->
+                        writeRecords(listOf(record))
+                    }
+                } else if (records.size == 1) { // we sent records one by one
+                    // we're not able to send this record successfully to Loki, giving up
                     handleFailedRecord(records.first())
                     return emptyList()
                 }
