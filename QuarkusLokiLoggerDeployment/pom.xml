@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.codinux.log</groupId>
         <artifactId>quarkus-loki-log-appender-parent</artifactId>
-        <version>0.5.3-SNAPSHOT</version>
+        <version>0.5.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
