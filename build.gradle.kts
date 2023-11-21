@@ -12,7 +12,7 @@ allprojects {
     }
 
     group = "net.codinux.log"
-    version = "0.5.3"
+    version = "0.5.4-SNAPSHOT"
 
 
     ext["sourceCodeRepositoryBaseUrl"] = "github.com/codinux/LokiLogAppender"
