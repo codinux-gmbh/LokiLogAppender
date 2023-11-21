@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>quarkus-loki-log-appender</artifactId>
-    <name>Enables logging from Loki to Elasticsearch - Runtime</name>
+    <name>Enables logging from Quarkus to Loki - Runtime</name>
 
     <dependencies>
         <dependency>

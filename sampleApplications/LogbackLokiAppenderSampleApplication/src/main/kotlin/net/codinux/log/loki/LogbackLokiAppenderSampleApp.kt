@@ -41,7 +41,7 @@ open class LogbackLokiAppenderSampleApp {
 
         log.info(MarkerFactory.getMarker("ImportantMessageMarker"), "Log with Marker")
 
-        TimeUnit.SECONDS.sleep(5) // ElasticsearchLogger sends records asynchronously, give it some time for that
+        TimeUnit.SECONDS.sleep(5) // LokiLogAppender sends records asynchronously, give it some time for that
 
         exitProcess(0)
     }
