@@ -62,8 +62,7 @@ open class LokiLogWriter(
                     }
                 } else if (records.size == 1) { // we sent records one by one
                     // we're not able to send this record successfully to Loki, giving up
-                    handleFailedRecord(records.first())
-                    return emptyList()
+                    return handleFailedRecord(records.first())
                 }
             }
         } catch (e: Exception) {
@@ -73,8 +72,10 @@ open class LokiLogWriter(
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
     }
 
-    protected open fun handleFailedRecord(record: LogRecord<Stream>) {
+    protected open fun handleFailedRecord(record: LogRecord<Stream>): List<LogRecord<Stream>> {
         stateLogger.warn("Dropping record as Loki indicated bad request: ${record.mappedRecord}")
+
+        return emptyList()
     }
 
 
