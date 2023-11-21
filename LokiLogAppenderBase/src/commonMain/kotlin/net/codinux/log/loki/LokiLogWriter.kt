@@ -61,17 +61,19 @@ open class LokiLogWriter(
                 }
             } else if (records.size == 1) { // we sent records one by one
                 if (httpStatusCode == 400) { // we're not able to send the record successfully to Loki, giving up
-                    stateLogger.warn("Dropping record as Loki indicated bad request: ${records.first()}")
+                    handleFailedRecord(records.first())
                     return emptyList()
                 }
-
-                records.first().errorCode = httpStatusCode
             }
         } catch (e: Exception) {
             stateLogger.error("Could not write record", e)
         }
 
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
+    }
+
+    protected open fun handleFailedRecord(record: LogRecord<Stream>) {
+        stateLogger.warn("Dropping record as Loki indicated bad request: ${record.mappedRecord}")
     }
 
 
