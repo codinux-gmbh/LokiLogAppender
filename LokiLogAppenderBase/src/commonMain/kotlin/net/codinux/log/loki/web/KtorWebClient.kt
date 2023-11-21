@@ -79,8 +79,7 @@ class KtorWebClient(
         }
 
         if (logError && response.status.isSuccess() == false) {
-            stateLogger.error("Could not push logs to Loki, response was: ${response.status}, ${response.bodyAsText()}")
-            stateLogger.error("Request body was:\n$body")
+            stateLogger.error("Could not push logs to Loki: ${response.status} ${response.bodyAsText()}. Request body was:\n$body")
         }
 
         return response.status.value
