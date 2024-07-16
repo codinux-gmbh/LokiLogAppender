@@ -25,7 +25,7 @@ class JBossLoggingLokiAppenderSampleApp {
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
             JBossLoggingLokiAppender(LokiLogAppenderConfig(
-                writer = WriterConfig("https://staging.dankito.net", username = "SchaugtsAmoiHer", password = "NewKidOnTheLog"),
+                writer = WriterConfig("http://localhost:3100"),
                 fields = LogAppenderFieldsConfig(
                     includeMarker = true,
                     includeNdc = true,
