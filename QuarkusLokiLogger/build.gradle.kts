@@ -9,7 +9,7 @@ quarkusExtension {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -18,7 +18,7 @@ val quarkusVersion: String by project
 val junitVersion: String by project
 
 dependencies {
-    implementation(platform("io.quarkus:quarkus-bom:${quarkusVersion}"))
+    implementation(platform("io.quarkus:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-core")
 
     implementation("$group:loki-jboss-logging-appender:$version")

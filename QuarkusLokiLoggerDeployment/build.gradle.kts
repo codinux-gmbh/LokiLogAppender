@@ -4,7 +4,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -12,7 +12,7 @@ java {
 val quarkusVersion: String by project
 
 dependencies {
-    implementation(platform("io.quarkus:quarkus-bom:${quarkusVersion}"))
+    implementation(platform("io.quarkus:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-core-deployment")
 
 //    implementation(project(":quarkus-loki-log-appender"))
