@@ -6,9 +6,9 @@ plugins {
 
 allprojects {
     repositories {
-        mavenLocal()
         mavenCentral()
         google()
+        mavenLocal()
     }
 
     group = "net.codinux.log"
