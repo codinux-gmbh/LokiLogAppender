@@ -14,6 +14,7 @@ java {
 val quarkusVersion: String by project
 
 dependencies {
+    // try to use the latest Quarkus version to see if extension still works with newer Quarkus versions
     implementation(platform("io.quarkus:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-resteasy")
