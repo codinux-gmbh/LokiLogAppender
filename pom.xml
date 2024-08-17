@@ -12,8 +12,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.parameters>true</maven.compiler.parameters>
+        <!-- choose a low Quarkus version to support as many Quarkus versions as possible -->
         <quarkus.version>1.6.1.Final</quarkus.version>
-        <kotlin.version>1.8.20</kotlin.version>
+        <kotlin.version>1.8.22</kotlin.version>
+        <jboss.logmanager.version>1.0.4</jboss.logmanager.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.6.0</maven.javadoc.plugin.version>
@@ -32,19 +34,6 @@
         <module>QuarkusLokiLoggerDeployment</module>
         <module>QuarkusLokiLogger</module>
     </modules>
-
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bom-deployment</artifactId>
-                <version>${quarkus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 
     <licenses>
