@@ -14,7 +14,6 @@ pluginManagement {
         kotlin("plugin.allopen") version kotlinVersion
 
         id("io.quarkus") version quarkusVersion
-        id("io.quarkus.extension") version quarkusVersion
     }
 }
 
@@ -33,13 +32,7 @@ project(":JBossLoggingLokiAppenderSampleApplication").projectDir = File("sampleA
 
 /*          Quarkus             */
 
-// building Quarkus extension with Gradle and / or Kotlin does not work (but in Quarkus?) so using Maven and Java for these
-
-//include("QuarkusLokiLogAppender")
-//project(":QuarkusLokiLogAppender").name = "quarkus-loki-log-appender"
-//
-//include("QuarkusLokiLogAppenderDeployment")
-//project(":QuarkusLokiLogAppenderDeployment").name = "quarkus-loki-log-appender-deployment"
+// building Quarkus extension with Gradle and / or Kotlin does not work so using Maven and Java for these
 
 include("QuarkusSampleApplication")
 project(":QuarkusSampleApplication").projectDir = File("sampleApplications/QuarkusSampleApplication")
