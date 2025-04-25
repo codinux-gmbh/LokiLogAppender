@@ -1,6 +1,10 @@
+// we have to add this otherwise compilation fails
 plugins {
-    // don't know why it's needed but otherwise build breaks with "The Kotlin Gradle plugin was loaded multiple times in different subprojects"
-    kotlin("plugin.serialization") apply(false)
+//    val kotlinVersion: String by settings
+    val kotlinVersion = "1.9.23"
+
+    kotlin("multiplatform") version kotlinVersion apply(false)
+    kotlin("jvm") version kotlinVersion apply(false)
 }
 
 
