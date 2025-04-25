@@ -8,6 +8,8 @@ pluginManagement {
     }
 
     plugins {
+        kotlin("multiplatform") version kotlinVersion apply(false)
+
         kotlin("plugin.serialization") version kotlinVersion
         kotlin("plugin.allopen") version kotlinVersion
 
