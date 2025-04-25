@@ -4,11 +4,9 @@ plugins {
 }
 
 kotlin {
-    // Enable the default target hierarchy:
-    targetHierarchy.default()
+    jvmToolchain(8)
 
     jvm {
-        jvmToolchain(8)
         withJava()
 
         testRuns["test"].executionTask.configure {
@@ -22,7 +20,7 @@ kotlin {
 
     js(IR) {
         moduleName = "loki-log-appender-base"
-        binaries.executable()
+        binaries.library()
 
         browser {
             testTask {
@@ -48,20 +46,17 @@ kotlin {
     linuxX64()
     mingwX64()
 
-    ios {
-        binaries {
-            framework {
-                baseName = "loki-log-appender-base"
-            }
-        }
-    }
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    watchos()
+    watchosArm64()
     watchosSimulatorArm64()
-    tvos()
+    tvosArm64()
     tvosSimulatorArm64()
+
+    applyDefaultHierarchyTemplate()
 
 
     val coroutinesVersion: String by project
