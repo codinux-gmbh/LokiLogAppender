@@ -54,7 +54,18 @@ kotlin {
         }
     }
 
-    // wasm()
+    // ktor2 does not support wasmJs
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        browser {
+//            testTask {
+//                useKarma {
+//                    useChromeHeadless()
+//                    useFirefoxHeadless()
+//                }
+//            }
+//        }
+//    }
 
 
     linuxX64()
