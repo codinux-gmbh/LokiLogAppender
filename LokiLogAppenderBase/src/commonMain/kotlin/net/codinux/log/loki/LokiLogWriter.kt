@@ -1,6 +1,5 @@
 package net.codinux.log.loki
 
-import kotlinx.datetime.Instant
 import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
@@ -13,6 +12,7 @@ import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
+import net.dankito.datetime.Instant
 
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,

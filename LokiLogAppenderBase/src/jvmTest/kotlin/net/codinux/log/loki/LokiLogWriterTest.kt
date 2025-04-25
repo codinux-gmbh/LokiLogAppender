@@ -2,10 +2,10 @@ package net.codinux.log.loki
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
 import net.codinux.log.config.LogAppenderFieldsConfig
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.dankito.datetime.Instant
 import org.junit.jupiter.api.Test
 
 class LokiLogWriterTest {
@@ -67,6 +67,6 @@ class LokiLogWriterTest {
     }
 
 
-    private fun getTimestamp() =
-        Clock.System.now()
+    private fun getTimestamp() = Instant.now()
+
 }
