@@ -13,12 +13,15 @@ import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
 import net.dankito.datetime.Instant
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer),
-    processData: ProcessData? = null
+    processData: ProcessData? = null,
+    protected val logErrorMessagesAtMaximumOncePer: Duration = 5.minutes
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData) {
 
     companion object {
@@ -66,7 +69,7 @@ open class LokiLogWriter(
                 }
             }
         } catch (e: Exception) {
-            stateLogger.error("Could not write record", e)
+            stateLogger.error("Could not write record", e, logErrorMessagesAtMaximumOncePer)
         }
 
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
