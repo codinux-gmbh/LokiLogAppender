@@ -21,8 +21,8 @@ open class LokiLogWriter(
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
     private val webClient: WebClient = KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer),
     processData: ProcessData? = null,
-    protected val logErrorMessagesAtMaximumOncePer: Duration = 5.minutes
-) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData) {
+    logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
+) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
         fun getLokiPushApiUrl(host: String): String =
