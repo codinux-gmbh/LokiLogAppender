@@ -3,9 +3,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <version>0.6.2-SNAPSHOT</version>
-        <groupId>net.codinux.log</groupId>
-        <artifactIdBase>quarkus-loki-log-appender</artifactIdBase>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>

@@ -21,7 +21,7 @@
         <dependency>
             <groupId>net.codinux.log</groupId>
             <artifactId>quarkus-loki-log-appender</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

@@ -21,12 +21,12 @@
         <dependency>
             <groupId>net.codinux.log</groupId>
             <artifactId>jboss-logging-loki-appender</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.codinux.log</groupId>
             <artifactId>quarkus-log-appender-config-base</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
