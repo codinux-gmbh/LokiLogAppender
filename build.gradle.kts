@@ -18,7 +18,7 @@ allprojects {
     version = "0.7.0-SNAPSHOT"
 
 
-    ext["sourceCodeRepositoryBaseUrl"] = "github.com/codinux/LokiLogAppender"
+    ext["sourceCodeRepositoryBaseUrl"] = "github.com/codinux-gmbh/LokiLogAppender"
 
     ext["projectDescription"] = "Logger implementation to push logs to Loki (Like Prometheus, but for logs)"
 }
