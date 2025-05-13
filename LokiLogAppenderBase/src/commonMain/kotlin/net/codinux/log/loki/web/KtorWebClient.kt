@@ -11,6 +11,8 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.data.KtorStreamContent
+import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
+import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.statelogger.AppenderStateLogger
 
 class KtorWebClient(
@@ -22,7 +24,11 @@ class KtorWebClient(
 
     companion object {
         private val JsonContentType = ContentType.parse("application/json")
+
+        fun of(config: LokiLogAppenderConfig, stateLogger: AppenderStateLogger): KtorWebClient =
+            KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer)
     }
+
 
     private val client = HttpClient {
         install(ContentNegotiation) {
