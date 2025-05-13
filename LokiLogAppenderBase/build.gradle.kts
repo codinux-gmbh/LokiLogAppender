@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform")
@@ -54,18 +55,17 @@ kotlin {
         }
     }
 
-    // ktor2 does not support wasmJs
-//    @OptIn(ExperimentalWasmDsl::class)
-//    wasmJs {
-//        browser {
-//            testTask {
-//                useKarma {
-//                    useChromeHeadless()
-//                    useFirefoxHeadless()
-//                }
-//            }
-//        }
-//    }
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                    useFirefoxHeadless()
+                }
+            }
+        }
+    }
 
 
     linuxX64()
