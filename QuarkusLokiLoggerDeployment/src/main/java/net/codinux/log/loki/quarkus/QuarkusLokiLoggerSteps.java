@@ -57,16 +57,10 @@ public class QuarkusLokiLoggerSteps {
         );
     }
 
-    static class IsFabric8KubernetesInfoRetrieverAvailable implements BooleanSupplier {
+    static class IsFabric8KubernetesInfoRetrieverAvailable extends IsClassAvailableSupplier {
 
-        @Override
-        public boolean getAsBoolean() {
-            try {
-                Class.forName("net.codinux.log.kubernetes.Fabric8KubernetesInfoRetriever");
-                return true;
-            } catch (Exception ignored) {
-                return false;
-            }
+        public IsFabric8KubernetesInfoRetrieverAvailable() {
+            super("net.codinux.log.kubernetes.Fabric8KubernetesInfoRetriever");
         }
     }
 
