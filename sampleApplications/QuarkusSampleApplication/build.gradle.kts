@@ -15,10 +15,10 @@ val quarkusVersion: String by project
 
 dependencies {
     // try to use the latest Quarkus version to see if extension still works with newer Quarkus versions
-    implementation(platform("io.quarkus:quarkus-bom:$quarkusVersion"))
+    implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-kotlin")
-    implementation("io.quarkus:quarkus-resteasy")
-    implementation("io.quarkus:quarkus-resteasy-jackson")
+    implementation("io.quarkus:quarkus-rest")
+    implementation("io.quarkus:quarkus-rest-jackson")
 
     implementation("$group:quarkus-loki-log-appender:$version")
     implementation("net.codinux.log:klf:1.8.1")
