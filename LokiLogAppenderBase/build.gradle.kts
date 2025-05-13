@@ -115,7 +115,6 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-                implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
             }
         }
         val jvmTest by getting
@@ -123,9 +122,6 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-js:$kotlinSerializationVersion")
             }
         }
         val jsTest by getting
@@ -134,18 +130,12 @@ kotlin {
         val linuxMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-linuxx64:$coroutinesVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-linuxx64:$kotlinSerializationVersion")
             }
         }
 
         val mingwMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-mingwx64:$coroutinesVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-mingwx64:$kotlinSerializationVersion")
             }
         }
 
