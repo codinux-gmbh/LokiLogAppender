@@ -10,11 +10,11 @@ import java.util.logging.Handler;
 public class QuarkusLokiLogAppenderRecorder {
 
     public RuntimeValue<Optional<Handler>> initializeLokiLogAppender(QuarkusLokiLogAppenderConfig config) {
-        if (config.enable == false) {
+        if (config.enable() == false) {
             return new RuntimeValue(Optional.empty());
         }
 
-        if (config.hostUrl == null || config.hostUrl.isBlank()) {
+        if (config.hostUrl() == null || config.hostUrl().isBlank()) {
             throw new IllegalArgumentException("If loki-logger is enabled, then host value with the URL pointing to your Loki instance must be configured");
         }
 
