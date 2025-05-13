@@ -10,9 +10,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import net.codinux.log.config.WriterConfig
-import net.codinux.log.data.KtorStreamContent
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.loki.web.KtorStreamContent
 import net.codinux.log.statelogger.AppenderStateLogger
 
 open class KtorWebClient(
