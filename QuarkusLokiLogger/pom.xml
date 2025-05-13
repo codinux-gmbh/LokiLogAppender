@@ -18,6 +18,7 @@
             <version>${quarkus.version}</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>net.codinux.log</groupId>
             <artifactId>jboss-logging-loki-appender</artifactId>
@@ -28,6 +29,13 @@
             <artifactId>quarkus-log-appender-config-base</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.codinux.log</groupId>
+            <artifactId>loki-java-web-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
             <artifactId>jboss-logmanager-embedded</artifactId>
