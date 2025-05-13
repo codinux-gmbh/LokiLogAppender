@@ -89,58 +89,22 @@ kotlin {
     val kotlinSerializationVersion: String by project
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api("net.codinux.log:log-appender-base:$version")
+        commonMain.dependencies {
+            api("net.codinux.log:log-appender-base:$version")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinSerializationVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinSerializationVersion")
 
-                api("net.dankito.datetime:kmp-datetime:$kmpDateTimeVersion")
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-
-                implementation(project(":KtorWebClient"))
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-            }
+            api("net.dankito.datetime:kmp-datetime:$kmpDateTimeVersion")
         }
 
-        val jvmMain by getting {
-            dependencies {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
 
-            }
-        }
-        val jvmTest by getting
+            implementation(project(":KtorWebClient"))
 
-        val jsMain by getting {
-            dependencies {
-
-            }
-        }
-        val jsTest by getting
-
-
-        val linuxMain by getting {
-            dependencies {
-
-            }
-        }
-
-        val mingwMain by getting {
-            dependencies {
-
-            }
-        }
-
-        val appleMain by getting {
-            dependencies {
-
-            }
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
         }
     }
 }
