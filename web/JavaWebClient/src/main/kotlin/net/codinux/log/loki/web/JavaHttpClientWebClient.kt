@@ -7,10 +7,13 @@ import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.statelogger.AppenderStateLogger
+import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.time.Duration
+import java.util.*
+import java.util.zip.GZIPOutputStream
 
 open class JavaHttpClientWebClient(
     protected val stateLogger: AppenderStateLogger,
@@ -25,19 +28,34 @@ open class JavaHttpClientWebClient(
     }
 
 
-    protected val client = HttpClient.newHttpClient()
+    protected val client = HttpClient.newBuilder().apply {
+        config.connectTimeoutMillis?.let {
+            connectTimeout(Duration.ofMillis(it))
+        }
+    }.build()
 
     protected val requestBuilder = HttpRequest
         .newBuilder(URI.create(lokiPushApiUrl))
         .header("Content-Type", "application/json")
+        .header("Content-Encoding", "gzip")
+        .header("Accept-Encoding", "gzip")
         .apply {
             if (tenantId != null) {
                 header("X-Scope-OrgID", tenantId)
             }
+
+
+            config.username?.let { username ->
+                config.password?.let { password ->
+                    val authHeader = "Basic " + Base64.getEncoder().encodeToString("$username:$password".toByteArray())
+                    header("Authorization", authHeader)
+                }
+            }
+
+            config.requestTimeoutMillis?.let {
+                timeout(Duration.ofMillis(it))
+            }
         }
-        // TODO: configure credentials
-        // TODO: configure timeouts
-        // TODO: configure gzip
 
     protected val objectMapper = ObjectMapper().apply {
         findAndRegisterModules()
@@ -47,7 +65,7 @@ open class JavaHttpClientWebClient(
     override suspend fun post(body: Any, logError: Boolean): Int = withContext(Dispatchers.IO) {
         val bodyAsString = if (body is String) body else objectMapper.writeValueAsString(body)
 
-        val request = requestBuilder.POST(HttpRequest.BodyPublishers.ofString(bodyAsString)).build()
+        val request = requestBuilder.POST(HttpRequest.BodyPublishers.ofByteArray(gzip(bodyAsString))).build()
 
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
@@ -56,6 +74,12 @@ open class JavaHttpClientWebClient(
         }
 
         response.statusCode()
+    }
+
+    protected open fun gzip(body: String): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        GZIPOutputStream(outputStream).use { it.write(body.toByteArray()) }
+        return outputStream.toByteArray()
     }
 
 }
