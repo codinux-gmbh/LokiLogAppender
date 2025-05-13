@@ -33,7 +33,7 @@ class LogExample {
         log.debug("Debug log")
 
         MDC.put("MDC test key", "MDC test value")
-        log.info("Log with MDC set")
+        log.info("Log with MDC set (MDC does not get logged by default, set quarkus.log.loki.field.mdc.include to true)")
         MDC.clear()
 
         log.info("Log after clearing MDC")
@@ -41,14 +41,14 @@ class LogExample {
         NDC.push("NDC 1")
         NDC.push("NDC 2")
 
-        log.info("Log with NDC")
+        log.info("Log with NDC (NDC does not get logged by default, set quarkus.log.loki.field.ndc.include to true)")
 
         NDC.clear()
 
         // Marker does not seem to be supported by JBoss logging, even though it's a field of ExtLogRecord with JavaDoc:
         // "Markers are used mostly by SLF4J and Log4j."
         val slf4jLogger = LoggerFactory.getLogger(LogExample::class.java)
-        slf4jLogger.info(MarkerFactory.getMarker("ImportantMessageMarker"), "Log with Marker")
+        slf4jLogger.info(MarkerFactory.getMarker("ImportantMessageMarker"), "Log with Marker (Marker does not get logged by default, set quarkus.log.loki.field.marker.include to true)")
     }
 
 }
