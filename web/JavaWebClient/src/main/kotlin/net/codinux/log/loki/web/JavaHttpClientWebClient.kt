@@ -2,6 +2,7 @@ package net.codinux.log.loki.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
@@ -67,7 +68,7 @@ open class JavaHttpClientWebClient(
 
         val request = requestBuilder.POST(HttpRequest.BodyPublishers.ofByteArray(gzip(bodyAsString))).build()
 
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        val response = client.sendAsync(request, JavaHttpResponseBodyHandler()).await()
 
         if (logError && response.statusCode() !in 200..299) {
             stateLogger.error("Could not push logs to Loki: ${response.statusCode()} ${response.body()}. Request body was:\n$body")
