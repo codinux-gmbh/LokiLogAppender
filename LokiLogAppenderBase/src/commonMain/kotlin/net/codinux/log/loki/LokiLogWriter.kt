@@ -8,7 +8,6 @@ import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.Stream
 import net.codinux.log.loki.model.StreamBody
 import net.codinux.log.loki.util.LokiLabelEscaper
-import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger
@@ -19,7 +18,7 @@ import kotlin.time.Duration.Companion.minutes
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger(),
-    private val webClient: WebClient = KtorWebClient.of(config, stateLogger),
+    private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {

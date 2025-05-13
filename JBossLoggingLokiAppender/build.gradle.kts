@@ -14,6 +14,7 @@ val junitVersion: String by project
 
 dependencies {
     api(project(":LokiLogAppenderBase"))
+    implementation(project(":KtorWebClient"))
 
     api("net.codinux.log:jboss-logging-appender-base:$version")
 

@@ -32,6 +32,12 @@ include("JBossLoggingLokiAppenderSampleApplication")
 project(":JBossLoggingLokiAppenderSampleApplication").projectDir =
     File("sampleApplications/JBossLoggingLokiAppenderSampleApplication")
 
+
+/*          WebClients             */
+
+include("KtorWebClient")
+project(":KtorWebClient").projectDir = File("web/KtorWebClient")
+
 include("JavaWebClient")
 project(":JavaWebClient").projectDir = File("web/JavaWebClient")
 

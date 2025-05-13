@@ -85,26 +85,25 @@ kotlin {
 
 
     val coroutinesVersion: String by project
-    val kmpDateTimeVersion: String by project
-    val kotlinSerializationVersion: String by project
+    val ktorVersion: String by project
+    val jacksonVersion: String by project
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("net.codinux.log:log-appender-base:$version")
+                implementation(project(":LokiLogAppenderBase"))
+
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-auth:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinSerializationVersion")
-
-                api("net.dankito.datetime:kmp-datetime:$kmpDateTimeVersion")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-
-                implementation(project(":KtorWebClient"))
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
             }
@@ -112,14 +111,15 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
             }
         }
         val jvmTest by getting
 
         val jsMain by getting {
             dependencies {
-
+                implementation("io.ktor:ktor-client-js:$ktorVersion")
             }
         }
         val jsTest by getting
@@ -127,26 +127,26 @@ kotlin {
 
         val linuxMain by getting {
             dependencies {
-
+                implementation("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
 
         val mingwMain by getting {
             dependencies {
-
+                implementation("io.ktor:ktor-client-winhttp:$ktorVersion")
             }
         }
 
         val appleMain by getting {
             dependencies {
-
+                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
         }
     }
 }
 
 
-ext["customArtifactId"] = "loki-log-appender-base"
-ext["projectDescription"] = "Logger implementation to push logs to Loki (Like Prometheus, but for logs)"
+ext["customArtifactId"] = "loki-ktor-web-client"
+ext["description"] = "A multiplatform implementation of Loki WebClient interface built with Ktor"
 
-apply(from = "../gradle/scripts/publish-codinux.gradle.kts")
+apply(from = "../../gradle/scripts/publish-codinux.gradle.kts")

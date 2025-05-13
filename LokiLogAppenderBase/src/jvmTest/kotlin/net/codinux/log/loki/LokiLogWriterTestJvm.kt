@@ -5,19 +5,23 @@ import kotlinx.coroutines.runBlocking
 import net.codinux.log.config.LogAppenderFieldsConfig
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.loki.web.KtorWebClient
+import net.codinux.log.statelogger.StdOutStateLogger
 import net.dankito.datetime.Instant
 import org.junit.jupiter.api.Test
 
-class LokiLogWriterTest {
+class LokiLogWriterTestJvm {
 
-    private val underTest = LokiLogWriter(LokiLogAppenderConfig(
+    private val config = LokiLogAppenderConfig(
         writer = WriterConfig("http://localhost:3100"),
         fields = LogAppenderFieldsConfig(
             includeLoggerClassName = true,
             includeAppName = true,
             appName = "Liebestest"
         )
-    ))
+    )
+
+    private val underTest = LokiLogWriter(config, StdOutStateLogger(), KtorWebClient.of(config, StdOutStateLogger()))
 
     @Test
     fun writeLogs() = runBlocking {
