@@ -26,3 +26,9 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+
+ext["customArtifactId"] = "loki-java-web-client"
+ext["description"] = "An implementation of Loki WebClient interface built with Java HttpClient which can be used instead of default implementation with Ktor"
+
+apply(from = "../../gradle/scripts/publish-codinux.gradle.kts")
