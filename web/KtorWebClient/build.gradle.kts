@@ -5,6 +5,10 @@ plugins {
     kotlin("plugin.serialization")
 }
 
+
+group = "net.codinux.log.web"
+
+
 kotlin {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {

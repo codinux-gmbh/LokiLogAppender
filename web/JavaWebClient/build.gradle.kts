@@ -7,6 +7,9 @@ kotlin {
 }
 
 
+group = "net.codinux.log.web"
+
+
 val coroutinesVersion: String by project
 val jacksonVersion: String by project
 
