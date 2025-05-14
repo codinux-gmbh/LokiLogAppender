@@ -13,6 +13,7 @@ public interface LokiJobNameConfig extends JobNameConfig {
      *
      * The logged job name can be configured with {@link LokiJobNameConfig#jobName()} and defaults to {@code "LokiLogger"}.
      */
+    @Override
     @WithDefault(LokiFieldsConfig.IncludeJobNameDefaultValueString)
     boolean include();
 
@@ -24,6 +25,7 @@ public interface LokiJobNameConfig extends JobNameConfig {
      *
      * Defaults to {@code "LokiLogger"}.
      */
+    @Override
     @WithName("name")
     @WithDefault(LokiFieldsConfig.JobNameDefaultValue)
     String jobName();

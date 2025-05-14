@@ -9,6 +9,7 @@ public interface LokiKubernetesInfoConfig extends KubernetesInfoConfig {
     /**
      * Config for logged Kubernetes fields.
      */
+    @Override
     @WithName("field")
     QuarkusLokiKubernetesFieldsConfig fields();
 

@@ -13,6 +13,7 @@ public interface LokiAppNameConfig extends AppNameConfig {
      * The logged app name can be configured with {@link LokiAppNameConfig#appName()} ()}
      * and defaults to {@code ${quarkus.application.name}}.
      */
+    @Override
     @WithDefault(LokiFieldsConfig.IncludeAppNameDefaultValueString)
     boolean include();
 

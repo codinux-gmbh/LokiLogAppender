@@ -12,6 +12,7 @@ public interface LokiMdcConfig extends MdcConfig {
      * (see e.g. https://grafana.com/docs/loki/latest/get-started/labels/bp-labels/ or
      * https://grafana.com/docs/loki/latest/get-started/labels/cardinality/).
      */
+    @Override
     @WithDefault(LokiFieldsConfig.IncludeMdcDefaultValueString)
     boolean include();
 

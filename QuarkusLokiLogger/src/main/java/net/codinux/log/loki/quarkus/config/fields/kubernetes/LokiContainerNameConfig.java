@@ -12,12 +12,14 @@ public interface LokiContainerNameConfig extends ContainerNameConfig {
      *
      * Defaults to {@code false}.
      */
+    @Override
     @WithDefault(LokiKubernetesFieldsConfig.IncludeContainerNameDefaultValueString)
     boolean include();
 
     /**
      * The name of the container name index field.
      */
+    @Override
     @WithName("fieldname")
     @WithDefault(LokiKubernetesFieldsConfig.ContainerNameDefaultFieldName)
     String fieldName();

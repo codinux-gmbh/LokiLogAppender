@@ -9,6 +9,7 @@ public interface QuarkusLokiLogAppenderFieldsConfig extends QuarkusLogAppenderFi
     /**
      * Config for the app name.
      */
+    @Override
     @WithName("app")
     LokiAppNameConfig appName();
 
@@ -26,6 +27,7 @@ public interface QuarkusLokiLogAppenderFieldsConfig extends QuarkusLogAppenderFi
     /**
      * Configure which Kubernetes values to include in log.
      */
+    @Override
     @WithName("kubernetes")
     LokiKubernetesInfoConfig kubernetesInfo();
 

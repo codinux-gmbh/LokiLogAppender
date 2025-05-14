@@ -19,8 +19,8 @@ public interface LokiPodNameConfig extends PodNameConfig {
     /**
      * The name of the Pod name index field.
      */
-    @WithName("fieldname")
     @Override
+    @WithName("fieldname")
     @WithDefault(LokiKubernetesFieldsConfig.PodNameDefaultFieldName)
     String fieldName();
 

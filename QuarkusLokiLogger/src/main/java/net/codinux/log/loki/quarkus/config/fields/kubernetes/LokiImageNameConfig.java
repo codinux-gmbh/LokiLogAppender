@@ -12,12 +12,14 @@ public interface LokiImageNameConfig extends ImageNameConfig {
      *
      * Defaults to {@code false} to avoid labels with high cardinality which is bad for Loki.
      */
+    @Override
     @WithDefault(LokiKubernetesFieldsConfig.IncludeImageNameDefaultValueString)
     boolean include();
 
     /**
      * The name of the image name index field.
      */
+    @Override
     @WithName("fieldname")
     @WithDefault(LokiKubernetesFieldsConfig.ImageNameDefaultFieldName)
     String fieldName();
