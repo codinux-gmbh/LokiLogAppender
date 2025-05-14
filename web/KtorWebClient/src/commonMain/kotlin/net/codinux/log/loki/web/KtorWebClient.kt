@@ -12,7 +12,6 @@ import io.ktor.serialization.kotlinx.json.*
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
-import net.codinux.log.loki.web.KtorStreamContent
 import net.codinux.log.statelogger.AppenderStateLogger
 
 open class KtorWebClient(
@@ -52,7 +51,7 @@ open class KtorWebClient(
 
             contentType(JsonContentType)
 
-            if (KtorStreamContent.isSupported && KtorStreamContent.supportsGZip) {
+            if (KtorRequestBodyCompression.supportsGZip) {
                 headers.append("Content-Encoding", "gzip")
             }
         }
@@ -77,8 +76,8 @@ open class KtorWebClient(
         val response = client.request {
             this.method = HttpMethod.Post
 
-            if (KtorStreamContent.isSupported) {
-                setBody(KtorStreamContent(body, KtorStreamContent.supportsGZip))
+            if (KtorRequestBodyCompression.supportsGZip) {
+                setBody(KtorRequestBodyCompression(body))
             } else {
                 setBody(body)
             }
