@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.http.content.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.zip.GZIPOutputStream
 
 actual class KtorRequestBodyCompression actual constructor(
@@ -22,13 +24,11 @@ actual class KtorRequestBodyCompression actual constructor(
 
     }
 
-    override suspend fun writeTo(channel: ByteWriteChannel) {
-        val outputStream = GZIPOutputStream(channel.toOutputStream())
 
-        objectMapper.writeValue(outputStream, content)
-
-        outputStream.flush()
-        outputStream.close()
+    override suspend fun writeTo(channel: ByteWriteChannel) = withContext(Dispatchers.IO) {
+        GZIPOutputStream(channel.toOutputStream()).use { outputStream ->
+            objectMapper.writeValue(outputStream, content)
+        }
     }
 
 }
