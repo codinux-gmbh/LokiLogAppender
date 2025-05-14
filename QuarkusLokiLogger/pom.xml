@@ -31,7 +31,7 @@
         </dependency>
 
         <dependency>
-            <groupId>net.codinux.log</groupId>
+            <groupId>net.codinux.log.web</groupId>
             <artifactId>loki-java-web-client</artifactId>
             <version>${project.version}</version>
         </dependency>
