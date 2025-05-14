@@ -13,6 +13,7 @@ import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.statelogger.AppenderStateLogger
+import kotlin.time.Duration.Companion.minutes
 
 open class KtorWebClient(
     private val stateLogger: AppenderStateLogger,
@@ -84,7 +85,9 @@ open class KtorWebClient(
         }
 
         if (logError && response.status.isSuccess() == false) {
-            stateLogger.error("Could not push logs to Loki: ${response.status} ${response.bodyAsText()}. Request body was:\n$body")
+            val responseBody = response.bodyAsText()
+            stateLogger.error("Could not push logs to Loki: ${response.status} $responseBody. Request body was:\n$body",
+                logAtMaximumEach = 5.minutes, category = "${response.status} $responseBody", e = null)
         }
 
         return response.status.value

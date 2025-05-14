@@ -15,6 +15,7 @@ import java.net.http.HttpRequest
 import java.time.Duration
 import java.util.*
 import java.util.zip.GZIPOutputStream
+import kotlin.time.Duration.Companion.minutes
 
 open class JavaHttpClientWebClient(
     protected val stateLogger: AppenderStateLogger,
@@ -71,7 +72,8 @@ open class JavaHttpClientWebClient(
         val response = client.sendAsync(request, JavaHttpResponseBodyHandler()).await()
 
         if (logError && response.statusCode() !in 200..299) {
-            stateLogger.error("Could not push logs to Loki: ${response.statusCode()} ${response.body()}. Request body was:\n$body")
+            stateLogger.error("Could not push logs to Loki: ${response.statusCode()} ${response.body()}. Request body was:\n$body",
+                logAtMaximumEach = 5.minutes, category = "${response.statusCode()} ${response.body()}", e = null)
         }
 
         response.statusCode()
