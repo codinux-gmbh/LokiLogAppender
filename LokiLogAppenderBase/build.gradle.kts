@@ -55,17 +55,18 @@ kotlin {
         }
     }
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    useFirefoxHeadless()
-                }
-            }
-        }
-    }
+    // Ktor 2 doesn't support WASM, so we have no working WebClient for WasmJs
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        browser {
+//            testTask {
+//                useKarma {
+//                    useChromeHeadless()
+//                    useFirefoxHeadless()
+//                }
+//            }
+//        }
+//    }
 
 
     linuxX64()
