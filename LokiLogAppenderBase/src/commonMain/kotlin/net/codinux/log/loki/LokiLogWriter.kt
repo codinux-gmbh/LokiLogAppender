@@ -94,4 +94,6 @@ open class LokiLogWriter(
         return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
+    private fun getStructuredMetadata(record: LogRecord<Stream>): Map<String, String> = emptyMap()
+
 }
