@@ -14,15 +14,19 @@ import kotlinx.serialization.encoding.encodeCollection
 // Loki's values are not safely typed. The first value is the timestamp in RFC3339 or RFC3339Nano format, the second the log line
 open class Values : OpenArrayList<String>(listOf("", "")) {
 
-    open val timestamp: String
-        get() = get(0)
+    open var timestamp: String = ""
+        protected set
 
-    open val message: String
-        get() = get(1)
+    open var message: String = ""
+        protected set
 
-    open fun set(timestamp: String, message: String) {
+
+    open fun set(timestamp: String, message: String, structuredMetadata: Map<String, String> = emptyMap()) {
         this[0] = timestamp
         this[1] = message
+
+        this.timestamp = timestamp
+        this.message = message
     }
 
     override fun toString(): String {
