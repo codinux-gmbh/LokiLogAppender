@@ -5,7 +5,7 @@
 
     <groupId>net.codinux.log</groupId>
     <artifactId>quarkus-loki-log-appender-parent</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.1</version>
 
 
     <properties>
