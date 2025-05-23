@@ -30,7 +30,7 @@ open class LokiLogWriter(
         // TODO: add to LokiLogAppenderConfig
 
         fun escapeLabelNames(config: LogAppenderConfig) =
-            LokiLabelEscaper().escapeLabelNames(config)
+            LokiLabelEscaper.Default.escapeLabelNames(config)
     }
 
 

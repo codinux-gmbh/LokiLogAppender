@@ -11,6 +11,9 @@ open class LokiLabelEscaper {
         // But i removed the colon as "The colons are reserved for user defined recording rules. They should not be used by exporters or direct instrumentation."
         private val IllegalLabelCharactersRegex = Regex("[^a-zA-Z0-9_]") // matching the whole label name against "[^a-zA-Z_][^a-zA-Z0-9_]*" did not work
 
+
+        val Default = LokiLabelEscaper()
+
     }
 
     open fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {

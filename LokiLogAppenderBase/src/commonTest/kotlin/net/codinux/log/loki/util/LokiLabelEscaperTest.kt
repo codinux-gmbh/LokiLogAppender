@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class LokiLabelEscaperTest {
 
-    private val underTest = LokiLabelEscaper()
+    private val underTest = LokiLabelEscaper.Default
 
 
     @Test

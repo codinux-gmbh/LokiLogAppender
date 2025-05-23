@@ -6,7 +6,7 @@ import net.codinux.log.loki.util.LokiLabelEscaper
 
 open class LokiLogRecordMapper(config: LogAppenderFieldsConfig) : LogRecordMapper(config, false, true) {
 
-    protected open val labelEscaper = LokiLabelEscaper()
+    protected open val labelEscaper = LokiLabelEscaper.Default
 
 
     override fun escapeDynamicLabelName(key: String) =
