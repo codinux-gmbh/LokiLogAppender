@@ -15,7 +15,6 @@ import java.net.http.HttpRequest
 import java.time.Duration
 import java.util.*
 import java.util.zip.GZIPOutputStream
-import kotlin.time.Duration.Companion.minutes
 
 open class JavaHttpClientWebClient(
     protected val stateLogger: AppenderStateLogger,
@@ -64,19 +63,15 @@ open class JavaHttpClientWebClient(
     }
 
 
-    override suspend fun post(body: Any, logError: Boolean): Int = withContext(Dispatchers.IO) {
+    override suspend fun post(body: Any, logError: Boolean): Pair<Int, String?> = withContext(Dispatchers.IO) {
         val bodyAsString = if (body is String) body else objectMapper.writeValueAsString(body)
 
         val request = requestBuilder.POST(HttpRequest.BodyPublishers.ofByteArray(gzip(bodyAsString))).build()
 
         val response = client.sendAsync(request, JavaHttpResponseBodyHandler()).await()
+        val status = response.statusCode()
 
-        if (logError && response.statusCode() !in 200..299) {
-            stateLogger.error("Could not push logs to Loki: ${response.statusCode()} ${response.body()}. Request body was:\n$body",
-                logAtMaximumEach = 5.minutes, category = "${response.statusCode()} ${response.body()}", e = null)
-        }
-
-        response.statusCode()
+        status to (if (status < 300) null else response.body())
     }
 
     protected open fun gzip(body: String): ByteArray {

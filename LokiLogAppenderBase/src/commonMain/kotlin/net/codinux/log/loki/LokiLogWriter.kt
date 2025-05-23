@@ -54,17 +54,20 @@ open class LokiLogWriter(
         try {
             streamBody.streams = records.map { it.mappedRecord }
 
-            val httpStatusCode = webClient.post(streamBody, records.size == 1)
+            val (status, responseBody) = webClient.post(streamBody, records.size == 1)
 
-            if (httpStatusCode in (200 until 300)) {
+            if (status in (200 until 300)) {
                 return emptyList() // all records successfully send to Loki = no record failed
-            } else if (httpStatusCode == 400) { // Bad request -> try to find the culprit and store at least all other ones
+            } else if (status == 400) { // Bad request -> try to find the culprit and store at least all other ones
                 if (records.size > 1) {
                     // write records one by one, so that the problem free records succeed and only the erroneous ones remain
                     return records.flatMap { record ->
                         writeRecords(listOf(record))
                     }
                 } else if (records.size == 1) { // we sent records one by one
+                    stateLogger.error("Could not push logs to Loki: $status $responseBody. Request body was:\n$streamBody", // TODO: map streamBody to JSON
+                        logAtMaximumEach = logErrorMessagesAtMaximumOncePer, category = "$status $responseBody", e = null)
+
                     // we're not able to send this record successfully to Loki, giving up
                     return handleFailedRecord(records.first())
                 }
