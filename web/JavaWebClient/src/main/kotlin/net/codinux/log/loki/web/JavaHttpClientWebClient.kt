@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.time.Duration
 import java.util.*
 import java.util.zip.GZIPOutputStream
@@ -68,7 +69,9 @@ open class JavaHttpClientWebClient(
 
         val request = requestBuilder.POST(HttpRequest.BodyPublishers.ofByteArray(gzip(bodyAsString))).build()
 
-        val response = client.sendAsync(request, JavaHttpResponseBodyHandler()).await()
+//        val bodyHandler = JavaHttpResponseBodyHandler()
+        val bodyHandler = HttpResponse.BodyHandlers.ofString()
+        val response = client.sendAsync(request, bodyHandler).await()
         val status = response.statusCode()
 
         status to (if (status < 300) null else response.body())
