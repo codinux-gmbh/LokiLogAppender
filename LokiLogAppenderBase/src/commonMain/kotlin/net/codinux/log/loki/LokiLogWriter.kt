@@ -24,13 +24,15 @@ open class LokiLogWriter(
 ) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
+        private val labelEscaper = LokiLabelEscaper.Default
+
         fun getLokiPushApiUrl(host: String): String =
             host + (if (host.endsWith('/')) "" else "/") + "loki/api/v1/push"
 
         // TODO: add to LokiLogAppenderConfig
 
         fun escapeLabelNames(config: LogAppenderConfig) =
-            LokiLabelEscaper.Default.escapeLabelNames(config)
+            labelEscaper.escapeLabelNames(config)
     }
 
 
@@ -42,7 +44,7 @@ open class LokiLogWriter(
     })
 
     override suspend fun mapRecord(record: LogRecord<Stream>) {
-        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record))
+        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record), getStructuredMetadata(record))
 
         mapper.mapLogEventFields(record, record.mappedRecord.stream)
     }
