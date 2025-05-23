@@ -21,7 +21,7 @@ class LokiLogWriterTestJvm {
         )
     )
 
-    private val underTest = LokiLogWriter(config, StdOutStateLogger(), KtorWebClient.of(config, StdOutStateLogger()))
+    private val underTest = LokiLogWriter(config, StdOutStateLogger.Default, KtorWebClient.of(config, StdOutStateLogger.Default))
 
     @Test
     fun writeLogs() = runBlocking {

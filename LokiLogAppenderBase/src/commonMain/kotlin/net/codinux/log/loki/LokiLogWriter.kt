@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 
 open class LokiLogWriter(
     config: LokiLogAppenderConfig,
-    stateLogger: AppenderStateLogger = StdOutStateLogger(),
+    stateLogger: AppenderStateLogger = StdOutStateLogger.Default,
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
