@@ -9,7 +9,7 @@ class LokiLabelEscaper {
 
         // Loki label names must match the regex [a-zA-Z_:][a-zA-Z0-9_:]*.
         // But i removed the colon as "The colons are reserved for user defined recording rules. They should not be used by exporters or direct instrumentation."
-        private val IllegalLabelCharactersRegex = Regex("[^a-zA-Z_][^a-zA-Z0-9_]*")
+        private val IllegalLabelCharactersRegex = Regex("[^a-zA-Z0-9_]") // matching the whole label name against "[^a-zA-Z_][^a-zA-Z0-9_]*" did not work
 
     }
 
@@ -116,9 +116,15 @@ class LokiLabelEscaper {
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    fun escapeLabelName(fieldName: String): String {
-        return fieldName.replace(IllegalLabelCharactersRegex, "_")
-    }
+    fun escapeLabelName(fieldName: String): String =
+        if (fieldName.firstOrNull()?.isDigit() == true) {
+            "_" + replaceIllegalCharacters(fieldName.substring(1))
+        } else {
+            replaceIllegalCharacters(fieldName)
+        }
+
+    private fun replaceIllegalCharacters(fieldName: String): String =
+        IllegalLabelCharactersRegex.replace(fieldName, "_")
 
     fun determinePrefix(prefix: String?): String =
         if (prefix.isNullOrBlank()) ""
