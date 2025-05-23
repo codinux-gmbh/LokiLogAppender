@@ -3,7 +3,7 @@ package net.codinux.log.loki.util
 import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.config.LogAppenderConfig
 
-class LokiLabelEscaper {
+open class LokiLabelEscaper {
 
     companion object {
 
@@ -13,7 +13,7 @@ class LokiLabelEscaper {
 
     }
 
-    fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
+    open fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
         val fields = config.fields
 
         fields.logLevelFieldName = escapeLabelName(fields.logLevelFieldName)
@@ -39,7 +39,7 @@ class LokiLabelEscaper {
         return config
     }
 
-    private fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
+    protected open fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
         fields.namespaceFieldName = escapeLabelName(fields.namespaceFieldName)
 
         fields.podNameFieldName = escapeLabelName(fields.podNameFieldName)
@@ -116,17 +116,17 @@ class LokiLabelEscaper {
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    fun escapeLabelName(fieldName: String): String =
+    open fun escapeLabelName(fieldName: String): String =
         if (fieldName.firstOrNull()?.isDigit() == true) {
             "_" + replaceIllegalCharacters(fieldName.substring(1))
         } else {
             replaceIllegalCharacters(fieldName)
         }
 
-    private fun replaceIllegalCharacters(fieldName: String): String =
+    protected open fun replaceIllegalCharacters(fieldName: String): String =
         IllegalLabelCharactersRegex.replace(fieldName, "_")
 
-    fun determinePrefix(prefix: String?): String =
+    open fun determinePrefix(prefix: String?): String =
         if (prefix.isNullOrBlank()) ""
         else if (prefix.endsWith('.')) prefix.substring(0, prefix.length - 2) + "_" // in Loki prefixes get separated by '_', in ElasticSearch by '.'
         else if (prefix.endsWith('_')) prefix
