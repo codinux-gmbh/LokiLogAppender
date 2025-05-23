@@ -86,14 +86,14 @@ open class LokiLogWriter(
     }
 
 
-    private fun convertTimestamp(timestamp: Instant) =
+    protected open fun convertTimestamp(timestamp: Instant) =
         // pad start as nanosecondsOfSecond does not contain leading zeros
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
-    private fun getLogLine(record: LogRecord<Stream>): String = with (record) {
+    protected open fun getLogLine(record: LogRecord<Stream>): String = with (record) {
         return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
-    private fun getStructuredMetadata(record: LogRecord<Stream>): Map<String, String> = emptyMap()
+    protected open fun getStructuredMetadata(record: LogRecord<Stream>): Map<String, String> = emptyMap()
 
 }
