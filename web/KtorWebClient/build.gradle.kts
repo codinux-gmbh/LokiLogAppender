@@ -37,7 +37,7 @@ kotlin {
     }
 
     js(IR) {
-        moduleName = "loki-log-appender-base"
+        moduleName = "loki-ktor-web-client"
         binaries.library()
 
         browser {
