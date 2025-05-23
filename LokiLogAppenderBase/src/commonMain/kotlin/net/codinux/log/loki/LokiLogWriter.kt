@@ -42,7 +42,7 @@ open class LokiLogWriter(
     })
 
     override suspend fun mapRecord(record: LogRecord<Stream>) {
-        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record.message, record.threadName, record.exception))
+        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record))
 
         mapper.mapLogEventFields(record, record.mappedRecord.stream)
     }
@@ -85,7 +85,7 @@ open class LokiLogWriter(
         // pad start as nanosecondsOfSecond does not contain leading zeros
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
-    private fun getLogLine(message: String, threadName: String?, exception: Throwable?): String {
+    private fun getLogLine(record: LogRecord<Stream>): String = with (record) {
         return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
