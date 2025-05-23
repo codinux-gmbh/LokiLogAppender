@@ -10,11 +10,18 @@ import net.codinux.log.statelogger.AppenderStateLogger
 
 open class JBossLoggingLokiAppender(
     config: LokiLogAppenderConfig,
-    stateLogger: AppenderStateLogger = JBossLoggingStateLogger(config.stateLoggerName ?: StateLoggerDefaultName),
+    stateLogger: AppenderStateLogger = createStateLogger(config),
     webClient: WebClient = JavaHttpClientWebClient.of(config, stateLogger),
 ) : JBossLoggingAppenderBase(LokiLogWriter(config, stateLogger, webClient)) {
 
+    companion object {
+        fun createStateLogger(config: LokiLogAppenderConfig): AppenderStateLogger {
+            return JBossLoggingStateLogger(config.stateLoggerName ?: StateLoggerDefaultName)
+        }
+    }
+
+
     // Java does not support default parameters
-    constructor(config: LokiLogAppenderConfig) : this(config, JBossLoggingStateLogger(config.stateLoggerName ?: StateLoggerDefaultName))
+    constructor(config: LokiLogAppenderConfig) : this(config, createStateLogger(config))
 
 }
