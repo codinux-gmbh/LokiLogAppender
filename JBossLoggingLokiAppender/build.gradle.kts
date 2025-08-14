@@ -10,13 +10,15 @@ java {
 }
 
 
+val logAppenderVersion: String by project
+
 val junitVersion: String by project
 
 dependencies {
     api(project(":LokiLogAppenderBase"))
     implementation(project(":JavaWebClient"))
 
-    api("net.codinux.log:jboss-logging-appender-base:$version")
+    api("net.codinux.log:jboss-logging-appender-base:$logAppenderVersion")
 
 
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))

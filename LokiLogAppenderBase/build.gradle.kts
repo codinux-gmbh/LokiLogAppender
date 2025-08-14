@@ -86,6 +86,7 @@ kotlin {
 
 
     val coroutinesVersion: String by project
+    val logAppenderVersion: String by project
     val kmpDateTimeVersion: String by project
     val kotlinSerializationVersion: String by project
 
@@ -93,7 +94,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api("net.codinux.log:log-appender-base:$version")
+            api("net.codinux.log:log-appender-base:$logAppenderVersion")
 
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
