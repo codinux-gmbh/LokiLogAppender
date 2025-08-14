@@ -9,9 +9,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.encodeCollection
-import net.codinux.log.loki.model.Values
+import net.codinux.log.loki.model.LogStreamEntry
 
-open class ValuesSerializer : KSerializer<Values> {
+open class LogStreamEntrySerializer : KSerializer<LogStreamEntry> {
 
     protected open val stringSerializer = String.serializer()
 
@@ -23,15 +23,15 @@ open class ValuesSerializer : KSerializer<Values> {
     override val descriptor = SerialDescriptor("Values", delegateSerializer.descriptor)
 
 
-    override fun deserialize(decoder: Decoder): Values =
-        Values()
+    override fun deserialize(decoder: Decoder): LogStreamEntry =
+        LogStreamEntry()
 
-    override fun serialize(encoder: Encoder, value: Values) {
+    override fun serialize(encoder: Encoder, value: LogStreamEntry) {
         val collectionSize = if (value.structuredMetadata.isNotEmpty()) 3 else 2
 
         encoder.encodeCollection(descriptor, collectionSize) {
             this.encodeStringElement(stringSerializer.descriptor, 0, value.timestamp)
-            this.encodeStringElement(stringSerializer.descriptor, 1, value.message)
+            this.encodeStringElement(stringSerializer.descriptor, 1, value.logLine)
 
             if (value.structuredMetadata.isNotEmpty()) {
                 this.encodeSerializableElement(stringSerializer.descriptor, 2, mapSerializer, value.structuredMetadata)

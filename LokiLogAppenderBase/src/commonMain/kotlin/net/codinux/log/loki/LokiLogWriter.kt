@@ -5,8 +5,8 @@ import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
 import net.codinux.log.data.ProcessData
 import net.codinux.log.loki.config.LokiLogAppenderConfig
-import net.codinux.log.loki.model.Stream
-import net.codinux.log.loki.model.StreamBody
+import net.codinux.log.loki.model.LogStream
+import net.codinux.log.loki.model.LokiPushRequest
 import net.codinux.log.loki.util.LokiLabelEscaper
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
@@ -21,7 +21,7 @@ open class LokiLogWriter(
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
-) : LogWriterBase<Stream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {
+) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
         private val labelEscaper = LokiLabelEscaper.Default
@@ -36,25 +36,25 @@ open class LokiLogWriter(
     }
 
 
-    protected open val streamBody = StreamBody()
+    protected open val pushRequest = LokiPushRequest()
 
 
-    override fun instantiateMappedRecord() = LogRecord(Stream().apply {
+    override fun instantiateMappedRecord() = LogRecord(LogStream().apply {
         mapper.mapStaticFields(this.stream)
     })
 
-    override suspend fun mapRecord(record: LogRecord<Stream>) {
+    override suspend fun mapRecord(record: LogRecord<LogStream>) {
         record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record), getStructuredMetadata(record))
 
         mapper.mapLogEventFields(record, record.mappedRecord.stream)
     }
 
 
-    override suspend fun writeRecords(records: List<LogRecord<Stream>>): List<LogRecord<Stream>> {
+    override suspend fun writeRecords(records: List<LogRecord<LogStream>>): List<LogRecord<LogStream>> {
         try {
-            streamBody.streams = records.map { it.mappedRecord }
+            pushRequest.streams = records.map { it.mappedRecord }
 
-            val (status, responseBody) = webClient.post(streamBody, records.size == 1)
+            val (status, responseBody) = webClient.post(pushRequest, records.size == 1)
 
             if (status in (200 until 300)) {
                 return emptyList() // all records successfully send to Loki = no record failed
@@ -65,7 +65,7 @@ open class LokiLogWriter(
                         writeRecords(listOf(record))
                     }
                 } else if (records.size == 1) { // we sent records one by one
-                    stateLogger.error("Could not push logs to Loki: $status $responseBody. Request body was:\n$streamBody", // TODO: map streamBody to JSON
+                    stateLogger.error("Could not push logs to Loki: $status $responseBody. Request body was:\n$pushRequest", // TODO: map streamBody to JSON
                         logAtMaximumEach = logErrorMessagesAtMaximumOncePer, category = "$status $responseBody", e = null)
 
                     // we're not able to send this record successfully to Loki, giving up
@@ -79,7 +79,7 @@ open class LokiLogWriter(
         return records // could not send records to Loki, so we failed to insert all records -> all records failed
     }
 
-    protected open fun handleFailedRecord(record: LogRecord<Stream>): List<LogRecord<Stream>> {
+    protected open fun handleFailedRecord(record: LogRecord<LogStream>): List<LogRecord<LogStream>> {
         stateLogger.warn("Dropping record as Loki indicated bad request: ${record.mappedRecord}")
 
         return emptyList()
@@ -90,10 +90,10 @@ open class LokiLogWriter(
         // pad start as nanosecondsOfSecond does not contain leading zeros
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
-    protected open fun getLogLine(record: LogRecord<Stream>): String = with (record) {
+    protected open fun getLogLine(record: LogRecord<LogStream>): String = with (record) {
         return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
-    protected open fun getStructuredMetadata(record: LogRecord<Stream>): Map<String, String> = emptyMap()
+    protected open fun getStructuredMetadata(record: LogRecord<LogStream>): Map<String, String> = emptyMap()
 
 }
