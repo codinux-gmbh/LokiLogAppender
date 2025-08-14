@@ -89,6 +89,8 @@ kotlin {
     val kmpDateTimeVersion: String by project
     val kotlinSerializationVersion: String by project
 
+    val assertKVersion: String by project
+
     sourceSets {
         commonMain.dependencies {
             api("net.codinux.log:log-appender-base:$version")
@@ -106,6 +108,9 @@ kotlin {
             implementation(project(":KtorWebClient"))
 
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+
+            implementation("com.willowtreeapps.assertk:assertk:$assertKVersion")
         }
     }
 }
