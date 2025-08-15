@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
+import net.codinux.log.auth.Authentication
+import net.codinux.log.auth.BasicAuthAuthentication
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
@@ -20,13 +22,14 @@ import java.util.zip.GZIPOutputStream
 open class JavaHttpClientWebClient(
     protected val stateLogger: AppenderStateLogger,
     lokiPushApiUrl: String,
+    authentication: Authentication? = null,
     tenantId: String?,
     config: WriterConfig
 ) : WebClient {
 
     companion object {
         fun of(config: LokiLogAppenderConfig, stateLogger: AppenderStateLogger): JavaHttpClientWebClient =
-            JavaHttpClientWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer)
+            JavaHttpClientWebClient(stateLogger, getLokiPushApiUrl(config.hostUrl), config.getAuthentication(), config.tenantId, config.writer)
     }
 
 
@@ -47,9 +50,9 @@ open class JavaHttpClientWebClient(
             }
 
 
-            config.username?.let { username ->
-                config.password?.let { password ->
-                    val authHeader = "Basic " + Base64.getEncoder().encodeToString("$username:$password".toByteArray())
+            authentication?.let {
+                (authentication as? BasicAuthAuthentication)?.let { basicAuth ->
+                    val authHeader = "Basic " + Base64.getEncoder().encodeToString("${basicAuth.username}:${basicAuth.password}".toByteArray())
                     header("Authorization", authHeader)
                 }
             }

@@ -7,6 +7,11 @@ import net.codinux.log.config.WriterConfig
 open class LokiLogAppenderConfig(
     enabled: Boolean = EnabledDefaultValue,
 
+    hostUrl: String = HostUrlNotSet,
+
+    username: String? = UsernameNotSet,
+    password: String? = PasswordNotSet,
+
     writer: WriterConfig = WriterConfig(),
 
     fields: LogAppenderFieldsConfig = LogAppenderFieldsConfig(),
@@ -14,7 +19,7 @@ open class LokiLogAppenderConfig(
     open var tenantId: String? = null,
 
     stateLoggerName: String? = StateLoggerNotSet
-) : LogAppenderConfig(enabled, writer, fields, stateLoggerName) {
+) : LogAppenderConfig(enabled, hostUrl, username, password, writer, fields, stateLoggerName) {
 
     companion object {
         const val StateLoggerDefaultName = "net.codinux.log.loki.LokiStateLogger"

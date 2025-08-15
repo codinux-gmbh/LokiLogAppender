@@ -9,6 +9,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import net.codinux.log.auth.Authentication
+import net.codinux.log.auth.BasicAuthAuthentication
 import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.LokiLogWriter.Companion.getLokiPushApiUrl
 import net.codinux.log.loki.config.LokiLogAppenderConfig
@@ -17,6 +19,7 @@ import net.codinux.log.statelogger.AppenderStateLogger
 open class KtorWebClient(
     private val stateLogger: AppenderStateLogger,
     lokiPushApiUrl: String,
+    authentication: Authentication? = null,
     tenantId: String?,
     config: WriterConfig
 ) : WebClient {
@@ -25,7 +28,7 @@ open class KtorWebClient(
         val JsonContentType = ContentType.parse("application/json")
 
         fun of(config: LokiLogAppenderConfig, stateLogger: AppenderStateLogger): KtorWebClient =
-            KtorWebClient(stateLogger, getLokiPushApiUrl(config.writer.hostUrl), config.tenantId, config.writer)
+            KtorWebClient(stateLogger, getLokiPushApiUrl(config.hostUrl), config.getAuthentication(), config.tenantId, config.writer)
     }
 
 
@@ -56,12 +59,12 @@ open class KtorWebClient(
             }
         }
 
-        config.username?.let { username ->
-            config.password?.let { password ->
-                install(Auth) {
+        authentication?.let {
+            install(Auth) {
+                (authentication as? BasicAuthAuthentication)?.let { basicAuth ->
                     basic {
                         credentials {
-                            BasicAuthCredentials(username, password)
+                            BasicAuthCredentials(basicAuth.username, basicAuth.password)
                         }
                         sendWithoutRequest { request ->
                             request.url.buildString() == lokiPushApiUrl

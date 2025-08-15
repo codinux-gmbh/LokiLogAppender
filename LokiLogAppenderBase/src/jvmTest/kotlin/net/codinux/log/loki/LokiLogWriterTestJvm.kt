@@ -3,7 +3,6 @@ package net.codinux.log.loki
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.codinux.log.config.LogAppenderFieldsConfig
-import net.codinux.log.config.WriterConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.statelogger.StdOutStateLogger
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test
 class LokiLogWriterTestJvm {
 
     private val config = LokiLogAppenderConfig(
-        writer = WriterConfig("http://localhost:3100"),
+        hostUrl = "http://localhost:3100",
         fields = LogAppenderFieldsConfig(
             includeLoggerClassName = true,
             includeAppName = true,
