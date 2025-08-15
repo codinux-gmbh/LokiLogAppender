@@ -2,7 +2,6 @@ package net.codinux.log.loki
 
 import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
-import net.codinux.log.config.LogAppenderConfig
 import net.codinux.log.config.LogWriterBaseConfig
 import net.codinux.log.data.ProcessData
 import net.codinux.log.kubernetes.PodInfo
@@ -34,11 +33,11 @@ open class LokiLogWriter(
 
         // TODO: add to LokiLogAppenderConfig
 
-        fun escapeLabelNames(config: LogAppenderConfig) =
+        fun escapeLabelNames(config: LokiLogAppenderConfig) =
             labelEscaper.escapeLabelNames(config)
 
 
-        private fun LogAppenderConfig.toLogWriterBaseConfig() = LogWriterBaseConfig(
+        private fun LokiLogAppenderConfig.toLogWriterBaseConfig() = LogWriterBaseConfig(
             this.enabled, this.fields, this.writer, this.fields.includeKubernetesInfo
         )
     }

@@ -1,7 +1,7 @@
 package net.codinux.log.loki.util
 
 import net.codinux.log.config.KubernetesFieldsConfig
-import net.codinux.log.config.LogAppenderConfig
+import net.codinux.log.loki.config.LokiLogAppenderConfig
 
 open class LokiLabelEscaper {
 
@@ -16,7 +16,7 @@ open class LokiLabelEscaper {
 
     }
 
-    open fun escapeLabelNames(config: LogAppenderConfig): LogAppenderConfig {
+    open fun escapeLabelNames(config: LokiLogAppenderConfig): LokiLogAppenderConfig {
         val fields = config.fields
 
         fields.logLevelFieldName = escapeLabelName(fields.logLevelFieldName)
