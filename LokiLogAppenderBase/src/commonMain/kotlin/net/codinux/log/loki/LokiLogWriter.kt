@@ -106,7 +106,9 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     protected open fun getLogLine(record: LogRecord<LogStream>): String = with (record) {
-        return "${ if (appenderConfig.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
+        return (if (appenderConfig.fields.includeThreadName && threadName != null) "[${threadName}] " else "") +
+                mapper.escapeControlCharacters(message) +
+                (mapper.getStacktrace(exception) ?: "")
     }
 
 }
