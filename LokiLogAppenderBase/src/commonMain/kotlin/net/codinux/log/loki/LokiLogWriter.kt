@@ -4,6 +4,7 @@ import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
 import net.codinux.log.data.ProcessData
+import net.codinux.log.kubernetes.PodInfo
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.LogStream
 import net.codinux.log.loki.model.LokiPushRequest
@@ -21,8 +22,8 @@ open class LokiLogWriter(
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
-    protected val recordMapper: LokiLogRecordMapper = LokiLogRecordMapper(config.fields),
-) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, recordMapper, processData, logErrorMessagesAtMaximumOncePer) {
+    protected val mapper: LokiLogRecordMapper = LokiLogRecordMapper(config.fields),
+) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
         private val labelEscaper = LokiLabelEscaper.Default
@@ -40,16 +41,21 @@ open class LokiLogWriter(
     protected open val pushRequest = LokiPushRequest()
 
 
+    override fun writerInitialized(processData: ProcessData, podInfo: PodInfo?) {
+        mapper.processData = processData
+        mapper.podInfo = podInfo
+    }
+
     override fun instantiateMappedRecord() = LogRecord(LogStream().apply {
-        recordMapper.mapStaticLabels(this.stream)
-        recordMapper.mapStaticStructuredMetadata(this.structuredMetadata)
+        mapper.mapStaticLabels(this.stream)
+        mapper.mapStaticStructuredMetadata(this.structuredMetadata)
     })
 
     override suspend fun mapRecord(record: LogRecord<LogStream>) {
         record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record))
 
-        recordMapper.mapDynamicLabels(record, record.mappedRecord.stream)
-        recordMapper.mapDynamicStructuredMetadata(record, record.mappedRecord.structuredMetadata)
+        mapper.mapDynamicLabels(record, record.mappedRecord.stream)
+        mapper.mapDynamicStructuredMetadata(record, record.mappedRecord.structuredMetadata)
     }
 
 
@@ -94,7 +100,7 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     protected open fun getLogLine(record: LogRecord<LogStream>): String = with (record) {
-        return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
+        return "${ if (appenderConfig.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
 
 }
