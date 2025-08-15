@@ -21,7 +21,8 @@ open class LokiLogWriter(
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
-) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, LokiLogRecordMapper(config.fields), processData, logErrorMessagesAtMaximumOncePer) {
+    protected val recordMapper: LokiLogRecordMapper = LokiLogRecordMapper(config.fields),
+) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, recordMapper, processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
         private val labelEscaper = LokiLabelEscaper.Default
@@ -40,13 +41,15 @@ open class LokiLogWriter(
 
 
     override fun instantiateMappedRecord() = LogRecord(LogStream().apply {
-        mapper.mapStaticFields(this.stream)
+        recordMapper.mapStaticLabels(this.stream)
+        recordMapper.mapStaticStructuredMetadata(this.structuredMetadata)
     })
 
     override suspend fun mapRecord(record: LogRecord<LogStream>) {
-        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record), getStructuredMetadata(record))
+        record.mappedRecord.set(convertTimestamp(record.timestamp), getLogLine(record))
 
-        mapper.mapLogEventFields(record, record.mappedRecord.stream)
+        recordMapper.mapDynamicLabels(record, record.mappedRecord.stream)
+        recordMapper.mapDynamicStructuredMetadata(record, record.mappedRecord.structuredMetadata)
     }
 
 
@@ -93,7 +96,5 @@ open class LokiLogWriter(
     protected open fun getLogLine(record: LogRecord<LogStream>): String = with (record) {
         return "${ if (config.fields.includeThreadName && threadName != null) "[${threadName}] " else ""}${mapper.escapeControlCharacters(message)}${mapper.getStacktrace(exception) ?: ""}"
     }
-
-    protected open fun getStructuredMetadata(record: LogRecord<LogStream>): Map<String, String> = emptyMap()
 
 }

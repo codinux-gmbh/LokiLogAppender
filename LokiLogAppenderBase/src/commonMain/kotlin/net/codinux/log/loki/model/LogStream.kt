@@ -14,8 +14,11 @@ open class LogStream {
     // in our implementation values always has exact one element
     open val values: List<LogStreamEntry> = listOf(LogStreamEntry())
 
-    open fun set(timestamp: String, logLine: String, structuredMetadata: Map<String, String> = emptyMap()) {
-        values[0].set(timestamp, logLine, structuredMetadata)
+    // only works as in our implementation values always has exact one element
+    open val structuredMetadata: MutableMap<String, String?> = values[0].structuredMetadata
+
+    open fun set(timestamp: String, logLine: String) {
+        values[0].set(timestamp, logLine)
     }
 
     override fun toString(): String {

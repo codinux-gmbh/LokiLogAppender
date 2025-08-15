@@ -34,7 +34,8 @@ open class LogStreamEntrySerializer : KSerializer<LogStreamEntry> {
             this.encodeStringElement(stringSerializer.descriptor, 1, value.logLine)
 
             if (value.structuredMetadata.isNotEmpty()) {
-                this.encodeSerializableElement(stringSerializer.descriptor, 2, mapSerializer, value.structuredMetadata)
+                @Suppress("UNCHECKED_CAST") // TODO: find a better solution to declare that values are not null
+                this.encodeSerializableElement(stringSerializer.descriptor, 2, mapSerializer, value.structuredMetadata as Map<String, String>)
             }
         }
     }
