@@ -49,7 +49,8 @@ class LogStreamEntrySerializerTest {
     @Test
     fun serializeStructuredMetadata() {
         val stream = LogStream().apply {
-            set(timestampIsoString, logLine, mapOf(
+            set(timestampIsoString, logLine)
+            structuredMetadata.putAll(mapOf(
                 "pod" to "SomePod-123",
                 "logger" to "net.codinux.log.loki.LokiLogger"
             ))
