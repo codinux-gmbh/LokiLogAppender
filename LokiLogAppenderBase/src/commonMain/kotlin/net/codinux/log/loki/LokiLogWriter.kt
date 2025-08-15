@@ -3,6 +3,7 @@ package net.codinux.log.loki
 import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogAppenderConfig
+import net.codinux.log.config.LogWriterBaseConfig
 import net.codinux.log.data.ProcessData
 import net.codinux.log.kubernetes.PodInfo
 import net.codinux.log.loki.config.LokiLogAppenderConfig
@@ -17,13 +18,13 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 open class LokiLogWriter(
-    config: LokiLogAppenderConfig,
+    protected val appenderConfig: LokiLogAppenderConfig,
     stateLogger: AppenderStateLogger = StdOutStateLogger.Default,
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
-    protected val mapper: LokiLogRecordMapper = LokiLogRecordMapper(config.fields),
-) : LogWriterBase<LogStream>(escapeLabelNames(config), stateLogger, processData, logErrorMessagesAtMaximumOncePer) {
+    protected val mapper: LokiLogRecordMapper = LokiLogRecordMapper(escapeLabelNames(appenderConfig).fields),
+) : LogWriterBase<LogStream>(appenderConfig.toLogWriterBaseConfig(), stateLogger, processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
         private val labelEscaper = LokiLabelEscaper.Default
@@ -35,6 +36,11 @@ open class LokiLogWriter(
 
         fun escapeLabelNames(config: LogAppenderConfig) =
             labelEscaper.escapeLabelNames(config)
+
+
+        private fun LogAppenderConfig.toLogWriterBaseConfig() = LogWriterBaseConfig(
+            this.enabled, this.fields, this.writer, this.fields.includeKubernetesInfo
+        )
     }
 
 
