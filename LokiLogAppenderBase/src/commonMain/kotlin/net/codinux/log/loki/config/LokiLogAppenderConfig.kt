@@ -12,13 +12,13 @@ open class LokiLogAppenderConfig(
     username: String? = UsernameNotSet,
     password: String? = PasswordNotSet,
 
-    writer: WriterConfig = WriterConfig(),
+    open var tenantId: String? = null,
 
     fields: LogAppenderFieldsConfig = LogAppenderFieldsConfig(),
 
-    open var tenantId: String? = null,
+    writer: WriterConfig = WriterConfig(),
 
-    stateLoggerName: String? = StateLoggerNotSet
+    stateLoggerName: String? = StateLoggerDefaultName
 ) : LogAppenderConfig(enabled, hostUrl, username, password, writer, fields, stateLoggerName) {
 
     companion object {
