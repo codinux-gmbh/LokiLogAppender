@@ -1,6 +1,6 @@
 package net.codinux.log.loki
 
-import net.codinux.log.FieldMapper
+import net.codinux.log.mapper.FieldMapper
 import net.codinux.log.LogRecord
 import net.codinux.log.data.ProcessData
 import net.codinux.log.kubernetes.PodInfo
