@@ -15,7 +15,7 @@ open class LokiLogAppenderConfig(
 
     open var tenantId: String? = null,
 
-    open var fields: LogAppenderFieldsConfig = LogAppenderFieldsConfig(),
+    open var fields: LogFieldsConfig = LogFieldsConfig(),
 
     open var writer: WriterConfig = WriterConfig(),
 

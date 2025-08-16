@@ -2,7 +2,8 @@ package net.codinux.log.loki
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import net.codinux.log.config.LogAppenderFieldsConfig
+import net.codinux.log.loki.config.field.IncludeField
+import net.codinux.log.loki.config.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.KtorWebClient
 import net.codinux.log.statelogger.StdOutStateLogger
@@ -13,11 +14,11 @@ class LokiLogWriterTestJvm {
 
     private val config = LokiLogAppenderConfig(
         hostUrl = "http://localhost:3100",
-        fields = LogAppenderFieldsConfig(
-            includeLoggerClassName = true,
-            includeAppName = true,
-            appName = "Liebestest"
-        )
+        fields = LogFieldsConfig().apply {
+            loggerClass.include = IncludeField.Label
+            appName.include = IncludeField.Label
+            appName.value = "Liebestest"
+        }
     )
 
     private val underTest = LokiLogWriter(config, StdOutStateLogger.Default, KtorWebClient.of(config, StdOutStateLogger.Default))

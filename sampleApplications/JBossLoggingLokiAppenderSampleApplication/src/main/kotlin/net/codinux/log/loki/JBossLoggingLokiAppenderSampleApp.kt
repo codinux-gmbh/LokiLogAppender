@@ -1,8 +1,8 @@
 package net.codinux.log.loki
 
-import net.codinux.log.config.LogAppenderFieldsConfig
-import net.codinux.log.config.WriterConfig
 import net.codinux.log.JBossLoggingUtil
+import net.codinux.log.loki.config.field.IncludeField
+import net.codinux.log.loki.config.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import org.jboss.logging.Logger
 import org.jboss.logging.NDC
@@ -26,13 +26,13 @@ class JBossLoggingLokiAppenderSampleApp {
             // make sure Loki is running on localhost under port 3100 or adjust URL here
             JBossLoggingLokiAppender(LokiLogAppenderConfig(
                 hostUrl = "http://localhost:3100",
-                fields = LogAppenderFieldsConfig(
-                    includeMarker = true,
-                    includeNdc = true,
-                    includeKubernetesInfo = false,
-                    includeAppName = true,
-                    appName = "TestApp"
-                )
+                fields = LogFieldsConfig().apply {
+                    marker.include = IncludeField.StructuredMetadata
+                    ndc.include = IncludeField.StructuredMetadata
+                    includeKubernetesInfo = false
+                    appName.include = IncludeField.Label
+                    appName.value = "TestApp"
+                }
             )),
             JBossLoggingUtil.colorConsoleHandler()
         )

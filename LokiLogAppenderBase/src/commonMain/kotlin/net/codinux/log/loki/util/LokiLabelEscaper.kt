@@ -19,22 +19,22 @@ open class LokiLabelEscaper {
     open fun escapeLabelNames(config: LokiLogAppenderConfig): LokiLogAppenderConfig {
         val fields = config.fields
 
-        fields.logLevelFieldName = escapeLabelName(fields.logLevelFieldName)
-        fields.loggerNameFieldName = escapeLabelName(fields.loggerNameFieldName)
-        fields.loggerClassNameFieldName = escapeLabelName(fields.loggerClassNameFieldName)
-        fields.threadNameFieldName = escapeLabelName(fields.threadNameFieldName)
+        fields.logLevel.name = escapeLabelName(fields.logLevel.name)
+        fields.logger.name = escapeLabelName(fields.logger.name)
+        fields.loggerClass.name = escapeLabelName(fields.loggerClass.name)
+        fields.thread.name = escapeLabelName(fields.thread.name)
 
-        fields.hostNameFieldName = escapeLabelName(fields.hostNameFieldName)
-        fields.hostIpFieldName = escapeLabelName(fields.hostIpFieldName)
-        fields.appNameFieldName = escapeLabelName(fields.appNameFieldName)
-        fields.appVersionFieldName = escapeLabelName(fields.appVersionFieldName)
-        fields.jobNameFieldName = escapeLabelName(fields.jobNameFieldName)
-        fields.stacktraceFieldName = escapeLabelName(fields.stacktraceFieldName)
+        fields.hostName.name = escapeLabelName(fields.hostName.name)
+        fields.hostIp.name = escapeLabelName(fields.hostIp.name)
+        fields.appName.name = escapeLabelName(fields.appName.name)
+        fields.appVersion.name = escapeLabelName(fields.appVersion.name)
+        fields.job.name = escapeLabelName(fields.job.name)
+        fields.stacktrace.name = escapeLabelName(fields.stacktrace.name)
 
-        fields.mdcKeysPrefix = determinePrefix(fields.mdcKeysPrefix)
+        fields.mdc.prefix = determinePrefix(fields.mdc.prefix)
 
-        fields.markerFieldName = escapeLabelName(fields.markerFieldName)
-        fields.ndcFieldName = escapeLabelName(fields.ndcFieldName)
+        fields.marker.name = escapeLabelName(fields.marker.name)
+        fields.ndc.name = escapeLabelName(fields.ndc.name)
 
         fields.kubernetesFieldsPrefix = determinePrefix(fields.kubernetesFieldsPrefix)
         escapeKubernetesFieldsLabelNames(fields.kubernetesFields)

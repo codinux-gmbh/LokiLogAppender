@@ -22,7 +22,7 @@ open class LokiLogWriter(
     private val webClient: WebClient,
     processData: ProcessData? = null,
     logErrorMessagesAtMaximumOncePer: Duration = 5.minutes,
-    protected val mapper: LokiLogRecordMapper = LokiLogRecordMapper(escapeLabelNames(appenderConfig).fields),
+    protected val mapper: LokiLogRecordMapper = LokiLogRecordMapper(escapeLabelNames(appenderConfig)),
 ) : LogWriterBase<LogStream>(appenderConfig.toLogWriterBaseConfig(), stateLogger, processData, logErrorMessagesAtMaximumOncePer) {
 
     companion object {
@@ -46,14 +46,9 @@ open class LokiLogWriter(
     protected open val pushRequest = LokiPushRequest()
 
 
-    override fun writerInitialized(processData: ProcessData, podInfo: PodInfo?) {
-        mapper.processData = processData
-        mapper.podInfo = podInfo
-    }
-
     override fun instantiateMappedRecord() = LogRecord(LogStream().apply {
         mapper.mapStaticLabels(this.stream)
-        mapper.mapStaticStructuredMetadata(this.structuredMetadata)
+        mapper.mapStaticStructuredMetadata(this.structuredMetadata, processData, podInfo)
     })
 
     override suspend fun mapRecord(record: LogRecord<LogStream>) {
@@ -105,7 +100,7 @@ open class LokiLogWriter(
         "${timestamp.epochSeconds}${timestamp.nanosecondsOfSecond.toString().padStart(9, '0')}"
 
     protected open fun getLogLine(record: LogRecord<LogStream>): String = with (record) {
-        return (if (appenderConfig.fields.includeThreadName && threadName != null) "[${threadName}] " else "") +
+        return (if (appenderConfig.fields.thread.isIncluded && threadName != null) "[${threadName}] " else "") +
                 mapper.escapeControlCharacters(message) +
                 (mapper.getStacktrace(exception) ?: "")
     }
