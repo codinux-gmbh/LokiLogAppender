@@ -1,27 +1,46 @@
 package net.codinux.log.loki
 
-import net.codinux.log.ConfigurableLogbackAppenderBase
 import net.codinux.log.LogWriter
+import net.codinux.log.LogbackAppenderBase
 import net.codinux.log.statelogger.LogbackStateLogger
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.JavaHttpClientWebClient
 
-open class LogbackLokiAppender(config: LokiLogAppenderConfig = LokiLogAppenderConfig())
-    : ConfigurableLogbackAppenderBase(config) {
+open class LogbackLokiAppender(protected open val config: LokiLogAppenderConfig = LokiLogAppenderConfig())
+    : LogbackAppenderBase() {
 
     override fun createLogWriter(): LogWriter {
-        val mappedConfig = config as LokiLogAppenderConfig
         val stateLogger = LogbackStateLogger(config.stateLoggerName ?: LokiLogAppenderConfig.StateLoggerDefaultName)
-        val webClient = JavaHttpClientWebClient.of(mappedConfig, stateLogger)
+        val webClient = JavaHttpClientWebClient.of(config, stateLogger)
 
-        return LokiLogWriter(mappedConfig, stateLogger, webClient)
+        return LokiLogWriter(config, stateLogger, webClient)
     }
 
 
-    /*      Loki specific configuration     */
+    open fun setEnabled(enabled: Boolean) {
+        config.enabled = enabled
+    }
+
+
+    open fun setHostUrl(hostUrl: String) {
+        config.hostUrl = hostUrl
+    }
+
+    open fun setUsername(username: String?) {
+        config.username = username
+    }
+
+    open fun setPassword(password: String?) {
+        config.password = password
+    }
+
 
     fun setTenantId(tenantId: String) {
-        (config as? LokiLogAppenderConfig)?.tenantId = tenantId
+        config.tenantId = tenantId
+    }
+
+    open fun setStateLoggerName(stateLoggerName: String?) {
+        config.stateLoggerName = stateLoggerName
     }
 
 }
