@@ -13,6 +13,8 @@ java {
 val logAppenderVersion: String by project
 
 val junitVersion: String by project
+val mockkVersion: String by project
+val assertKVersion: String by project
 
 dependencies {
     api(project(":LokiLogAppenderBase"))
@@ -23,6 +25,11 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.willowtreeapps.assertk:assertk:$assertKVersion")
+
+    testImplementation("org.jboss.slf4j:slf4j-jboss-logging:1.2.1.Final")
 }
 
 tasks.test {
