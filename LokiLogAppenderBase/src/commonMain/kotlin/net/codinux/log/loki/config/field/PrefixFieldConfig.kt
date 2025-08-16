@@ -5,7 +5,14 @@ open class PrefixFieldConfig(
     open var include: IncludeField = IncludeField.No
 ) {
     open val isIncluded: Boolean
-        get() = include == IncludeField.No
+        get() = include.isIncluded
+
+    open val logAsLabel: Boolean
+        get() = include.logAsLabel
+
+    open val logAsStructuredMetadata: Boolean
+        get() = include.logAsStructuredMetadata
+
 
     override fun toString() = "$prefix include $include"
 }

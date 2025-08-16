@@ -18,37 +18,53 @@ open class LokiLogRecordMapper(
     protected open val logsDynamicStructuredMetadata = logsDynamicStructuredMetadata(config.fields)
 
 
-    open fun mapStaticLabels(labels: MutableMap<String, String?>) {
-        // TODO: for now we hard code which fields get logged as labels and which as structured metadata
-        mapField(labels, fields.appName.isIncluded, fields.appName.name, fields.appName.value)
-        mapField(labels, fields.job.isIncluded, fields.job.name, fields.job.value)
+    open fun mapStaticLabels(labels: MutableMap<String, String?>, processData: ProcessData, podInfo: PodInfo?) {
+        mapField(labels, fields.appName.logAsLabel, fields.appName.name, fields.appName.value)
+        mapField(labels, fields.appVersion.logAsLabel, fields.appVersion.name, fields.appVersion.value)
+        mapField(labels, fields.job.logAsLabel, fields.job.name, fields.job.value)
+        mapField(labels, fields.hostName.logAsLabel, fields.hostName.name, processData.hostName)
+        mapField(labels, fields.hostIp.logAsLabel, fields.hostIp.name, processData.hostIp)
+
+        // TODO
+//        fieldMapper.mapPodInfoFields(labels, fields.includeKubernetesInfo, podInfo, fields.kubernetesFieldsPrefix, fields.kubernetesFields)
     }
 
     open fun <T> mapDynamicLabels(record: LogRecord<T>, labels: MutableMap<String, String?>) {
-        // TODO: for now we hard code which fields get logged as labels and which as structured metadata
-        mapField(labels, fields.logLevel.isIncluded, fields.logLevel.name, record.level)
+        mapField(labels, fields.logLevel.logAsLabel, fields.logLevel.name, record.level)
+        mapField(labels, fields.logger.logAsLabel, fields.logger.name, record.loggerName)
+        mapField(labels, fields.loggerClass.logAsLabel, fields.loggerClass.name) { record.loggerName?.let { fieldMapper.extractLoggerClassName(it) } }
+        mapField(labels, fields.thread.logAsLabel, fields.thread.name, record.threadName)
+
+        mapField(labels, fields.stacktrace.logAsLabel, fields.stacktrace.name) { getStacktrace(record.exception) }
+
+        fieldMapper.mapMdcFields(record, labels, fields.mdc.logAsLabel && record.mdc != null, record.mdc, fields.mdc.prefix)
+        mapDynamicFieldIfNotNull(labels, fields.marker.logAsLabel, fields.marker.name, record.marker)
+        mapDynamicFieldIfNotNull(labels, fields.ndc.logAsLabel, fields.ndc.name, record.ndc)
     }
 
 
     open fun mapStaticStructuredMetadata(structuredMetadata: MutableMap<String, String?>, processData: ProcessData, podInfo: PodInfo?) {
-        // TODO: for now we hard code which fields get logged as labels and which as structured metadata
-        mapField(structuredMetadata, fields.hostName.isIncluded, fields.hostName.name, processData.hostName)
-        mapField(structuredMetadata, fields.appVersion.isIncluded, fields.appVersion.name, fields.appVersion.value)
+        mapField(structuredMetadata, fields.appName.logAsStructuredMetadata, fields.appName.name, fields.appName.value)
+        mapField(structuredMetadata, fields.appVersion.logAsStructuredMetadata, fields.appVersion.name, fields.appVersion.value)
+        mapField(structuredMetadata, fields.job.logAsStructuredMetadata, fields.job.name, fields.job.value)
+        mapField(structuredMetadata, fields.hostName.logAsStructuredMetadata, fields.hostName.name, processData.hostName)
+        mapField(structuredMetadata, fields.hostIp.logAsStructuredMetadata, fields.hostIp.name, processData.hostIp)
 
         fieldMapper.mapPodInfoFields(structuredMetadata, fields.includeKubernetesInfo, podInfo, fields.kubernetesFieldsPrefix, fields.kubernetesFields)
     }
 
     open fun mapDynamicStructuredMetadata(record: LogRecord<LogStream>, structuredMetadata: MutableMap<String, String?>) {
         if (logsDynamicStructuredMetadata) {
-            // TODO: for now we hard code which fields get logged as labels and which as structured metadata
-            mapField(structuredMetadata, fields.logger.isIncluded, fields.logger.name, record.loggerName)
-            mapField(structuredMetadata, fields.loggerClass.isIncluded, fields.loggerClass.name) { record.loggerName?.let { fieldMapper.extractLoggerClassName(it) } }
+            mapField(structuredMetadata, fields.logLevel.logAsStructuredMetadata, fields.logLevel.name, record.level)
+            mapField(structuredMetadata, fields.logger.logAsStructuredMetadata, fields.logger.name, record.loggerName)
+            mapField(structuredMetadata, fields.loggerClass.logAsStructuredMetadata, fields.loggerClass.name) { record.loggerName?.let { fieldMapper.extractLoggerClassName(it) } }
+            mapField(structuredMetadata, fields.thread.logAsStructuredMetadata, fields.thread.name, record.threadName)
 
-            mapField(structuredMetadata, fields.stacktrace.isIncluded, fields.stacktrace.name) { getStacktrace(record.exception) }
+            mapField(structuredMetadata, fields.stacktrace.logAsStructuredMetadata, fields.stacktrace.name) { getStacktrace(record.exception) }
 
-            fieldMapper.mapMdcFields(record, structuredMetadata, fields.mdc.isIncluded && record.mdc != null, record.mdc, fields.mdc.prefix)
-            mapDynamicFieldIfNotNull(structuredMetadata, fields.marker.isIncluded, fields.marker.name, record.marker)
-            mapDynamicFieldIfNotNull(structuredMetadata, fields.ndc.isIncluded, fields.ndc.name, record.ndc)
+            fieldMapper.mapMdcFields(record, structuredMetadata, fields.mdc.logAsStructuredMetadata && record.mdc != null, record.mdc, fields.mdc.prefix)
+            mapDynamicFieldIfNotNull(structuredMetadata, fields.marker.logAsStructuredMetadata, fields.marker.name, record.marker)
+            mapDynamicFieldIfNotNull(structuredMetadata, fields.ndc.logAsStructuredMetadata, fields.ndc.name, record.ndc)
         }
     }
 
@@ -74,9 +90,9 @@ open class LokiLogRecordMapper(
 
 
     protected fun logsDynamicStructuredMetadata(fields: LogFieldsConfig): Boolean =
-        fields.logger.isIncluded || fields.loggerClass.isIncluded
-                || fields.thread.isIncluded
-                || fields.stacktrace.isIncluded
-                || fields.mdc.isIncluded || fields.marker.isIncluded || fields.ndc.isIncluded
+        fields.logLevel.logAsStructuredMetadata || fields.logger.logAsStructuredMetadata || fields.loggerClass.logAsStructuredMetadata
+                || fields.thread.logAsStructuredMetadata
+                || fields.stacktrace.logAsStructuredMetadata
+                || fields.mdc.logAsStructuredMetadata || fields.marker.logAsStructuredMetadata || fields.ndc.logAsStructuredMetadata
 
 }

@@ -6,4 +6,15 @@ enum class IncludeField {
     Label,
 
     StructuredMetadata,
+    ;
+
+
+    val isIncluded: Boolean
+        get() = this != No
+
+    val logAsLabel: Boolean
+        get() = this == Label
+
+    val logAsStructuredMetadata: Boolean
+        get() = this == StructuredMetadata
 }

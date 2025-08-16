@@ -47,7 +47,7 @@ open class LokiLogWriter(
 
 
     override fun instantiateMappedRecord() = LogRecord(LogStream().apply {
-        mapper.mapStaticLabels(this.stream)
+        mapper.mapStaticLabels(this.stream, processData, podInfo)
         mapper.mapStaticStructuredMetadata(this.structuredMetadata, processData, podInfo)
     })
 

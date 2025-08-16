@@ -5,7 +5,13 @@ open class FieldConfig(
     open var include: IncludeField = IncludeField.No
 ) {
     open val isIncluded: Boolean
-        get() = include == IncludeField.No
+        get() = include.isIncluded
+
+    open val logAsLabel: Boolean
+        get() = include.logAsLabel
+
+    open val logAsStructuredMetadata: Boolean
+        get() = include.logAsStructuredMetadata
 
     open fun setInclude(include: Boolean) {
         this.include = if (include) {
