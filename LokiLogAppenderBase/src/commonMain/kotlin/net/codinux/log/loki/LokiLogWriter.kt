@@ -4,11 +4,11 @@ import net.codinux.log.LogRecord
 import net.codinux.log.LogWriterBase
 import net.codinux.log.config.LogWriterBaseConfig
 import net.codinux.log.data.ProcessData
-import net.codinux.log.kubernetes.PodInfo
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.loki.mapper.LokiLogRecordMapper
 import net.codinux.log.loki.model.LogStream
 import net.codinux.log.loki.model.LokiPushRequest
-import net.codinux.log.loki.util.LokiLabelEscaper
+import net.codinux.log.loki.mapper.LokiLabelEscaper
 import net.codinux.log.loki.web.WebClient
 import net.codinux.log.statelogger.AppenderStateLogger
 import net.codinux.log.statelogger.StdOutStateLogger

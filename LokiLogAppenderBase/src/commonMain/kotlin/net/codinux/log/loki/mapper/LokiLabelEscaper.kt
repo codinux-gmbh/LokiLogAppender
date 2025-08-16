@@ -1,4 +1,4 @@
-package net.codinux.log.loki.util
+package net.codinux.log.loki.mapper
 
 import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig

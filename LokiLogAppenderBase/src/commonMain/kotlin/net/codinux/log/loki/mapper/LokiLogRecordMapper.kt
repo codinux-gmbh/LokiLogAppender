@@ -1,4 +1,4 @@
-package net.codinux.log.loki
+package net.codinux.log.loki.mapper
 
 import net.codinux.log.mapper.FieldMapper
 import net.codinux.log.LogRecord
@@ -7,7 +7,6 @@ import net.codinux.log.kubernetes.PodInfo
 import net.codinux.log.loki.config.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.LogStream
-import net.codinux.log.loki.util.LokiLabelEscaper
 
 open class LokiLogRecordMapper(
     protected open val config: LokiLogAppenderConfig,

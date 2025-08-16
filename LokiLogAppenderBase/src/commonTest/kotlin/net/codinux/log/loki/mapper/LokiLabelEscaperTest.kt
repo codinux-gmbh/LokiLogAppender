@@ -1,5 +1,6 @@
 package net.codinux.log.loki.util
 
+import net.codinux.log.loki.mapper.LokiLabelEscaper
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
