@@ -10,21 +10,21 @@ class LokiLabelEscaperTest {
 
     @Test
     fun labelStartsWithNumber_GetsReplaced() {
-        val result = underTest.escapeLabelName("1")
+        val result = underTest.escapeFieldName("1")
 
         assertEquals("_", result)
     }
 
     @Test
     fun numberInLabelNotInFirstPlace_DoesNotGetReplaced() {
-        val result = underTest.escapeLabelName("MDC1")
+        val result = underTest.escapeFieldName("MDC1")
 
         assertEquals("MDC1", result)
     }
 
     @Test
     fun multipleIllegalCharacters_AllGetReplaced() {
-        val result = underTest.escapeLabelName("MDC1.%Liebe")
+        val result = underTest.escapeFieldName("MDC1.%Liebe")
 
         assertEquals("MDC1__Liebe", result)
     }

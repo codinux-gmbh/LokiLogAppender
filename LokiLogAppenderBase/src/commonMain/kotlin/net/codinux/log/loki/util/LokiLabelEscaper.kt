@@ -2,8 +2,9 @@ package net.codinux.log.loki.util
 
 import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.mapper.FieldEscaper
 
-open class LokiLabelEscaper {
+open class LokiLabelEscaper : FieldEscaper {
 
     companion object {
 
@@ -19,22 +20,22 @@ open class LokiLabelEscaper {
     open fun escapeLabelNames(config: LokiLogAppenderConfig): LokiLogAppenderConfig {
         val fields = config.fields
 
-        fields.logLevel.name = escapeLabelName(fields.logLevel.name)
-        fields.logger.name = escapeLabelName(fields.logger.name)
-        fields.loggerClass.name = escapeLabelName(fields.loggerClass.name)
-        fields.thread.name = escapeLabelName(fields.thread.name)
+        fields.logLevel.name = escapeFieldName(fields.logLevel.name)
+        fields.logger.name = escapeFieldName(fields.logger.name)
+        fields.loggerClass.name = escapeFieldName(fields.loggerClass.name)
+        fields.thread.name = escapeFieldName(fields.thread.name)
 
-        fields.hostName.name = escapeLabelName(fields.hostName.name)
-        fields.hostIp.name = escapeLabelName(fields.hostIp.name)
-        fields.appName.name = escapeLabelName(fields.appName.name)
-        fields.appVersion.name = escapeLabelName(fields.appVersion.name)
-        fields.job.name = escapeLabelName(fields.job.name)
-        fields.stacktrace.name = escapeLabelName(fields.stacktrace.name)
+        fields.hostName.name = escapeFieldName(fields.hostName.name)
+        fields.hostIp.name = escapeFieldName(fields.hostIp.name)
+        fields.appName.name = escapeFieldName(fields.appName.name)
+        fields.appVersion.name = escapeFieldName(fields.appVersion.name)
+        fields.job.name = escapeFieldName(fields.job.name)
+        fields.stacktrace.name = escapeFieldName(fields.stacktrace.name)
 
         fields.mdc.prefix = determinePrefix(fields.mdc.prefix)
 
-        fields.marker.name = escapeLabelName(fields.marker.name)
-        fields.ndc.name = escapeLabelName(fields.ndc.name)
+        fields.marker.name = escapeFieldName(fields.marker.name)
+        fields.ndc.name = escapeFieldName(fields.ndc.name)
 
         fields.kubernetesFieldsPrefix = determinePrefix(fields.kubernetesFieldsPrefix)
         escapeKubernetesFieldsLabelNames(fields.kubernetesFields)
@@ -43,22 +44,22 @@ open class LokiLabelEscaper {
     }
 
     protected open fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
-        fields.namespaceFieldName = escapeLabelName(fields.namespaceFieldName)
+        fields.namespaceFieldName = escapeFieldName(fields.namespaceFieldName)
 
-        fields.podNameFieldName = escapeLabelName(fields.podNameFieldName)
-        fields.containerNameFieldName = escapeLabelName(fields.containerNameFieldName)
-        fields.imageNameFieldName = escapeLabelName(fields.imageNameFieldName)
+        fields.podNameFieldName = escapeFieldName(fields.podNameFieldName)
+        fields.containerNameFieldName = escapeFieldName(fields.containerNameFieldName)
+        fields.imageNameFieldName = escapeFieldName(fields.imageNameFieldName)
 
-        fields.nodeNameFieldName = escapeLabelName(fields.nodeNameFieldName)
-        fields.nodeIpFieldName = escapeLabelName(fields.nodeIpFieldName)
-        fields.podIpFieldName = escapeLabelName(fields.podIpFieldName)
+        fields.nodeNameFieldName = escapeFieldName(fields.nodeNameFieldName)
+        fields.nodeIpFieldName = escapeFieldName(fields.nodeIpFieldName)
+        fields.podIpFieldName = escapeFieldName(fields.podIpFieldName)
 
-        fields.startTimeFieldName = escapeLabelName(fields.startTimeFieldName)
-        fields.restartCountFieldName = escapeLabelName(fields.restartCountFieldName)
+        fields.startTimeFieldName = escapeFieldName(fields.startTimeFieldName)
+        fields.restartCountFieldName = escapeFieldName(fields.restartCountFieldName)
 
-        fields.podUidFieldName = escapeLabelName(fields.podUidFieldName)
-        fields.containerIdFieldName = escapeLabelName(fields.containerIdFieldName)
-        fields.imageIdFieldName = escapeLabelName(fields.imageIdFieldName)
+        fields.podUidFieldName = escapeFieldName(fields.podUidFieldName)
+        fields.containerIdFieldName = escapeFieldName(fields.containerIdFieldName)
+        fields.imageIdFieldName = escapeFieldName(fields.imageIdFieldName)
 
         fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
         fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
@@ -119,7 +120,7 @@ open class LokiLabelEscaper {
      *
      * (https://grafana.com/docs/loki/latest/fundamentals/labels/)
      */
-    open fun escapeLabelName(fieldName: String): String =
+    override fun escapeFieldName(fieldName: String): String =
         if (fieldName.firstOrNull()?.isDigit() == true) {
             "_" + replaceIllegalCharacters(fieldName.substring(1))
         } else {

@@ -11,18 +11,12 @@ import net.codinux.log.loki.util.LokiLabelEscaper
 
 open class LokiLogRecordMapper(
     protected open val config: LokiLogAppenderConfig,
-    protected open val fieldMapper: FieldMapper = FieldMapper(false),
+    protected open val fieldMapper: FieldMapper = FieldMapper(false, fieldEscaper = LokiLabelEscaper.Default),
 ) {
 
     protected open val fields = config.fields
 
-    protected open val labelEscaper = LokiLabelEscaper.Default
-
     protected open val logsDynamicStructuredMetadata = logsDynamicStructuredMetadata(config.fields)
-
-
-    fun escapeDynamicLabelName(key: String) =
-        labelEscaper.escapeLabelName(key)
 
 
     open fun mapStaticLabels(labels: MutableMap<String, String?>) {
