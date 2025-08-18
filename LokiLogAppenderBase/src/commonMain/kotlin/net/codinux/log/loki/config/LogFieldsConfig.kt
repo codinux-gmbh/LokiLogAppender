@@ -14,10 +14,7 @@ open class LogFieldsConfig(
     open var logLevel: FieldConfig = FieldConfig(LogLevelDefaultFieldName, LogLevelDefaultIncludeValue),
 
     open var logger: FieldConfig = FieldConfig(LoggerNameDefaultFieldName, LoggerNameDefaultIncludeValue),
-    open var loggerClass: FieldConfig = FieldConfig(
-        LoggerClassNameDefaultFieldName,
-        LoggerClassNameDefaultIncludeValue
-    ),
+    open var loggerClass: FieldConfig = FieldConfig(LoggerClassNameDefaultFieldName, LoggerClassNameDefaultIncludeValue),
 
     open var thread: FieldConfig = FieldConfig(ThreadNameDefaultFieldName, ThreadNameDefaultIncludeValue),
 
@@ -122,11 +119,11 @@ open class LogFieldsConfig(
         val MdcDefaultIncludeValue = MdcDefaultIncludeValueString.asInclude()
 
         const val MarkerDefaultFieldName: String = "marker"
-        const val MarkerDefaultIncludeValueString = No
+        const val MarkerDefaultIncludeValueString = StructuredMetadata
         val MarkerDefaultIncludeValue = MarkerDefaultIncludeValueString.asInclude()
 
         const val NdcDefaultFieldName: String = "ndc"
-        const val NdcDefaultIncludeValueString = No
+        const val NdcDefaultIncludeValueString = StructuredMetadata
         val NdcDefaultIncludeValue = NdcDefaultIncludeValueString.asInclude()
 
 
