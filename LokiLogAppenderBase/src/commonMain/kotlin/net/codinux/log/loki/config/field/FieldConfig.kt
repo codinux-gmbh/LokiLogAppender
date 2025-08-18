@@ -4,6 +4,10 @@ open class FieldConfig(
     open var name: String,
     open var include: IncludeField = IncludeField.No
 ) {
+
+    constructor() : this("", IncludeField.No) // required for Joran (Logback)
+
+
     open val isIncluded: Boolean
         get() = include.isIncluded
 

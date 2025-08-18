@@ -2,6 +2,8 @@ package net.codinux.log.loki
 
 import net.codinux.log.LogWriter
 import net.codinux.log.LogbackAppenderBase
+import net.codinux.log.config.WriterConfig
+import net.codinux.log.loki.config.LogFieldsConfig
 import net.codinux.log.statelogger.LogbackStateLogger
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.JavaHttpClientWebClient
@@ -35,12 +37,25 @@ open class LogbackLokiAppender(protected open val config: LokiLogAppenderConfig 
     }
 
 
-    fun setTenantId(tenantId: String) {
+    open fun setTenantId(tenantId: String) {
         config.tenantId = tenantId
     }
 
     open fun setStateLoggerName(stateLoggerName: String?) {
         config.stateLoggerName = stateLoggerName
+    }
+
+
+    open fun getFields(): LogFieldsConfig = config.fields
+
+    open fun setFields(fields: LogFieldsConfig) {
+        config.fields = fields
+    }
+
+    open fun getWriter(): WriterConfig = config.writer
+
+    open fun setWriter(writer: WriterConfig) {
+        config.writer = writer
     }
 
 }

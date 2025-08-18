@@ -4,33 +4,87 @@
     <appender name="LOKI" class="net.codinux.log.loki.LogbackLokiAppender">
         <enabled>true</enabled>
         <hostUrl>http://localhost:3100</hostUrl>
+        <username>null</username>
+        <password>null</password>
         <tenantId>Tenant</tenantId>
-        <includeLogLevel>true</includeLogLevel>
-        <logLevelFieldName>level</logLevelFieldName>
-        <includeLoggerName>true</includeLoggerName>
-        <loggerNameFieldName>logger</loggerNameFieldName>
-        <includeLoggerClassName>true</includeLoggerClassName>
-        <loggerClassNameFieldName>loggerClass</loggerClassNameFieldName>
-        <includeThreadName>true</includeThreadName>
-        <threadNameFieldName>thread</threadNameFieldName>
-        <includeAppName>true</includeAppName>
-        <appNameFieldName>app</appNameFieldName>
-        <appName>TestApp</appName>
-        <includeAppVersion>true</includeAppVersion>
-        <appVersionFieldName>version</appVersionFieldName>
-        <appVersion>1.0.0</appVersion>
-        <includeJobName>false</includeJobName>
-        <jobNameFieldName>app</jobNameFieldName>
-        <jobName>LogsCollector</jobName>
-        <includeHostName>true</includeHostName>
-        <hostNameFieldName>host</hostNameFieldName>
-        <includeStacktrace>true</includeStacktrace>
-        <stacktraceFieldName>stacktrace</stacktraceFieldName>
-        <includeMdc>true</includeMdc>
-        <mdcKeysPrefix>mdc</mdcKeysPrefix>
-        <maxLogRecordsPerBatch>100</maxLogRecordsPerBatch>
-        <maxBufferedLogRecords>2000</maxBufferedLogRecords>
-        <sendLogRecordsPeriodMillis>100</sendLogRecordsPeriodMillis>
+
+        <fields>
+            <logLevel>
+                <include>Label</include>
+                <name>level</name>
+            </logLevel>
+            <logger>
+                <include>StructuredMetadata</include>
+                <name>logger</name>
+            </logger>
+            <loggerClass>
+                <include>No</include>
+            </loggerClass>
+            <thread>
+                <include>StructuredMetadata</include>
+                <name>thread</name>
+            </thread>
+
+            <stacktrace>
+                <include>StructuredMetadata</include>
+                <name>stacktrace</name>
+                <maxFieldLength>32666</maxFieldLength>
+            </stacktrace>
+
+            <appName>
+                <include>Label</include>
+                <name>app</name>
+                <value>TestApp</value>
+            </appName>
+            <appVersion>
+                <include>No</include>
+                <name>version</name>
+                <value>1.0.0</value>
+            </appVersion>
+            <job>
+                <include>No</include>
+                <name>job</name>
+                <value>null</value>
+            </job>
+
+            <hostName>
+                <include>No</include>
+                <name>host</name>
+            </hostName>
+            <hostIp>
+                <include>No</include>
+                <name>hostIP</name>
+            </hostIp>
+
+            <mdc>
+                <include>StructuredMetadata</include>
+                <prefix>mdc</prefix>
+            </mdc>
+            <marker>
+                <include>StructuredMetadata</include>
+                <name>marker</name>
+            </marker>
+            <mdc>
+                <include>StructuredMetadata</include>
+                <name>ndc</name>
+            </mdc>
+        </fields>
+
+        <writer>
+            <maxLogRecordsPerBatch>100</maxLogRecordsPerBatch>
+            <maxBufferedLogRecords>2000</maxBufferedLogRecords>
+            <sendLogRecordsPeriodMillis>100</sendLogRecordsPeriodMillis>
+
+            <!-- Not set by default -->
+            <connectTimeoutMillis></connectTimeoutMillis>
+            <requestTimeoutMillis></requestTimeoutMillis>
+        </writer>
+
+        <includeKubernetesInfo>false</includeKubernetesInfo>
+        <kubernetesFieldsPrefix>k8s</kubernetesFieldsPrefix>
+        <kubernetesFields>
+
+        </kubernetesFields>
     </appender>
 
 

@@ -2,8 +2,12 @@ package net.codinux.log.loki.config.field
 
 import net.codinux.log.loki.config.LogFieldsConfig
 
-class StacktraceFieldConfig(
+open class StacktraceFieldConfig(
     name: String,
     include: IncludeField = IncludeField.No,
     var maxFieldLength: Int = LogFieldsConfig.StacktraceMaxFieldLengthDefaultValue,
-) : FieldConfig(name, include)
+) : FieldConfig(name, include) {
+
+    constructor() : this("", IncludeField.No) // required for Joran (Logback)
+
+}

@@ -4,6 +4,9 @@ open class PrefixFieldConfig(
     open var prefix: String,
     open var include: IncludeField = IncludeField.No
 ) {
+
+    constructor() : this("", IncludeField.No) // required for Joran (Logback)
+
     open val isIncluded: Boolean
         get() = include.isIncluded
 
