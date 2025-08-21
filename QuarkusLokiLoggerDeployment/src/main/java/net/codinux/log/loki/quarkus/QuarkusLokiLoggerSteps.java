@@ -23,28 +23,29 @@ public class QuarkusLokiLoggerSteps {
 
     @BuildStep
     ReflectiveClassBuildItem lokiLoggerClasses() {
-        return new ReflectiveClassBuildItem(true, true,
+        return ReflectiveClassBuildItem.builder(
                 LokiPushRequest.class, LokiPushRequest.Companion.getClass(),
                 LogStream.class, LogStream.Companion.getClass(),
                 LogStreamEntry.class, LogStreamEntry.Companion.getClass(), LogStreamEntrySerializer.class
-        );
+        ).methods(true).fields(true)
+                .build();
     }
 
 
     @BuildStep(onlyIf = IsFabric8KubernetesInfoRetrieverAvailable.class)
     ReflectiveClassBuildItem fabric8KubernetesInfoRetriever() {
         // since we only need reflection to the constructor of the class, we can specify `false` for both the methods and the fields arguments.
-        return new ReflectiveClassBuildItem(false, false, "net.codinux.log.kubernetes.Fabric8KubernetesInfoRetriever");
+        return ReflectiveClassBuildItem.builder("net.codinux.log.kubernetes.Fabric8KubernetesInfoRetriever").build();
     }
 
     @BuildStep(onlyIf = IsCodinuxKubernetesInfoRetrieverAvailable.class)
     ReflectiveClassBuildItem codinuxKubernetesInfoRetriever() {
-        return new ReflectiveClassBuildItem(false, false, "net.codinux.log.kubernetes.CodinuxKubernetesInfoRetriever");
+        return ReflectiveClassBuildItem.builder("net.codinux.log.kubernetes.CodinuxKubernetesInfoRetriever").build();
     }
 
     @BuildStep(onlyIf = IsCodinuxKubernetesInfoRetrieverAvailable.class)
     ReflectiveClassBuildItem codinuxKubernetesInfoRetrieverModel() {
-        return new ReflectiveClassBuildItem(true, true,
+        return ReflectiveClassBuildItem.builder(
                 "net.codinux.log.kubernetes.model.Container", "net.codinux.log.kubernetes.model.Container$Companion",
                 "net.codinux.log.kubernetes.model.ContainerState", "net.codinux.log.kubernetes.model.ContainerState$Companion",
                 "net.codinux.log.kubernetes.model.ContainerStateRunning", "net.codinux.log.kubernetes.model.ContainerStateRunning$Companion",
@@ -55,7 +56,7 @@ public class QuarkusLokiLoggerSteps {
                 "net.codinux.log.kubernetes.model.Pod", "net.codinux.log.kubernetes.model.Pod$Companion",
                 "net.codinux.log.kubernetes.model.PodSpec", "net.codinux.log.kubernetes.model.PodSpec$Companion",
                 "net.codinux.log.kubernetes.model.PodStatus", "net.codinux.log.kubernetes.model.PodStatus$Companion"
-        );
+        ).methods(true).fields(true).build();
     }
 
     static class IsFabric8KubernetesInfoRetrieverAvailable extends IsClassAvailableSupplier {
