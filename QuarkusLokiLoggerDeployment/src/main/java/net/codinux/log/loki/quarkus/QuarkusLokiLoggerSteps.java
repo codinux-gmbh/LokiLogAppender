@@ -9,7 +9,6 @@ import net.codinux.log.loki.model.LogStream;
 import net.codinux.log.loki.model.LogStreamEntry;
 import net.codinux.log.loki.model.LokiPushRequest;
 import net.codinux.log.loki.serialization.LogStreamEntrySerializer;
-import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 
 import java.util.function.BooleanSupplier;
 
@@ -17,8 +16,8 @@ public class QuarkusLokiLoggerSteps {
 
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    public LogHandlerBuildItem setUpLogAppender(QuarkusLokiLogAppenderRecorder recorder, QuarkusLokiLogAppenderConfig config) {
-        return new LogHandlerBuildItem(recorder.initializeLokiLogAppender(config));
+    public LogHandlerBuildItem setUpLogAppender(QuarkusLokiLogAppenderRecorder recorder) {
+        return new LogHandlerBuildItem(recorder.initializeLokiLogAppender());
     }
 
     @BuildStep
