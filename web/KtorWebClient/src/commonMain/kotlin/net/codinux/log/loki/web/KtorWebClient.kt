@@ -28,7 +28,7 @@ open class KtorWebClient(
         val JsonContentType = ContentType.parse("application/json")
 
         fun of(config: LokiLogAppenderConfig, stateLogger: AppenderStateLogger): KtorWebClient =
-            KtorWebClient(stateLogger, getLokiPushApiUrl(config.hostUrl), config.getAuthentication(), config.tenantId, config.writer)
+            KtorWebClient(stateLogger, getLokiPushApiUrl(config.lokiBaseUrl), config.getAuthentication(), config.tenantId, config.writer)
     }
 
 

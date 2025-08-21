@@ -29,7 +29,7 @@ open class JavaHttpClientWebClient(
 
     companion object {
         fun of(config: LokiLogAppenderConfig, stateLogger: AppenderStateLogger): JavaHttpClientWebClient =
-            JavaHttpClientWebClient(stateLogger, getLokiPushApiUrl(config.hostUrl), config.getAuthentication(), config.tenantId, config.writer)
+            JavaHttpClientWebClient(stateLogger, getLokiPushApiUrl(config.lokiBaseUrl), config.getAuthentication(), config.tenantId, config.writer)
     }
 
 

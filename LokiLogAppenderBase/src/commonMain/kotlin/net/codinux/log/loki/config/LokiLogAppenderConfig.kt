@@ -2,13 +2,12 @@ package net.codinux.log.loki.config
 
 import net.codinux.log.auth.Authentication
 import net.codinux.log.auth.BasicAuthAuthentication
-import net.codinux.log.config.LogAppenderFieldsConfig
 import net.codinux.log.config.WriterConfig
 
 open class LokiLogAppenderConfig(
     open var enabled: Boolean = EnabledDefaultValue,
 
-    open var hostUrl: String = HostUrlNotSet,
+    open var lokiBaseUrl: String = BaseUrlNotSet,
 
     open var username: String? = UsernameNotSet,
     open var password: String? = PasswordNotSet,
@@ -26,7 +25,7 @@ open class LokiLogAppenderConfig(
         const val EnabledDefaultValue = true
         const val EnabledDefaultValueString = EnabledDefaultValue.toString()
 
-        const val HostUrlNotSet = "null"
+        const val BaseUrlNotSet = "null"
 
         val UsernameNotSet: String? = null
         const val UsernameNotSetString = "null"

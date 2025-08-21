@@ -25,7 +25,7 @@ class JBossLoggingLokiAppenderSampleApp {
         JBossLoggingUtil.registerLogHandler(
             // make sure Loki is running on localhost under port 3100 or adjust URL here
             JBossLoggingLokiAppender(LokiLogAppenderConfig(
-                hostUrl = "http://localhost:3100",
+                lokiBaseUrl = "http://localhost:3100",
                 fields = LogFieldsConfig().apply {
                     marker.include = IncludeField.StructuredMetadata
                     ndc.include = IncludeField.StructuredMetadata

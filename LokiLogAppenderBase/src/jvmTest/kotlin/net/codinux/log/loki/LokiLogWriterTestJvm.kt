@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class LokiLogWriterTestJvm {
 
     private val config = LokiLogAppenderConfig(
-        hostUrl = "http://localhost:3100",
+        lokiBaseUrl = "http://localhost:3100",
         fields = LogFieldsConfig().apply {
             loggerClass.include = IncludeField.Label
             appName.include = IncludeField.Label

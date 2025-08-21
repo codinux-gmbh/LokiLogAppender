@@ -24,8 +24,8 @@ open class LogbackLokiAppender(protected open val config: LokiLogAppenderConfig 
     }
 
 
-    open fun setHostUrl(hostUrl: String) {
-        config.hostUrl = hostUrl
+    open fun setLokiBaseUrl(baseUrl: String) {
+        config.lokiBaseUrl = baseUrl
     }
 
     open fun setUsername(username: String?) {
