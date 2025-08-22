@@ -17,7 +17,8 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <!-- choose a low Quarkus version to support as many Quarkus versions as possible -->
         <quarkus.version>2.10.0.Final</quarkus.version>
-        <kotlin.version>1.8.22</kotlin.version>
+        <!-- Preferably set kotlin.version to the same version as kotlinVersion in gradle.properties -->
+        <kotlin.version>1.9.25</kotlin.version>
         <jboss.logmanager.version>1.0.4</jboss.logmanager.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
