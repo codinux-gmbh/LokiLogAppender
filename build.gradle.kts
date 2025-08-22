@@ -55,8 +55,7 @@ fun setVersion(version: String) {
 
     val parentPomFile = projectDir.resolve("pom.xml")
     val parentPomText = parentPomFile.readText()
-    val parentPomTextUpdated = parentPomText.replaceFirst(parentPomVersionRegex, "    <version>$version</version>")
-    parentPomFile.writeText(parentPomTextUpdated)
+    var parentPomTextUpdated = parentPomText.replaceFirst(parentPomVersionRegex, "    <version>$version</version>")
 
     listOf(projectDir.resolve("QuarkusLokiLogger"), projectDir.resolve("QuarkusLokiLoggerDeployment"))
         .map { it.resolve("pom.xml") }
@@ -65,4 +64,21 @@ fun setVersion(version: String) {
             val childPomTextUpdated = childPomText.replaceFirst(childPomVersionRegex, "        <version>$version</version>")
             childPomFile.writeText(childPomTextUpdated)
         }
+
+
+    val gradlePropertiesText = projectDir.resolve("gradle.properties").readText()
+
+    val kotlinVersionRegex = Regex("^kotlinVersion=([\\d.]+)$", RegexOption.MULTILINE)
+    val kotlinVersion = kotlinVersionRegex.find(gradlePropertiesText)?.groups!![1]!!.value
+
+    val logAppenderBaseVersionRegex = Regex("^logAppenderBaseVersion=([\\dSNAPSHOT.-]+)$", RegexOption.MULTILINE)
+    val logAppenderBaseVersion = logAppenderBaseVersionRegex.find(gradlePropertiesText)?.groups!![1]!!.value
+
+    val parentPomKotlinVersionRegex = Regex("<kotlin.version>[\\d.]+</kotlin.version>", RegexOption.MULTILINE)
+    val parentPomLogAppenderBaseVersionRegex = Regex("<log.appender.base.version>[\\dSNAPSHOT.-]+</log.appender.base.version>", RegexOption.MULTILINE)
+
+    parentPomTextUpdated = parentPomTextUpdated.replaceFirst(parentPomKotlinVersionRegex, "<kotlin.version>$kotlinVersion</kotlin.version>")
+    parentPomTextUpdated = parentPomTextUpdated.replaceFirst(parentPomLogAppenderBaseVersionRegex, "<log.appender.base.version>$logAppenderBaseVersion</log.appender.base.version>")
+
+    parentPomFile.writeText(parentPomTextUpdated)
 }
