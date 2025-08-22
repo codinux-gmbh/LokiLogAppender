@@ -81,9 +81,9 @@ open class LogFieldsConfig(
         private const val True = true
         private const val False = false
 
-        private const val No = "No"
-        private const val Label = "Label"
-        private const val StructuredMetadata = "StructuredMetadata"
+        const val No = "No"
+        const val Label = "Label"
+        const val StructuredMetadata = "StructuredMetadata"
 
 
         /*          Log Event fields            */
@@ -141,11 +141,10 @@ open class LogFieldsConfig(
         val AppVersionDefaultValue: String? = null
         const val AppVersionDefaultValueString = "null"
 
-        val JobNameDefaultFieldName = "job"
+        const val JobNameDefaultFieldName = "job"
         const val JobNameDefaultIncludeValueString = No
         val JobNameDefaultIncludeValue = JobNameDefaultIncludeValueString.asInclude()
-        val JobNameDefaultValue: String? = null
-        const val JobNameDefaultValueString = "null"
+        const val JobNameDefaultValue: String = "LokiLogger"
 
 
         /*          Host                */

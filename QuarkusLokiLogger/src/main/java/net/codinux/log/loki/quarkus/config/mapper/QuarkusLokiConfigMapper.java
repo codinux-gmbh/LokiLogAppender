@@ -1,21 +1,72 @@
 package net.codinux.log.loki.quarkus.config.mapper;
 
+import net.codinux.log.loki.config.LogFieldsConfig;
 import net.codinux.log.loki.config.LokiLogAppenderConfig;
+import net.codinux.log.loki.config.field.FieldConfig;
+import net.codinux.log.loki.config.field.FieldWithValueConfig;
+import net.codinux.log.loki.config.field.PrefixFieldConfig;
+import net.codinux.log.loki.config.field.StacktraceFieldConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
+import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldConfig;
+import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldWithValueConfig;
+import net.codinux.log.loki.quarkus.config.fields.QuarkusLokiLogAppenderFieldsConfig;
+import net.codinux.log.loki.quarkus.config.fields.StacktraceConfig;
 import net.codinux.log.quarkus.config.mapper.QuarkusConfigMapper;
+
+import static net.codinux.log.quarkus.config.mapper.QuarkusConfigMapper.mapNullableString;
 
 public class QuarkusLokiConfigMapper {
 
     public static LokiLogAppenderConfig mapConfig(QuarkusLokiLogAppenderConfig config) {
-        LokiLogAppenderConfig mappedConfig = new LokiLogAppenderConfig();
+        return new LokiLogAppenderConfig(
+                config.enable(),
+                config.lokiBaseUrl(),
+                mapNullableString(config.authentication().username()),
+                mapNullableString(config.authentication().password()),
+                mapNullableString(config.tenantId()),
+                mapFields(config.fields()),
+                QuarkusConfigMapper.mapWriterConfig(config.writer()),
+                mapNullableString(config.stateLoggerName())
+        );
+    }
 
-        // map common fields
-        QuarkusConfigMapper.mapConfigTo(config, mappedConfig);
+    private static LogFieldsConfig mapFields(QuarkusLokiLogAppenderFieldsConfig fields) {
+        return new LogFieldsConfig(
+                map(fields.logLevel()),
+                map(fields.loggerName()),
+                map(fields.loggerClassName()),
 
-        // map Loki config specific fields
-        mappedConfig.setTenantId(QuarkusConfigMapper.mapNullableString(config.tenantId()));
+                map(fields.threadName()),
+                mapStacktraceConfig(fields.stacktrace()),
 
-        return mappedConfig;
+                map(fields.appName()),
+                map(fields.appVersion()),
+                map(fields.jobName()),
+
+                map(fields.hostName()),
+                map(fields.hostIp()),
+
+                new PrefixFieldConfig(fields.mdc().prefix(), fields.mdc().include()),
+                map(fields.marker()),
+                map(fields.ndc()),
+
+                // TODO
+                fields.kubernetesInfo().include(),
+                fields.kubernetesInfo().prefix(),
+                QuarkusConfigMapper.mapKubernetesFields(fields.kubernetesInfo().fields())
+        );
+    }
+
+    private static FieldConfig map(QuarkusFieldConfig config) {
+        return new FieldConfig(config.fieldName(), config.include());
+    }
+
+    private static FieldWithValueConfig map(QuarkusFieldWithValueConfig config) {
+        return new FieldWithValueConfig(config.fieldName(), config.include(), config.value());
+    }
+
+    private static StacktraceFieldConfig mapStacktraceConfig(StacktraceConfig config) {
+        return new StacktraceFieldConfig(config.fieldName(), config.include(), config.maxFieldLength());
     }
 
 }
