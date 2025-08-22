@@ -38,7 +38,7 @@ open class LokiLogWriter(
 
 
         private fun LokiLogAppenderConfig.toLogWriterBaseConfig() = LogWriterBaseConfig(
-            this.enabled, this.fields, this.writer, this.fields.includeKubernetesInfo
+            this.enabled, this.fields, this.writer, this.fields.kubernetes.includeKubernetesInfo
         )
     }
 

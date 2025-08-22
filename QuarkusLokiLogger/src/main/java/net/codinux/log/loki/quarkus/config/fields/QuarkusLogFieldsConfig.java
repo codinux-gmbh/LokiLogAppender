@@ -2,7 +2,7 @@ package net.codinux.log.loki.quarkus.config.fields;
 
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.smallrye.config.WithName;
-import net.codinux.log.loki.quarkus.config.fields.kubernetes.LokiKubernetesInfoConfig;
+import net.codinux.log.loki.quarkus.config.fields.kubernetes.QuarkusKubernetesFieldsConfig;
 
 @ConfigGroup
 public interface QuarkusLogFieldsConfig {
@@ -88,6 +88,6 @@ public interface QuarkusLogFieldsConfig {
      * Configure which Kubernetes values to include in log.
      */
     @WithName("kubernetes")
-    LokiKubernetesInfoConfig kubernetesInfo();
+    QuarkusKubernetesFieldsConfig kubernetes();
 
 }

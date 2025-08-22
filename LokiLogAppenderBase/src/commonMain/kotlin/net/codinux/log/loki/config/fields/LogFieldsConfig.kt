@@ -1,13 +1,7 @@
 package net.codinux.log.loki.config.fields
 
 import net.codinux.log.config.CostlyFieldsConfig
-import net.codinux.log.config.KubernetesFieldsConfig
-import net.codinux.log.config.LogAppenderFieldsConfig.Companion.IncludeKubernetesInfoDefaultValue
-import net.codinux.log.loki.config.fields.FieldConfig
-import net.codinux.log.loki.config.fields.FieldWithValueConfig
-import net.codinux.log.loki.config.fields.IncludeField
-import net.codinux.log.loki.config.fields.PrefixFieldConfig
-import net.codinux.log.loki.config.fields.StacktraceFieldConfig
+import net.codinux.log.loki.config.fields.kubernetes.KubernetesFieldsConfig
 
 open class LogFieldsConfig(
 
@@ -44,11 +38,7 @@ open class LogFieldsConfig(
     open var ndc: FieldConfig = FieldConfig(NdcDefaultFieldName, NdcDefaultIncludeValue),
 
 
-    // TODO: extract to object KubernetesFieldsConfig(include: Boolean, prefix: String, <fields>)
-    open var includeKubernetesInfo: Boolean = IncludeKubernetesInfoDefaultValue,
-    open var kubernetesFieldsPrefix: String? = KubernetesFieldsPrefixDefaultValue,
-
-    open var kubernetesFields: KubernetesFieldsConfig = KubernetesFieldsConfig(),
+    open var kubernetes: KubernetesFieldsConfig = KubernetesFieldsConfig(),
 
     ) : CostlyFieldsConfig {
 
@@ -73,8 +63,8 @@ open class LogFieldsConfig(
 
     companion object {
 
-        private const val True = true
-        private const val False = false
+        const val True = true
+        const val False = false
 
         const val No = "No"
         const val Label = "Label"
@@ -160,7 +150,7 @@ open class LogFieldsConfig(
         const val KubernetesInfoDefaultIncludeValueString = KubernetesInfoDefaultIncludeValue.toString()
 
 
-        private fun String.asInclude(): IncludeField = when (this) {
+        internal fun String.asInclude(): IncludeField = when (this) {
             Label -> IncludeField.Label
             StructuredMetadata -> IncludeField.StructuredMetadata
             No -> IncludeField.No

@@ -6,6 +6,9 @@ import net.codinux.log.data.ProcessData
 import net.codinux.log.kubernetes.PodInfo
 import net.codinux.log.loki.config.fields.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.loki.config.fields.FieldConfig
+import net.codinux.log.loki.config.fields.IncludeField
+import net.codinux.log.loki.config.fields.kubernetes.KubernetesFieldsConfig
 import net.codinux.log.loki.model.LogStream
 
 open class LokiLogRecordMapper(
@@ -25,8 +28,7 @@ open class LokiLogRecordMapper(
         mapField(labels, fields.hostName.logAsLabel, fields.hostName.name, processData.hostName)
         mapField(labels, fields.hostIp.logAsLabel, fields.hostIp.name, processData.hostIp)
 
-        // TODO
-//        fieldMapper.mapPodInfoFields(labels, fields.includeKubernetesInfo, podInfo, fields.kubernetesFieldsPrefix, fields.kubernetesFields)
+        mapKubernetesFields(labels, fields.kubernetes, IncludeField.Label, podInfo)
     }
 
     open fun <T> mapDynamicLabels(record: LogRecord<T>, labels: MutableMap<String, String?>) {
@@ -50,7 +52,7 @@ open class LokiLogRecordMapper(
         mapField(structuredMetadata, fields.hostName.logAsStructuredMetadata, fields.hostName.name, processData.hostName)
         mapField(structuredMetadata, fields.hostIp.logAsStructuredMetadata, fields.hostIp.name, processData.hostIp)
 
-        fieldMapper.mapPodInfoFields(structuredMetadata, fields.includeKubernetesInfo, podInfo, fields.kubernetesFieldsPrefix, fields.kubernetesFields)
+        mapKubernetesFields(structuredMetadata, fields.kubernetes, IncludeField.StructuredMetadata, podInfo)
     }
 
     open fun mapDynamicStructuredMetadata(record: LogRecord<LogStream>, structuredMetadata: MutableMap<String, String?>) {
@@ -87,6 +89,49 @@ open class LokiLogRecordMapper(
         // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
         value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
             .replace("\"", "\\\"")
+
+
+    open fun mapKubernetesFields(fields: MutableMap<String, String?>, kubernetes: KubernetesFieldsConfig, requiredInclude: IncludeField, podInfo: PodInfo?) {
+        if (kubernetes.includeKubernetesInfo) {
+            podInfo?.let { info ->
+                val prefix = kubernetes.kubernetesFieldsPrefix!!
+                mapKubernetesField(fields, kubernetes.namespace, requiredInclude, prefix, info.namespace)
+
+                mapKubernetesField(fields, kubernetes.podName, requiredInclude, prefix, info.podName)
+                mapKubernetesField(fields, kubernetes.podIp, requiredInclude, prefix, info.podIp)
+                mapKubernetesField(fields, kubernetes.podUid, requiredInclude, prefix, info.podUid)
+
+                mapKubernetesField(fields, kubernetes.containerName, requiredInclude, prefix, info.containerName)
+//                mapKubernetesField(fields, kubernetes.containerId, requiredInclude, prefix, info.containerId)
+
+                mapKubernetesField(fields, kubernetes.imageName, requiredInclude, prefix, info.imageName)
+//                mapKubernetesField(fields, kubernetes.imageId, requiredInclude, prefix, info.imageId)
+
+                mapKubernetesField(fields, kubernetes.nodeIp, requiredInclude, prefix, info.nodeIp)
+                mapKubernetesField(fields, kubernetes.nodeName, requiredInclude, prefix, info.nodeName)
+
+//                mapKubernetesField(fields, kubernetes.startTime, requiredInclude, prefix, info.startTime)
+//                mapKubernetesField(fields, kubernetes.restartCount, requiredInclude, prefix, info.restartCount.toString())
+
+//                if (kubernetes.includeLabels) {
+//                    val labelsPrefix = prefix + kubernetes.labelsPrefix
+//                    info.labels.forEach { (labelName, value) ->
+//                        mapField(fields, true, labelsPrefix + escapeDynamicLabelName(labelName), value)
+//                    }
+//                }
+//
+//                if (kubernetes.includeAnnotations) {
+//                    val annotationsPrefix = prefix + kubernetes.annotationsPrefix
+//                    info.annotations.forEach { (annotationName, value) ->
+//                        mapField(fields, true, annotationsPrefix + escapeDynamicLabelName(annotationName), value)
+//                    }
+//                }
+            }
+        }
+    }
+
+    protected open fun mapKubernetesField(fields: MutableMap<String, String?>, field: FieldConfig, requiredInclude: IncludeField, prefix: String, value: String?) =
+        mapField(fields, field.isIncludedAs(requiredInclude), prefix + field.name, value)
 
 
     protected fun logsDynamicStructuredMetadata(fields: LogFieldsConfig): Boolean =

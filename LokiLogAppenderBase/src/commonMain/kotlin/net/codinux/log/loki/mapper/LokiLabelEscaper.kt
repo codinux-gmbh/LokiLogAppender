@@ -1,7 +1,7 @@
 package net.codinux.log.loki.mapper
 
-import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
+import net.codinux.log.loki.config.fields.kubernetes.KubernetesFieldsConfig
 import net.codinux.log.mapper.FieldEscaper
 
 open class LokiLabelEscaper : FieldEscaper {
@@ -37,32 +37,34 @@ open class LokiLabelEscaper : FieldEscaper {
         fields.marker.name = escapeFieldName(fields.marker.name)
         fields.ndc.name = escapeFieldName(fields.ndc.name)
 
-        fields.kubernetesFieldsPrefix = determinePrefix(fields.kubernetesFieldsPrefix)
-        escapeKubernetesFieldsLabelNames(fields.kubernetesFields)
+        fields.kubernetes.kubernetesFieldsPrefix = determinePrefix(fields.kubernetes.kubernetesFieldsPrefix)
+        escapeKubernetesFieldsLabelNames(fields.kubernetes)
 
         return config
     }
 
     protected open fun escapeKubernetesFieldsLabelNames(fields: KubernetesFieldsConfig) {
-        fields.namespaceFieldName = escapeFieldName(fields.namespaceFieldName)
+        fields.namespace.name = escapeFieldName(fields.namespace.name)
 
-        fields.podNameFieldName = escapeFieldName(fields.podNameFieldName)
-        fields.containerNameFieldName = escapeFieldName(fields.containerNameFieldName)
-        fields.imageNameFieldName = escapeFieldName(fields.imageNameFieldName)
+        fields.podName.name = escapeFieldName(fields.podName.name)
+        fields.podIp.name = escapeFieldName(fields.podIp.name)
+        fields.podUid.name = escapeFieldName(fields.podUid.name)
 
-        fields.nodeNameFieldName = escapeFieldName(fields.nodeNameFieldName)
-        fields.nodeIpFieldName = escapeFieldName(fields.nodeIpFieldName)
-        fields.podIpFieldName = escapeFieldName(fields.podIpFieldName)
+        fields.containerName.name = escapeFieldName(fields.containerName.name)
+//        fields.containerId.name = escapeFieldName(fields.containerId.name)
 
-        fields.startTimeFieldName = escapeFieldName(fields.startTimeFieldName)
-        fields.restartCountFieldName = escapeFieldName(fields.restartCountFieldName)
+        fields.imageName.name = escapeFieldName(fields.imageName.name)
+//        fields.imageId.name = escapeFieldName(fields.imageId.name)
 
-        fields.podUidFieldName = escapeFieldName(fields.podUidFieldName)
-        fields.containerIdFieldName = escapeFieldName(fields.containerIdFieldName)
-        fields.imageIdFieldName = escapeFieldName(fields.imageIdFieldName)
+        fields.nodeName.name = escapeFieldName(fields.nodeName.name)
+        fields.nodeIp.name = escapeFieldName(fields.nodeIp.name)
 
-        fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
-        fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
+//
+//        fields.startTime.name = escapeFieldName(fields.startTime.name)
+//        fields.restartCount.name = escapeFieldName(fields.restartCount.name)
+//
+//        fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
+//        fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
     }
 
     /**

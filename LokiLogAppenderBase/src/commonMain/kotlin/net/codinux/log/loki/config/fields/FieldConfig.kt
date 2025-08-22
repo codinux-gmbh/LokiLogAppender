@@ -17,6 +17,9 @@ open class FieldConfig(
     open val logAsStructuredMetadata: Boolean
         get() = include.logAsStructuredMetadata
 
+    open fun isIncludedAs(include: IncludeField): Boolean =
+        this.include == include
+
     open fun setInclude(include: Boolean) {
         this.include = if (include) {
             IncludeField.Label

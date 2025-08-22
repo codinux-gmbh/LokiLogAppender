@@ -29,7 +29,7 @@ class JBossLoggingLokiAppenderSampleApp {
                 fields = LogFieldsConfig().apply {
                     marker.include = IncludeField.StructuredMetadata
                     ndc.include = IncludeField.StructuredMetadata
-                    includeKubernetesInfo = false
+                    kubernetes.includeKubernetesInfo = false
                     appName.include = IncludeField.Label
                     appName.value = "TestApp"
                 }
