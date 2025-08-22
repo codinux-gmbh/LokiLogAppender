@@ -19,6 +19,8 @@
         <quarkus.version>2.10.0.Final</quarkus.version>
         <!-- Preferably set kotlin.version to the same version as kotlinVersion in gradle.properties -->
         <kotlin.version>1.9.25</kotlin.version>
+        <!-- Preferably set to the same LogAppenderBase version as in gradle.properties -->
+        <log.appender.base.version>0.8.0-SNAPSHOT</log.appender.base.version>
         <jboss.logmanager.version>1.0.4</jboss.logmanager.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>

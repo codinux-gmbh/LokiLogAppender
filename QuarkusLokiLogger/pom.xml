@@ -27,7 +27,7 @@
         <dependency>
             <groupId>net.codinux.log</groupId>
             <artifactId>quarkus-log-appender-config-base</artifactId>
-            <version>${project.version}</version>
+            <version>${log.appender.base.version}</version>
         </dependency>
 
         <dependency>
