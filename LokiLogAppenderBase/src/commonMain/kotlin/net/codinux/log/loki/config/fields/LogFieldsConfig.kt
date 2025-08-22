@@ -21,22 +21,10 @@ open class LogFieldsConfig(
     open var stacktrace: StacktraceFieldConfig = StacktraceFieldConfig(StacktraceDefaultFieldName, StacktraceDefaultIncludeValue, StacktraceMaxFieldLengthDefaultValue),
 
 
-    open var appName: FieldWithValueConfig = FieldWithValueConfig(
-        AppNameDefaultFieldName,
-        AppNameDefaultIncludeValue,
-        AppNameDefaultValue
-    ),
-    open var appVersion: FieldWithValueConfig = FieldWithValueConfig(
-        AppVersionDefaultFieldName,
-        AppVersionDefaultIncludeValue,
-        AppVersionDefaultValue
-    ),
+    open var appName: FieldWithValueConfig = FieldWithValueConfig(AppNameDefaultFieldName, AppNameDefaultIncludeValue, AppNameDefaultValue),
+    open var appVersion: FieldWithValueConfig = FieldWithValueConfig(AppVersionDefaultFieldName, AppVersionDefaultIncludeValue, AppVersionDefaultValue),
 
-    open var job: FieldWithValueConfig = FieldWithValueConfig(
-        JobNameDefaultFieldName,
-        JobNameDefaultIncludeValue,
-        JobNameDefaultValue
-    ),
+    open var job: FieldWithValueConfig = FieldWithValueConfig(JobNameDefaultFieldName, JobNameDefaultIncludeValue, JobNameDefaultValue),
 
     open var hostName: FieldConfig = FieldConfig(HostNameDefaultFieldName, HostNameDefaultIncludeValue),
     open var hostIp: FieldConfig = FieldConfig(HostIpDefaultFieldName, HostIpDefaultIncludeValue),
