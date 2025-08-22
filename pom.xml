@@ -20,7 +20,7 @@
         <!-- Automatically set to the same Kotlin version as in gradle.properties by root build.gradle.kts -->
         <kotlin.version>1.9.25</kotlin.version>
         <!-- Automatically set to the same LogAppenderBase version as in gradle.properties by root build.gradle.kts -->
-        <log.appender.base.version>0.8.0-SNAPSHOT</log.appender.base.version>
+        <log.appender.base.version>0.8.0</log.appender.base.version>
         <jboss.logmanager.version>1.0.4</jboss.logmanager.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
