@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
-import net.codinux.log.loki.quarkus.config.fields.QuarkusLokiLogAppenderFieldsConfig;
+import net.codinux.log.loki.quarkus.config.fields.QuarkusLogFieldsConfig;
 import net.codinux.log.quarkus.config.QuarkusWriterConfig;
 
 import java.util.Optional;
@@ -45,7 +45,7 @@ public interface QuarkusLokiLogAppenderConfig {
      * Configuration of logged fields.
      */
     @WithName("field")
-    QuarkusLokiLogAppenderFieldsConfig fields();
+    QuarkusLogFieldsConfig fields();
 
 
     /**

@@ -5,7 +5,7 @@ import io.smallrye.config.WithName;
 import net.codinux.log.loki.quarkus.config.fields.kubernetes.LokiKubernetesInfoConfig;
 
 @ConfigGroup
-public interface QuarkusLokiLogAppenderFieldsConfig {
+public interface QuarkusLogFieldsConfig {
 
     /**
      * Configure if log level should get logged as Label or StructuredMetadata and its field name.

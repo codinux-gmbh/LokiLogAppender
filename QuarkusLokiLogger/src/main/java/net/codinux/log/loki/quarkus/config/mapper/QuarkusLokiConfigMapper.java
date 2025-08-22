@@ -9,7 +9,7 @@ import net.codinux.log.loki.config.fields.StacktraceFieldConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldConfig;
 import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldWithValueConfig;
-import net.codinux.log.loki.quarkus.config.fields.QuarkusLokiLogAppenderFieldsConfig;
+import net.codinux.log.loki.quarkus.config.fields.QuarkusLogFieldsConfig;
 import net.codinux.log.loki.quarkus.config.fields.StacktraceConfig;
 import net.codinux.log.quarkus.config.mapper.QuarkusConfigMapper;
 
@@ -30,7 +30,7 @@ public class QuarkusLokiConfigMapper {
         );
     }
 
-    private static LogFieldsConfig mapFields(QuarkusLokiLogAppenderFieldsConfig fields) {
+    private static LogFieldsConfig mapFields(QuarkusLogFieldsConfig fields) {
         return new LogFieldsConfig(
                 map(fields.logLevel()),
                 map(fields.loggerName()),
