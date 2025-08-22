@@ -51,20 +51,19 @@ open class LokiLabelEscaper : FieldEscaper {
         fields.podUid.name = escapeFieldName(fields.podUid.name)
 
         fields.containerName.name = escapeFieldName(fields.containerName.name)
-//        fields.containerId.name = escapeFieldName(fields.containerId.name)
+        fields.containerId.name = escapeFieldName(fields.containerId.name)
 
         fields.imageName.name = escapeFieldName(fields.imageName.name)
-//        fields.imageId.name = escapeFieldName(fields.imageId.name)
+        fields.imageId.name = escapeFieldName(fields.imageId.name)
 
         fields.nodeName.name = escapeFieldName(fields.nodeName.name)
         fields.nodeIp.name = escapeFieldName(fields.nodeIp.name)
 
-//
-//        fields.startTime.name = escapeFieldName(fields.startTime.name)
-//        fields.restartCount.name = escapeFieldName(fields.restartCount.name)
-//
-//        fields.labelsPrefix = determinePrefix(fields.labelsPrefix)
-//        fields.annotationsPrefix = determinePrefix(fields.annotationsPrefix)
+        fields.startTime.name = escapeFieldName(fields.startTime.name)
+        fields.restartCount.name = escapeFieldName(fields.restartCount.name)
+
+        fields.labels.prefix = determinePrefix(fields.labels.prefix)
+        fields.annotations.prefix = determinePrefix(fields.annotations.prefix)
     }
 
     /**

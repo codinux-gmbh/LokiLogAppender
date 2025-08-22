@@ -9,7 +9,7 @@ import net.codinux.log.loki.quarkus.config.converter.IncludeFieldConverter;
 import net.codinux.log.quarkus.converter.FieldNamePrefixConverter;
 
 @ConfigGroup
-public interface MdcConfig {
+public interface MdcConfig extends QuarkusPrefixFieldConfig {
 
     /**
      * If MDC (Mapped Diagnostic Context) should be included as Label or StructuredMetadata in Loki.
@@ -18,6 +18,7 @@ public interface MdcConfig {
      * (see e.g. https://grafana.com/docs/loki/latest/get-started/labels/bp-labels/ or
      * https://grafana.com/docs/loki/latest/get-started/labels/cardinality/).
      */
+    @Override
     @WithDefault(LogFieldsConfig.MdcDefaultIncludeValueString)
     @WithConverter(IncludeFieldConverter.class)
     IncludeField include();
@@ -37,6 +38,7 @@ public interface MdcConfig {
      *
      *  Defaults to {@code mdc}.
      */
+    @Override
     @WithDefault(LogFieldsConfig.MdcFieldsPrefixDefaultValue)
     @WithConverter(FieldNamePrefixConverter.class)
     String prefix();

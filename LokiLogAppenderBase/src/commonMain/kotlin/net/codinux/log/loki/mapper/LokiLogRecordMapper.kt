@@ -77,8 +77,14 @@ open class LokiLogRecordMapper(
     protected open fun mapField(fields: MutableMap<String, String?>, includeField: Boolean, fieldName: String, value: String?) =
         fieldMapper.mapField(fields, includeField, fieldName, value)
 
+    protected open fun mapFieldIfNotNull(fields: MutableMap<String, String?>, includeField: Boolean, fieldName: String, value: String?) =
+        fieldMapper.mapFieldIfNotNull(fields, includeField, fieldName, value)
+
     protected open fun mapDynamicFieldIfNotNull(fields: MutableMap<String, String?>, includeField: Boolean, fieldName: String, value: String?) =
         fieldMapper.mapDynamicFieldIfNotNull(fields, includeField, fieldName, value)
+
+    protected open fun escapeDynamicLabelName(key: String): String =
+        fieldMapper.fieldEscaper?.escapeFieldName(key) ?: key
 
 
     open fun getStacktrace(exception: Throwable?): String? =
@@ -102,36 +108,36 @@ open class LokiLogRecordMapper(
                 mapKubernetesField(fields, kubernetes.podUid, requiredInclude, prefix, info.podUid)
 
                 mapKubernetesField(fields, kubernetes.containerName, requiredInclude, prefix, info.containerName)
-//                mapKubernetesField(fields, kubernetes.containerId, requiredInclude, prefix, info.containerId)
+                mapKubernetesField(fields, kubernetes.containerId, requiredInclude, prefix, info.containerId)
 
                 mapKubernetesField(fields, kubernetes.imageName, requiredInclude, prefix, info.imageName)
-//                mapKubernetesField(fields, kubernetes.imageId, requiredInclude, prefix, info.imageId)
+                mapKubernetesField(fields, kubernetes.imageId, requiredInclude, prefix, info.imageId)
 
                 mapKubernetesField(fields, kubernetes.nodeIp, requiredInclude, prefix, info.nodeIp)
                 mapKubernetesField(fields, kubernetes.nodeName, requiredInclude, prefix, info.nodeName)
 
-//                mapKubernetesField(fields, kubernetes.startTime, requiredInclude, prefix, info.startTime)
-//                mapKubernetesField(fields, kubernetes.restartCount, requiredInclude, prefix, info.restartCount.toString())
+                mapKubernetesField(fields, kubernetes.startTime, requiredInclude, prefix, info.startTime)
+                mapKubernetesField(fields, kubernetes.restartCount, requiredInclude, prefix, info.restartCount.toString())
 
-//                if (kubernetes.includeLabels) {
-//                    val labelsPrefix = prefix + kubernetes.labelsPrefix
-//                    info.labels.forEach { (labelName, value) ->
-//                        mapField(fields, true, labelsPrefix + escapeDynamicLabelName(labelName), value)
-//                    }
-//                }
-//
-//                if (kubernetes.includeAnnotations) {
-//                    val annotationsPrefix = prefix + kubernetes.annotationsPrefix
-//                    info.annotations.forEach { (annotationName, value) ->
-//                        mapField(fields, true, annotationsPrefix + escapeDynamicLabelName(annotationName), value)
-//                    }
-//                }
+                if (kubernetes.labels.isIncludedAs(requiredInclude)) {
+                    val labelsPrefix = prefix + kubernetes.labels.prefix
+                    info.labels.forEach { (labelName, value) ->
+                        mapField(fields, true, labelsPrefix + escapeDynamicLabelName(labelName), value)
+                    }
+                }
+
+                if (kubernetes.annotations.isIncludedAs(requiredInclude)) {
+                    val annotationsPrefix = prefix + kubernetes.annotations.prefix
+                    info.annotations.forEach { (annotationName, value) ->
+                        mapField(fields, true, annotationsPrefix + escapeDynamicLabelName(annotationName), value)
+                    }
+                }
             }
         }
     }
 
     protected open fun mapKubernetesField(fields: MutableMap<String, String?>, field: FieldConfig, requiredInclude: IncludeField, prefix: String, value: String?) =
-        mapField(fields, field.isIncludedAs(requiredInclude), prefix + field.name, value)
+        mapFieldIfNotNull(fields, field.isIncludedAs(requiredInclude), prefix + field.name, value)
 
 
     protected fun logsDynamicStructuredMetadata(fields: LogFieldsConfig): Boolean =

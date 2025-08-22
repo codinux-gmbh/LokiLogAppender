@@ -16,6 +16,9 @@ open class PrefixFieldConfig(
     open val logAsStructuredMetadata: Boolean
         get() = include.logAsStructuredMetadata
 
+    open fun isIncludedAs(include: IncludeField): Boolean =
+        this.include == include
+
 
     override fun toString() = "$prefix include $include"
 }

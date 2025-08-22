@@ -60,12 +60,24 @@ public interface QuarkusKubernetesFieldsConfig {
     @WithName("containername")
     ContainerNameConfig containerName();
 
+    /**
+     * Config for the container id index field.
+     */
+    @WithName("containerid")
+    ContainerIdConfig containerId();
+
 
     /**
      * Config for the image name index field.
      */
     @WithName("imagename")
     ImageNameConfig imageName();
+
+    /**
+     * Config for the image id index field.
+     */
+    @WithName("imageid")
+    ImageIdConfig imageId();
 
 
     /**
@@ -80,42 +92,29 @@ public interface QuarkusKubernetesFieldsConfig {
     @WithName("nodeip")
     NodeIpConfig nodeIp();
 
-//
-//    /**
-//     * Config for the container start time index field.
-//     */
-//    @WithName("starttime")
-//    StartTimeConfig startTime();
-//
-//    /**
-//     * Config for the container restart count index field.
-//     */
-//    @WithName("restartcount")
-//    RestartCountConfig restartCount();
+
+    /**
+     * Config for the container start time index field.
+     */
+    @WithName("starttime")
+    StartTimeConfig startTime();
+
+    /**
+     * Config for the container restart count index field.
+     */
+    @WithName("restartcount")
+    RestartCountConfig restartCount();
 
 
-//    /**
-//     * Config for the container id index field.
-//     */
-//    @WithName("containerid")
-//    ContainerIdConfig containerId();
-//
-//    /**
-//     * Config for the image id index field.
-//     */
-//    @WithName("imageid")
-//    ImageIdConfig imageId();
-//
-//
-//    /**
-//     * Config for the Kubernetes labels index fields.
-//     */
-//    KubernetesLabelsConfig labels();
-//
-//
-//    /**
-//     * Config for the Kubernetes annotations index fields.
-//     */
-//    KubernetesAnnotationsConfig annotations();
+    /**
+     * Config for the Kubernetes labels index fields.
+     */
+    KubernetesLabelsConfig labels();
+
+
+    /**
+     * Config for the Kubernetes annotations index fields.
+     */
+    KubernetesAnnotationsConfig annotations();
 
 }

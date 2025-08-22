@@ -4,10 +4,7 @@ import net.codinux.log.loki.config.LokiLogAppenderConfig;
 import net.codinux.log.loki.config.fields.*;
 import net.codinux.log.loki.config.fields.kubernetes.KubernetesFieldsConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
-import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldConfig;
-import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldWithValueConfig;
-import net.codinux.log.loki.quarkus.config.fields.QuarkusLogFieldsConfig;
-import net.codinux.log.loki.quarkus.config.fields.StacktraceConfig;
+import net.codinux.log.loki.quarkus.config.fields.*;
 import net.codinux.log.loki.quarkus.config.fields.kubernetes.QuarkusKubernetesFieldsConfig;
 import net.codinux.log.quarkus.config.mapper.QuarkusConfigMapper;
 
@@ -44,7 +41,7 @@ public class QuarkusLokiConfigMapper {
                 map(fields.hostName()),
                 map(fields.hostIp()),
 
-                new PrefixFieldConfig(fields.mdc().prefix(), fields.mdc().include()),
+                map(fields.mdc()),
                 map(fields.marker()),
                 map(fields.ndc()),
 
@@ -64,13 +61,22 @@ public class QuarkusLokiConfigMapper {
                 map(kubernetes.podUid()),
 
                 map(kubernetes.containerName()),
+                map(kubernetes.containerId()),
 
                 map(kubernetes.imageName()),
+                map(kubernetes.imageId()),
 
                 map(kubernetes.nodeName()),
-                map(kubernetes.nodeIp())
+                map(kubernetes.nodeIp()),
+
+                map(kubernetes.startTime()),
+                map(kubernetes.restartCount()),
+
+                map(kubernetes.labels()),
+                map(kubernetes.annotations())
         );
     }
+
 
     private static FieldConfig map(QuarkusFieldConfig config) {
         return new FieldConfig(config.fieldName(), config.include());
@@ -78,6 +84,10 @@ public class QuarkusLokiConfigMapper {
 
     private static FieldWithValueConfig map(QuarkusFieldWithValueConfig config) {
         return new FieldWithValueConfig(config.fieldName(), config.include(), config.value());
+    }
+
+    private static PrefixFieldConfig map(QuarkusPrefixFieldConfig config) {
+        return new PrefixFieldConfig(config.prefix(), config.include());
     }
 
     private static StacktraceFieldConfig mapStacktraceConfig(StacktraceConfig config) {
