@@ -3,6 +3,7 @@ package net.codinux.log.loki.config
 import net.codinux.log.auth.Authentication
 import net.codinux.log.auth.BasicAuthAuthentication
 import net.codinux.log.config.WriterConfig
+import net.codinux.log.loki.config.fields.LogFieldsConfig
 
 open class LokiLogAppenderConfig(
     open var enabled: Boolean = EnabledDefaultValue,

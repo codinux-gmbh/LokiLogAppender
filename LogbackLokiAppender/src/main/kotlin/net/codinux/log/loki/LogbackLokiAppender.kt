@@ -3,7 +3,7 @@ package net.codinux.log.loki
 import net.codinux.log.LogWriter
 import net.codinux.log.LogbackAppenderBase
 import net.codinux.log.config.WriterConfig
-import net.codinux.log.loki.config.LogFieldsConfig
+import net.codinux.log.loki.config.fields.LogFieldsConfig
 import net.codinux.log.statelogger.LogbackStateLogger
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.JavaHttpClientWebClient

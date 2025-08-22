@@ -1,6 +1,6 @@
 package net.codinux.log.loki.quarkus.config.mapper;
 
-import net.codinux.log.loki.config.LogFieldsConfig;
+import net.codinux.log.loki.config.fields.LogFieldsConfig;
 import net.codinux.log.loki.config.LokiLogAppenderConfig;
 import net.codinux.log.loki.config.fields.FieldConfig;
 import net.codinux.log.loki.config.fields.FieldWithValueConfig;

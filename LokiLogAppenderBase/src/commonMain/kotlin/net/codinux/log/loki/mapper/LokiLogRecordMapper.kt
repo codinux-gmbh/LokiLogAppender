@@ -4,7 +4,7 @@ import net.codinux.log.mapper.FieldMapper
 import net.codinux.log.LogRecord
 import net.codinux.log.data.ProcessData
 import net.codinux.log.kubernetes.PodInfo
-import net.codinux.log.loki.config.LogFieldsConfig
+import net.codinux.log.loki.config.fields.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.model.LogStream
 

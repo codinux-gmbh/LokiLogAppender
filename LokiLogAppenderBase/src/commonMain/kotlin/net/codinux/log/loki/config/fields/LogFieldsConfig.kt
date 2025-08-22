@@ -1,4 +1,4 @@
-package net.codinux.log.loki.config
+package net.codinux.log.loki.config.fields
 
 import net.codinux.log.config.CostlyFieldsConfig
 import net.codinux.log.config.KubernetesFieldsConfig
@@ -40,6 +40,13 @@ open class LogFieldsConfig(
 
     open var hostName: FieldConfig = FieldConfig(HostNameDefaultFieldName, HostNameDefaultIncludeValue),
     open var hostIp: FieldConfig = FieldConfig(HostIpDefaultFieldName, HostIpDefaultIncludeValue),
+
+
+    // TODO: add
+    //  - environment
+    //  - cluster
+    //  - imageVersion
+    // TODO: set nodeName to Label for my applications (or even as default?)
 
 
     open var mdc: PrefixFieldConfig = PrefixFieldConfig(MdcFieldsPrefixDefaultValue, MdcDefaultIncludeValue),
