@@ -26,7 +26,7 @@ public interface KubernetesLabelsConfig extends QuarkusPrefixFieldConfig {
      * Empty string or special value "off" turns prefix off.
      */
     @Override
-    @WithDefault(KubernetesFieldsConfig.LabelsPrefixDefaultValue)
+    @WithDefault(KubernetesFieldsConfig.LabelsDefaultPrefixValue)
     @WithConverter(FieldNamePrefixConverter.class)
     String prefix();
 

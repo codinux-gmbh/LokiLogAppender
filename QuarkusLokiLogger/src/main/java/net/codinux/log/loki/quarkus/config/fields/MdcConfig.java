@@ -39,7 +39,7 @@ public interface MdcConfig extends QuarkusPrefixFieldConfig {
      *  Defaults to {@code mdc}.
      */
     @Override
-    @WithDefault(LogFieldsConfig.MdcFieldsPrefixDefaultValue)
+    @WithDefault(LogFieldsConfig.MdcDefaultPrefixValue)
     @WithConverter(FieldNamePrefixConverter.class)
     String prefix();
 

@@ -31,7 +31,7 @@ public interface StacktraceConfig extends QuarkusFieldConfig {
      * The name of the stacktrace field.
      */
     @WithName("maxFieldLength")
-    @WithDefault(LogFieldsConfig.StacktraceMaxFieldLengthDefaultValueString)
+    @WithDefault(LogFieldsConfig.StacktraceDefaultMaxFieldLengthValueString)
     int maxFieldLength();
 
 }

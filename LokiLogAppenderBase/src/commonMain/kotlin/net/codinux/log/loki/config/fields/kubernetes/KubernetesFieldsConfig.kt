@@ -11,7 +11,7 @@ import net.codinux.log.loki.config.fields.PrefixFieldConfig
 open class KubernetesFieldsConfig(
 
     open var includeKubernetesInfo: Boolean = IncludeKubernetesInfoDefaultValue,
-    open var kubernetesFieldsPrefix: String? = KubernetesFieldsPrefixDefaultValue,
+    open var kubernetesFieldsPrefix: String? = KubernetesFieldsDefaultPrefixValue,
 
     open var namespace: FieldConfig = FieldConfig(NamespaceDefaultFieldName, NamespaceDefaultIncludeValue),
 
@@ -31,8 +31,8 @@ open class KubernetesFieldsConfig(
     open var startTime: FieldConfig = FieldConfig(StartTimeDefaultFieldName, StartTimeDefaultIncludeValue),
     open var restartCount: FieldConfig = FieldConfig(RestartCountDefaultFieldName, RestartCountDefaultIncludeValue),
 
-    open var labels: PrefixFieldConfig = PrefixFieldConfig(LabelsPrefixDefaultValue, LabelsDefaultIncludeValue),
-    open var annotations: PrefixFieldConfig = PrefixFieldConfig(AnnotationsPrefixDefaultValue, AnnotationsDefaultIncludeValue),
+    open var labels: PrefixFieldConfig = PrefixFieldConfig(LabelsDefaultPrefixValue, LabelsDefaultIncludeValue),
+    open var annotations: PrefixFieldConfig = PrefixFieldConfig(AnnotationsDefaultPrefixValue, AnnotationsDefaultIncludeValue),
 
 
     // TODO: add containerId, imageId, startTime, restartCount, labels, annotations
@@ -42,7 +42,7 @@ open class KubernetesFieldsConfig(
 
         const val IncludeKubernetesInfoDefaultValue = False
         const val IncludeKubernetesInfoDefaultValueString = IncludeKubernetesInfoDefaultValue.toString()
-        const val KubernetesFieldsPrefixDefaultValue: String = ""
+        const val KubernetesFieldsDefaultPrefixValue: String = ""
 
 
         const val NamespaceDefaultFieldName = "namespace"
@@ -99,11 +99,11 @@ open class KubernetesFieldsConfig(
         val RestartCountDefaultIncludeValue = RestartCountDefaultIncludeValueString.asInclude()
 
 
-        const val LabelsPrefixDefaultValue = "label"
+        const val LabelsDefaultPrefixValue = "label"
         const val LabelsDefaultIncludeValueString = No
         val LabelsDefaultIncludeValue = LabelsDefaultIncludeValueString.asInclude()
 
-        const val AnnotationsPrefixDefaultValue = "annotation"
+        const val AnnotationsDefaultPrefixValue = "annotation"
         const val AnnotationsDefaultIncludeValueString = No
         val AnnotationsDefaultIncludeValue = AnnotationsDefaultIncludeValueString.asInclude()
 

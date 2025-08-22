@@ -12,7 +12,7 @@ open class LogFieldsConfig(
 
     open var thread: FieldConfig = FieldConfig(ThreadNameDefaultFieldName, ThreadNameDefaultIncludeValue),
 
-    open var stacktrace: StacktraceFieldConfig = StacktraceFieldConfig(StacktraceDefaultFieldName, StacktraceDefaultIncludeValue, StacktraceMaxFieldLengthDefaultValue),
+    open var stacktrace: StacktraceFieldConfig = StacktraceFieldConfig(StacktraceDefaultFieldName, StacktraceDefaultIncludeValue, StacktraceDefaultMaxFieldLengthValue),
 
 
     open var appName: FieldWithValueConfig = FieldWithValueConfig(AppNameDefaultFieldName, AppNameDefaultIncludeValue, AppNameDefaultValue),
@@ -31,7 +31,7 @@ open class LogFieldsConfig(
     // TODO: set nodeName to Label for my applications (or even as default?)
 
 
-    open var mdc: PrefixFieldConfig = PrefixFieldConfig(MdcFieldsPrefixDefaultValue, MdcDefaultIncludeValue),
+    open var mdc: PrefixFieldConfig = PrefixFieldConfig(MdcDefaultPrefixValue, MdcDefaultIncludeValue),
 
     open var marker: FieldConfig = FieldConfig(MarkerDefaultFieldName, MarkerDefaultIncludeValue),
 
@@ -93,13 +93,13 @@ open class LogFieldsConfig(
         const val StacktraceDefaultFieldName = "stacktrace"
         const val StacktraceDefaultIncludeValueString = StructuredMetadata
         val StacktraceDefaultIncludeValue = StacktraceDefaultIncludeValueString.asInclude()
-        const val StacktraceMaxFieldLengthDefaultValue = 32766 - 100 // subtract a little buffer
-        const val StacktraceMaxFieldLengthDefaultValueString = StacktraceMaxFieldLengthDefaultValue.toString()
+        const val StacktraceDefaultMaxFieldLengthValue = 32766 - 100 // subtract a little buffer
+        const val StacktraceDefaultMaxFieldLengthValueString = StacktraceDefaultMaxFieldLengthValue.toString()
 
 
         /*          Log Event metadata          */
 
-        const val MdcFieldsPrefixDefaultValue: String = "mdc"
+        const val MdcDefaultPrefixValue: String = "mdc"
         const val MdcDefaultIncludeValueString = StructuredMetadata
         val MdcDefaultIncludeValue = MdcDefaultIncludeValueString.asInclude()
 

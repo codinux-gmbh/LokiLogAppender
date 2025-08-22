@@ -18,7 +18,7 @@ public interface ImageNameConfig extends QuarkusFieldConfig {
      * Defaults to {@code false} to avoid labels with high cardinality which is bad for Loki.
      */
     @Override
-    @WithDefault(KubernetesFieldsConfig.ImageNameDefaultFieldName)
+    @WithDefault(KubernetesFieldsConfig.ImageNameDefaultIncludeValueString)
     @WithConverter(IncludeFieldConverter.class)
     IncludeField include();
 

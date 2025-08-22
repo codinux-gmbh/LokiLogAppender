@@ -23,7 +23,7 @@ public interface QuarkusKubernetesFieldsConfig {
      *
      * Defaults to an empty string (= no prefix). Others prefer "k8s".
      */
-    @WithDefault(KubernetesFieldsConfig.KubernetesFieldsPrefixDefaultValue)
+    @WithDefault(KubernetesFieldsConfig.KubernetesFieldsDefaultPrefixValue)
     @WithConverter(FieldNamePrefixConverter.class)
     String prefix();
 
