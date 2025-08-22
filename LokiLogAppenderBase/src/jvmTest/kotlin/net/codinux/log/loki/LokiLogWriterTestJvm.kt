@@ -2,7 +2,7 @@ package net.codinux.log.loki
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import net.codinux.log.loki.config.field.IncludeField
+import net.codinux.log.loki.config.fields.IncludeField
 import net.codinux.log.loki.config.LogFieldsConfig
 import net.codinux.log.loki.config.LokiLogAppenderConfig
 import net.codinux.log.loki.web.KtorWebClient

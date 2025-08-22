@@ -3,11 +3,11 @@ package net.codinux.log.loki.config
 import net.codinux.log.config.CostlyFieldsConfig
 import net.codinux.log.config.KubernetesFieldsConfig
 import net.codinux.log.config.LogAppenderFieldsConfig.Companion.IncludeKubernetesInfoDefaultValue
-import net.codinux.log.loki.config.field.FieldConfig
-import net.codinux.log.loki.config.field.FieldWithValueConfig
-import net.codinux.log.loki.config.field.IncludeField
-import net.codinux.log.loki.config.field.PrefixFieldConfig
-import net.codinux.log.loki.config.field.StacktraceFieldConfig
+import net.codinux.log.loki.config.fields.FieldConfig
+import net.codinux.log.loki.config.fields.FieldWithValueConfig
+import net.codinux.log.loki.config.fields.IncludeField
+import net.codinux.log.loki.config.fields.PrefixFieldConfig
+import net.codinux.log.loki.config.fields.StacktraceFieldConfig
 
 open class LogFieldsConfig(
 

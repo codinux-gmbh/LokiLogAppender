@@ -1,6 +1,6 @@
 package net.codinux.log.loki.quarkus.config.converter;
 
-import net.codinux.log.loki.config.field.IncludeField;
+import net.codinux.log.loki.config.fields.IncludeField;
 import org.eclipse.microprofile.config.spi.Converter;
 
 public class IncludeFieldConverter implements Converter<IncludeField> {

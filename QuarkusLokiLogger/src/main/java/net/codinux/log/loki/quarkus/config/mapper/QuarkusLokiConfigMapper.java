@@ -2,10 +2,10 @@ package net.codinux.log.loki.quarkus.config.mapper;
 
 import net.codinux.log.loki.config.LogFieldsConfig;
 import net.codinux.log.loki.config.LokiLogAppenderConfig;
-import net.codinux.log.loki.config.field.FieldConfig;
-import net.codinux.log.loki.config.field.FieldWithValueConfig;
-import net.codinux.log.loki.config.field.PrefixFieldConfig;
-import net.codinux.log.loki.config.field.StacktraceFieldConfig;
+import net.codinux.log.loki.config.fields.FieldConfig;
+import net.codinux.log.loki.config.fields.FieldWithValueConfig;
+import net.codinux.log.loki.config.fields.PrefixFieldConfig;
+import net.codinux.log.loki.config.fields.StacktraceFieldConfig;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldConfig;
 import net.codinux.log.loki.quarkus.config.fields.QuarkusFieldWithValueConfig;

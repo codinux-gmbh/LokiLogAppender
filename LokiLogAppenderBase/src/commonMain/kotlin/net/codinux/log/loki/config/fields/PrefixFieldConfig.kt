@@ -1,4 +1,4 @@
-package net.codinux.log.loki.config.field
+package net.codinux.log.loki.config.fields
 
 open class PrefixFieldConfig(
     open var prefix: String,

@@ -2,8 +2,8 @@ package net.codinux.log.loki.quarkus.config.fields;
 
 import io.smallrye.config.WithConverter;
 import io.smallrye.config.WithDefault;
-import net.codinux.log.loki.config.LogFieldsConfig;
-import net.codinux.log.loki.config.field.IncludeField;
+import net.codinux.log.loki.config.fields.LogFieldsConfig;
+import net.codinux.log.loki.config.fields.IncludeField;
 import net.codinux.log.loki.quarkus.config.converter.IncludeFieldConverter;
 import net.codinux.log.quarkus.converter.FieldNamePrefixConverter;
 
