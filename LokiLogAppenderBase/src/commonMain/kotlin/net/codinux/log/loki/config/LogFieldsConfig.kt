@@ -142,7 +142,7 @@ open class LogFieldsConfig(
         const val AppVersionDefaultValueString = "null"
 
         const val JobNameDefaultFieldName = "job"
-        const val JobNameDefaultIncludeValueString = No
+        const val JobNameDefaultIncludeValueString = Label
         val JobNameDefaultIncludeValue = JobNameDefaultIncludeValueString.asInclude()
         const val JobNameDefaultValue: String = "LokiLogger"
 
