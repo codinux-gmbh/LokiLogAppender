@@ -4,7 +4,6 @@ import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import net.codinux.log.loki.quarkus.config.QuarkusLokiLogAppenderConfig;
 
-import javax.inject.Inject;
 import java.util.Optional;
 import java.util.logging.Handler;
 
@@ -13,7 +12,6 @@ public class QuarkusLokiLogAppenderRecorder {
 
     private final RuntimeValue<QuarkusLokiLogAppenderConfig> configValue;
 
-    @Inject
     public QuarkusLokiLogAppenderRecorder(RuntimeValue<QuarkusLokiLogAppenderConfig> config) {
         this.configValue = config;
     }
