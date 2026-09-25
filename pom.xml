@@ -17,8 +17,6 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <!-- choose a low Quarkus version to support as many Quarkus versions as possible -->
         <quarkus.version>2.10.0.Final</quarkus.version>
-        <!-- Automatically set to the same Kotlin version as in gradle.properties by root build.gradle.kts -->
-        <kotlin.version>1.9.25</kotlin.version>
         <!-- Automatically set to the same LogAppenderBase version as in gradle.properties by root build.gradle.kts -->
         <log.appender.base.version>0.8.0</log.appender.base.version>
         <jboss.logmanager.version>1.0.4</jboss.logmanager.version>
