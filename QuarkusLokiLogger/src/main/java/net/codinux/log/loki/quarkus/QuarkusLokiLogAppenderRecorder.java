@@ -21,14 +21,14 @@ public class QuarkusLokiLogAppenderRecorder {
         QuarkusLokiLogAppenderConfig config = configValue.getValue();
 
         if (config.enable() == false) {
-            return new RuntimeValue(Optional.empty());
+            return new RuntimeValue<>(Optional.empty());
         }
 
         if (config.lokiBaseUrl() == null || config.lokiBaseUrl().isBlank()) {
             throw new IllegalArgumentException("If loki-logger is enabled, then baseUrl value with the base URL pointing to your Loki instance must be configured");
         }
 
-        return new RuntimeValue(Optional.of(new QuarkusLokiLogAppender(config)));
+        return new RuntimeValue<>(Optional.of(new QuarkusLokiLogAppender(config)));
     }
 
 }
