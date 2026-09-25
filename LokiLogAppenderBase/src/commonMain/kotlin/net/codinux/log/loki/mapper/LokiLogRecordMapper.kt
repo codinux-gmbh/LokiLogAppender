@@ -91,10 +91,8 @@ open class LokiLogRecordMapper(
         fieldMapper.getStacktrace(exception, fields.stacktrace.isIncluded, fields.stacktrace.maxFieldLength)
 
     open fun escapeControlCharacters(value: String): String =
-    // we have to escape single backslashes as Loki doesn't accept control characters
-        // (returns then 400 Bad Request invalid control character found: 10, error found in #10 byte of ...)
-        value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
-            .replace("\"", "\\\"")
+        // in newer Loki versions escaping control characters is not needed anymore
+        value
 
 
     open fun mapKubernetesFields(fields: MutableMap<String, String?>, kubernetes: KubernetesFieldsConfig, requiredInclude: IncludeField, podInfo: PodInfo?) {
